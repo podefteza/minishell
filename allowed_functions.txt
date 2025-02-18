@@ -1,0 +1,89 @@
+Allowed functions:
+1. Readline Library (readline)
+readline
+rl_clear_history
+rl_on_new_line
+rl_replace_line
+rl_redisplay
+add_history
+📌 Library: #include <readline/readline.h> and #include <readline/history.h>
+📌 Linking: Requires -lreadline when compiling.
+
+2. Standard I/O Library (stdio.h)
+printf
+📌 Library: #include <stdio.h>
+
+3. Standard Library (stdlib.h)
+malloc
+free
+exit
+📌 Library: #include <stdlib.h>
+
+4. Unistd Library (unistd.h)
+write
+access
+open
+read
+close
+fork
+getcwd
+chdir
+unlink
+execve
+dup
+dup2
+pipe
+isatty
+ttyname
+ttyslot
+getenv
+📌 Library: #include <unistd.h>
+
+5. Sys/Wait Library (sys/wait.h)
+wait
+waitpid
+wait3
+wait4
+📌 Library: #include <sys/wait.h>
+
+6. Signal Library (signal.h)
+signal
+sigaction
+sigemptyset
+sigaddset
+kill
+📌 Library: #include <signal.h>
+
+7. Sys/Stat Library (sys/stat.h)
+stat
+lstat
+fstat
+📌 Library: #include <sys/stat.h>
+
+8. Directory Library (dirent.h)
+opendir
+readdir
+closedir
+📌 Library: #include <dirent.h>
+
+9. Error Handling Library (string.h, errno.h)
+strerror
+📌 Library: #include <string.h>
+perror
+📌 Library: #include <errno.h>
+
+10. Termios Library (termios.h)
+tcsetattr
+tcgetattr
+ioctl
+📌 Library: #include <termios.h>
+
+11. Termcap Library (term.h)
+tgetent
+tgetflag
+tgetnum
+tgetstr
+tgoto
+tputs
+📌 Library: #include <term.h>
+📌 Linking: Requires -ltermcap when compiling.
