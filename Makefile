@@ -5,11 +5,17 @@ CFLAGS = -Wall -Wextra -Werror
 LDFLAGS = -lreadline
 
 SRCS = minishell.c \
-		built_ins.c \
 		path_handler.c \
-		command_handler.c
+		command_handler.c \
+		pipe.c \
+		./builtins/builtin_setup.c \
+		./builtins/builtin_cd.c \
+		./builtins/builtin_echo.c \
+		./builtins/builtin_exit.c \
+		./builtins/builtin_pwd.c
 
 OBJ_DIR = obj
+BUILTINS_DIR = $(OBJ_DIR)/builtins
 
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
@@ -27,7 +33,10 @@ $(LIBFT):
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+$(BUILTINS_DIR):
+	@mkdir -p $(BUILTINS_DIR)
+
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR) $(BUILTINS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(OBJS) $(LIBFT)

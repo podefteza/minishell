@@ -6,76 +6,20 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:13:07 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/18 14:29:23 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/19 16:37:31 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-
-/*
-❌ TODO:
-
-✔️•Display a prompt when waiting for a new command.
-
-✔️•Have a working history.
-
-•Search and launch the right executable (based on the PATH variable or using a
-relative or an absolute path).
-
-•Avoid using more than one global variable to indicate a received signal. Consider
-the implications: this approach ensures that your signal handler will not access your
-main data structures.
-
-•Not interpret unclosed quotes or special characters which are not required by the
-subject such as \ (backslash) or ; (semicolon).
-
-•Handle ’ (single quote) which should prevent the shell from interpreting the meta-
-characters in the quoted sequence.
-
-•Handle " (double quote) which should prevent the shell from interpreting the meta-
-characters in the quoted sequence except for $ (dollar sign).
-
-•Implement redirections:
-	◦< should redirect input.
-	◦> should redirect output.
-	◦<< should be given a delimiter, then read the input until a line containing the
-	delimiter is seen. However, it doesn’t have to update the history!
-	◦>> should redirect output in append mode.
-
-•Implement pipes (| character). The output of each command in the pipeline is
-connected to the input of the next command via a pipe.
-
-•Handle environment variables ($ followed by a sequence of characters) which
-should expand to their values.
-
-•Handle $? which should expand to the exit status of the most recently executed
-foreground pipeline.
-
-•Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
-
-•In interactive mode:
-	◦ctrl-C displays a new prompt on a new line.
-	◦ctrl-D exits the shell.
-	◦ctrl-\ does nothing.
-
-•Your shell must implement the following
-	◦echo with option -n
-	✔️◦cd with only a relative or absolute path
-	✔️◦pwd with no options
-	◦export with no options
-	◦unset with no options
-	✔️◦env with no options or arguments
-	✔️◦exit with no options
-
-*/
-
-void	build_prompt(char *prompt, const char *user, const char *hostname, const char *display_path)
+void	build_prompt(char *prompt, const char *user, const char *hostname,
+		const char *display_path)
 {
 	size_t	i;
 
 	i = 0;
-	i += ft_strlcpy(prompt + i, BOLD GREEN "[minishell]" RESET " ", PROMPT_MAX - i);
+	i += ft_strlcpy(prompt + i, BOLD GREEN "[minishell]" RESET " ", PROMPT_MAX
+			- i);
 	i += ft_strlcpy(prompt + i, BOLD BLUE, PROMPT_MAX - i);
 	i += ft_strlcpy(prompt + i, user, PROMPT_MAX - i);
 	i += ft_strlcpy(prompt + i, "@", PROMPT_MAX - i);
@@ -85,41 +29,106 @@ void	build_prompt(char *prompt, const char *user, const char *hostname, const ch
 	i += ft_strlcpy(prompt + i, GREEN "$" RESET " ", PROMPT_MAX - i);
 }
 
+void	free_args(char **args)
+{
+	size_t	i;
+
+	if (!args)
+		return ;
+	i = 0;
+	while (args[i])
+		free(args[i++]);
+	free(args);
+}
+
+void	free_commands(char **commands)
+{
+	int	i;
+
+	if (!commands)
+		return;
+
+	i = 0;
+	while (commands[i])
+		free(commands[i++]);
+	free(commands);
+}
+
+
+void trim_commands(char **commands)
+{
+    int i = 0;
+    while (commands[i])
+    {
+        char *trimmed = ft_strtrim(commands[i], " \t\n");
+        free(commands[i]);
+        commands[i] = trimmed;
+        i++;
+    }
+}
 
 void	handle_input(char *input, char **envp)
 {
-	char	**args;
+	t_builtin	builtins[8];
+	char		**commands;
+	char		**args;
+	int			i;
+	int			pipe_fds[2];
 
+	builtin_setup(builtins);
+	if (ft_strchr(input, '|'))
+	{
+		commands = ft_split(input, '|');
+		if (!commands || !commands[0])
+		{
+			printf("minishell: syntax error: unexpected '|'\n");
+			free_commands(commands);
+			return;
+		}
+		trim_commands(commands);
+		fork_processes(pipe_fds, commands, envp);
+		free_commands(commands);
+		return;
+	}
 	args = ft_split(input, ' ');
 	if (!args || !args[0])
-		return;
-
-	// create a function to compare it to all buit-ins
-	if (ft_strncmp(args[0], "exit", 5) == 0)
 	{
-		free(args);
-		exit(0);
-	}
-	else if (ft_strncmp(args[0], "cd", 3) == 0)
-	{
-		builtin_cd(args);
-		free(args);
+		free_args(args);
 		return;
 	}
-	else if (ft_strncmp(args[0], "pwd", 4) == 0)
+	i = 0;
+	while (builtins[i].cmd != NULL)
 	{
-		builtin_pwd();
-		free(args);
-		return;
-	}
-	else if (ft_strncmp(args[0], "echo", 5) == 0)
-	{
-		builtin_echo(args);
-		free(args);
-		return;
+		if (ft_strncmp(args[0], builtins[i].cmd,
+				ft_strlen(builtins[i].cmd)) == 0)
+		{
+			builtins[i].func(args);
+			free_args(args);
+			return;
+		}
+		i++;
 	}
 	execute_command(args, envp);
-	free(args);
+	free_args(args);
+}
+
+void	get_host_name(char *hostname)
+{
+	int	fd;
+	int	ret;
+
+	fd = open("/etc/hostname", O_RDONLY);
+	if (fd < 0)
+	{
+		ft_strlcpy(hostname, "unknown", HOSTNAME_MAX);
+		return ;
+	}
+	ret = read(fd, hostname, HOSTNAME_MAX - 1);
+	close(fd);
+	if (ret > 0)
+		hostname[ret - 1] = '\0';
+	else
+		ft_strlcpy(hostname, "unknown", HOSTNAME_MAX);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -141,8 +150,7 @@ int	main(int argc, char **argv, char **envp)
 	user = getenv("USER");
 	if (!user)
 		user = "unknown";
-	if (gethostname(hostname, HOSTNAME_MAX) != 0)
-		ft_strlcpy(hostname, "unknown", HOSTNAME_MAX);
+	get_host_name(hostname);
 	home = getenv("HOME");
 	if (!home)
 		home = "";
@@ -157,7 +165,7 @@ int	main(int argc, char **argv, char **envp)
 		build_prompt(prompt, user, hostname, display_path);
 		input = readline(prompt);
 		if (!input)
-			break;
+			break ;
 		if (*input)
 		{
 			add_history(input);

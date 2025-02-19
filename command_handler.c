@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/18 14:15:08 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/19 13:21:39 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,14 @@ void	execute_command(char **args, char **envp)
 	char	*full_path;
 
 	if (!args || !args[0])
-		return;
+		return ;
 	full_path = find_command(args[0], envp);
 	if (!full_path)
 	{
 		ft_putstr_fd("minishell: command not found: ", 2);
 		ft_putstr_fd(args[0], 2);
 		ft_putstr_fd("\n", 2);
-		return;
+		return ;
 	}
 	pid = fork();
 	if (pid < 0)
