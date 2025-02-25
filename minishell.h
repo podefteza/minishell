@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/19 16:37:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/25 13:06:27 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,17 @@
 #include <readline/history.h>
 #include <errno.h>
 #include <limits.h>
+#include <linux/limits.h>
 //#include <string.h>
 #include <time.h>
 #include <sys/wait.h>
-#include <linux/limits.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include "libft/libft/libft.h"
 // check if all libraries are needed
 
 #define HOSTNAME_MAX 256
-#define PATH_MAX 4096
+//#define PATH_MAX 4096
 #define PROMPT_MAX 4416
 
 // Define ANSI color codes
@@ -42,6 +43,9 @@
 
 #define TRUE 1
 #define FALSE 0
+
+// global variable to store the last exit code
+extern int	g_exit_status;
 
 typedef struct s_builtin
 {
@@ -70,6 +74,21 @@ void	execute_command(char **args, char **envp);
 // pipe.c
 void	handle_pipe(char *input, char **envp);
 int	fork_processes(int *pipe_fds, char **commands, char **envp);
+
+// shell_setup.c
+void	build_prompt(char *prompt, const char *user, const char *hostname,
+	const char *display_path);
+void	get_host_name(char *hostname);
+
+// expand_variables.c
+char	*get_env_value(char *var, char **envp);
+char	*expand_variables(char *input, char **envp);
+
+// exit_status.c
+char	*last_exit_status(char *input);
+
+// format_input.c
+void handle_input(char *input, char **envp);
 
 // minishell.c
 void	free_args(char **args);

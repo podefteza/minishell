@@ -1,5 +1,7 @@
 /*❌ TODO:
 
+❌❌❌❌ SAVE THE LAST EXIT CODE IN THE GLOBAL VARIABLE WHEN EXITING!!! ❌❌❌❌
+
 ✔️•Display a prompt when waiting for a new command.
 
 ✔️•Have a working history.
@@ -28,13 +30,18 @@ characters in the quoted sequence except for $ (dollar sign).
 	◦>> should redirect output in append mode.
 
 •Implement pipes (| character). The output of each command in the pipeline is
-connected to the input of the next command via a pipe. ✔️ need to handle quotes!!
+connected to the input of the next command via a pipe. ✔️ need to handle quotes!! 💡 check multiple pipes (cat | cat | ls)
 
 •Handle environment variables ($ followed by a sequence of characters) which
 should expand to their values.
 
-•Handle $? which should expand to the exit status of the most recently executed
+✔️•Handle $? which should expand to the exit status of the most recently executed
 foreground pipeline.
+	✔️$HOME	/home/user
+	✔️$PATH	/usr/bin:/bin:/usr/local/bin
+	✔️$USER	username
+	✔️$SHELL	/bin/bash (or your shell’s path)
+	✔️$?	Last command’s exit status
 
 •Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
 
@@ -44,8 +51,8 @@ foreground pipeline.
 	◦ctrl-\ does nothing.
 
 •Your shell must implement the following
-	✔️✔️◦echo with option -n
-	✔️✔️◦cd with only a relative or absolute path ✔️ error when directory does not exist
+	✔️✔️◦echo with option -n ❌ echo with quotes
+	✔️✔️◦cd with only a relative or absolute path ✔️ error when directory does not exist ❌ cd ..\ does not behave like the shell (interactive mode??) ❌ cd ~ (see shorten_path())
 	✔️◦pwd with no options
 	◦export with no options
 	◦unset with no options
