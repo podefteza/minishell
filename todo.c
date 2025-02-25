@@ -51,7 +51,7 @@ foreground pipeline.
 	◦ctrl-\ does nothing.
 
 •Your shell must implement the following
-	✔️✔️◦echo with option -n ❌ echo with quotes
+	✔️✔️◦echo with option -n ❌ echo with quotes > if command is echo, don't trim the input
 	✔️✔️◦cd with only a relative or absolute path ✔️ error when directory does not exist ❌ cd ..\ does not behave like the shell (interactive mode??) ❌ cd ~ (see shorten_path())
 	✔️◦pwd with no options
 	◦export with no options

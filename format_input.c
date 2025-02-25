@@ -6,26 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/25 13:06:20 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/25 15:54:22 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	trim_commands(char **commands)
-{
-	int		i;
-	char	*trimmed;
-
-	i = 0;
-	while (commands[i])
-	{
-		trimmed = ft_strtrim(commands[i], " \t\n");
-		free(commands[i]);
-		commands[i] = trimmed;
-		i++;
-	}
-}
 
 char	*handle_quotes(char *input)
 {
@@ -65,27 +50,22 @@ char	*handle_quotes(char *input)
 	return (output);
 }
 
-int	ft_count_words(char *input)
+int	count_words(char *input)
 {
-	int		count;
-	int		in_single_quote;
-	int		in_double_quote;
+	int	count;
+	int	in_single_quote;
+	int	in_double_quote;
 
 	count = 0;
 	in_single_quote = 0;
 	in_double_quote = 0;
-
 	while (*input)
 	{
-		// Skip leading spaces outside of quotes
 		while (*input == ' ' && !in_single_quote && !in_double_quote)
 			input++;
 		if (!*input)
-			break;
-
-		count++; // Found a new word
-
-		// Process word until next space (or end)
+			break ;
+		count++;
 		while (*input)
 		{
 			if (*input == '\'' && !in_double_quote)
@@ -93,13 +73,12 @@ int	ft_count_words(char *input)
 			else if (*input == '\"' && !in_single_quote)
 				in_double_quote = !in_double_quote;
 			else if (*input == ' ' && !in_single_quote && !in_double_quote)
-				break;
+				break ;
 			input++;
 		}
 	}
 	return (count);
 }
-
 
 char	**split_arguments(char *input)
 {
@@ -114,22 +93,18 @@ char	**split_arguments(char *input)
 	in_single_quote = 0;
 	in_double_quote = 0;
 	arg_count = 0;
-	args = malloc(sizeof(char *) * (ft_count_words(input) + 1)); // Needs implementation
+	args = malloc(sizeof(char *) * (count_words(input) + 1));
 	if (!args)
 		return (NULL);
-
 	while (*input)
 	{
 		while (*input == ' ' && !in_single_quote && !in_double_quote)
-			input++; // Skip unquoted spaces
-
+			input++;
 		if (!*input)
-			break;
-
+			break ;
 		current_arg = malloc(ft_strlen(input) + 1);
 		if (!current_arg)
 			return (free_args(args), NULL);
-
 		i = 0;
 		while (*input)
 		{
@@ -138,7 +113,7 @@ char	**split_arguments(char *input)
 			else if (*input == '\"' && !in_single_quote)
 				in_double_quote = !in_double_quote;
 			else if (*input == ' ' && !in_single_quote && !in_double_quote)
-				break; // End of current argument
+				break ;
 			else
 				current_arg[i++] = *input;
 			input++;
@@ -150,69 +125,95 @@ char	**split_arguments(char *input)
 	return (args);
 }
 
-void handle_input(char *input, char **envp)
+void	handle_input(char *input, char **envp)
 {
-    t_builtin builtins[8];
-    char **commands;
-    char **args;
-    int i;
-    int pipe_fds[2];
-    char *modified_input;
-    char *cleaned_input;
+	t_builtin	builtins[8];
+	char		**commands;
+	char		**args;
+	int			i;
+	int			pipe_fds[2];
+	char		*modified_input;
+	char		*cleaned_input;
 
-    if (ft_strchr(input, '$'))
-        modified_input = expand_variables(input, envp);
-    else
-        modified_input = ft_strdup(input);
+	if (ft_strchr(input, '$'))
+		modified_input = expand_variables(input, envp);
+	else
+		modified_input = ft_strdup(input);
+	if (!modified_input)
+		return ;
+	cleaned_input = handle_quotes(modified_input);
+	free(modified_input);
+	if (!cleaned_input)
+		return ;
+	builtin_setup(builtins);
+	//	if (ft_strchr(cleaned_input, '|') && !ft_strnstr(cleaned_input, "echo", ft_strlen(cleaned_input)))
+	if (ft_strnstr(cleaned_input, "echo", ft_strlen(cleaned_input)))
+	{
+		args = malloc(sizeof(char *) * 3);
+		if (!args)
+		{
+			free(cleaned_input);
+			return;
+		}
+		args[0] = ft_strdup("echo");
+		char *message = cleaned_input + 4;
+		while (*message && (*message == ' ' || *message == '\t'))
+			message++;
+		args[1] = ft_strdup(message);
+		args[2] = NULL;
+	}
+	else
+	{
+		args = split_arguments(cleaned_input);
+		if (!args || !args[0])
+		{
+			free_args(args);
+			free(cleaned_input);
+			return ;
+		}
+	}
+	i = 0;
 
-    if (!modified_input)
-        return;
+	if (ft_strchr(cleaned_input, '|'))
+	{
+		commands = ft_split(cleaned_input, '|');
+		if (!commands || !commands[0])
+		{
+			printf("minishell: syntax error: unexpected '|'\n");
+			free_commands(commands);
+			free(cleaned_input);
+			return ;
+		}
+		while (commands[i])
+		{
+			printf("commands[%d]: %s\n", i, commands[i]);
+			i++;
+		}
+		fork_processes(pipe_fds, commands, envp);
+		free_commands(commands);
+		free(cleaned_input);
+		return ;
+	}
+	while (args[i])
+	{
+		printf("args[%d]: %s\n", i, args[i]);
+		i++;
+	}
 
-    cleaned_input = handle_quotes(modified_input);
-    free(modified_input);
-    if (!cleaned_input)
-        return;
-
-    builtin_setup(builtins);
-    if (ft_strchr(cleaned_input, '|'))
-    {
-        commands = ft_split(cleaned_input, '|');
-        if (!commands || !commands[0])
-        {
-            printf("minishell: syntax error: unexpected '|'\n");
-            free_commands(commands);
-            free(cleaned_input);
-            return;
-        }
-        fork_processes(pipe_fds, commands, envp);
-        free_commands(commands);
-        free(cleaned_input);
-        return;
-    }
-
-    // Use `split_arguments()` instead of `ft_split(cleaned_input, ' ')`
-    args = split_arguments(cleaned_input);
-    if (!args || !args[0])
-    {
-        free_args(args);
-        free(cleaned_input);
-        return;
-    }
-
-    i = 0;
-    while (builtins[i].cmd != NULL)
-    {
-        if (ft_strncmp(args[0], builtins[i].cmd, ft_strlen(builtins[i].cmd)) == 0)
-        {
-            builtins[i].func(args);
-            free_args(args);
-            free(cleaned_input);
-            return;
-        }
-        i++;
-    }
-
-    execute_command(args, envp);
-    free_args(args);
-    free(cleaned_input);
+	i = 0;
+	while (builtins[i].cmd != NULL)
+	{
+		if (ft_strncmp(args[0], builtins[i].cmd,
+				ft_strlen(builtins[i].cmd)) == 0)
+		{
+			builtins[i].func(args);
+			free_args(args);
+			free(cleaned_input);
+			return ;
+		}
+		i++;
+	}
+	execute_command(args, envp);
+	free_args(args);
+	free(cleaned_input);
 }
