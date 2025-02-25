@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/25 11:42:56 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/25 17:31:25 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,20 +48,20 @@ char *expand_variables(char *input, char **envp)
     ptr = result;
     while (*input)
     {
-        if (*input == '\'' && !in_double_quote) // Toggle single quote state
+        if (*input == '\'' && !in_double_quote)
         {
             in_single_quote = !in_single_quote;
             *ptr++ = *input++;
         }
-        else if (*input == '\"' && !in_single_quote) // Toggle double quote state
+        else if (*input == '\"' && !in_single_quote)
         {
             in_double_quote = !in_double_quote;
             *ptr++ = *input++;
         }
         else if (*input == '$' && (*(input + 1)) && !in_single_quote)
         {
-            input++; // Skip the $
-            if (*input == '?') // Handle special $? for exit status
+            input++;
+            if (*input == '?')
             {
                 var_value = ft_itoa(g_exit_status);
                 input++;
@@ -81,6 +81,8 @@ char *expand_variables(char *input, char **envp)
                 ptr += ft_strlen(var_value);
                 free(var_value);
             }
+			else
+				ptr = "$";
         }
         else
         {

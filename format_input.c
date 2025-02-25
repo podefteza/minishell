@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/25 15:54:22 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/25 18:21:53 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,22 +89,25 @@ char	**split_arguments(char *input)
 	char	**args;
 	char	*current_arg;
 
-	i = 0;
 	in_single_quote = 0;
 	in_double_quote = 0;
 	arg_count = 0;
 	args = malloc(sizeof(char *) * (count_words(input) + 1));
 	if (!args)
 		return (NULL);
+
 	while (*input)
 	{
+		// Skip spaces before the first argument (except inside quotes)
 		while (*input == ' ' && !in_single_quote && !in_double_quote)
 			input++;
 		if (!*input)
 			break ;
+
 		current_arg = malloc(ft_strlen(input) + 1);
 		if (!current_arg)
 			return (free_args(args), NULL);
+
 		i = 0;
 		while (*input)
 		{
@@ -113,7 +116,17 @@ char	**split_arguments(char *input)
 			else if (*input == '\"' && !in_single_quote)
 				in_double_quote = !in_double_quote;
 			else if (*input == ' ' && !in_single_quote && !in_double_quote)
-				break ;
+			{
+				// If we reach a space outside quotes, check next char
+				char *next = input + 1;
+				while (*next == ' ') // Skip multiple spaces
+					next++;
+				// If next char is a quote, continue to preserve spaces inside
+				if (*next == '\'' || *next == '\"')
+					current_arg[i++] = *input;
+				else
+					break;
+			}
 			else
 				current_arg[i++] = *input;
 			input++;
@@ -125,6 +138,7 @@ char	**split_arguments(char *input)
 	return (args);
 }
 
+
 void	handle_input(char *input, char **envp)
 {
 	t_builtin	builtins[8];
@@ -133,87 +147,91 @@ void	handle_input(char *input, char **envp)
 	int			i;
 	int			pipe_fds[2];
 	char		*modified_input;
-	char		*cleaned_input;
 
+	// Expand variables first (before splitting)
 	if (ft_strchr(input, '$'))
 		modified_input = expand_variables(input, envp);
 	else
 		modified_input = ft_strdup(input);
 	if (!modified_input)
 		return ;
-	cleaned_input = handle_quotes(modified_input);
-	free(modified_input);
-	if (!cleaned_input)
-		return ;
+
+	// Process builtins and commands
 	builtin_setup(builtins);
-	//	if (ft_strchr(cleaned_input, '|') && !ft_strnstr(cleaned_input, "echo", ft_strlen(cleaned_input)))
-	if (ft_strnstr(cleaned_input, "echo", ft_strlen(cleaned_input)))
+
+	// Special handling for "echo"
+	if (ft_strnstr(modified_input, "echo", ft_strlen(modified_input)))
 	{
 		args = malloc(sizeof(char *) * 3);
 		if (!args)
 		{
-			free(cleaned_input);
-			return;
+			free(modified_input);
+			return ;
 		}
 		args[0] = ft_strdup("echo");
-		char *message = cleaned_input + 4;
+
+		// Move past "echo" and trim leading spaces **before** quotes
+		char *message = modified_input + 4;
 		while (*message && (*message == ' ' || *message == '\t'))
 			message++;
+
+		// Preserve spaces inside quotes
 		args[1] = ft_strdup(message);
 		args[2] = NULL;
 	}
 	else
 	{
-		args = split_arguments(cleaned_input);
+		// **Only split arguments first, handle quotes later**
+		args = split_arguments(modified_input);
+		free(modified_input);
 		if (!args || !args[0])
 		{
 			free_args(args);
-			free(cleaned_input);
 			return ;
 		}
-	}
-	i = 0;
 
-	if (ft_strchr(cleaned_input, '|'))
+		// **NOW remove quotes, so spaces inside are preserved**
+		i = 0;
+		while (args[i])
+		{
+			char *cleaned_arg = handle_quotes(args[i]);
+			free(args[i]);
+			args[i] = cleaned_arg;
+			i++;
+		}
+	}
+
+	// Handle pipes
+	if (ft_strchr(args[0], '|'))
 	{
-		commands = ft_split(cleaned_input, '|');
+		commands = ft_split(args[0], '|');
 		if (!commands || !commands[0])
 		{
 			printf("minishell: syntax error: unexpected '|'\n");
 			free_commands(commands);
-			free(cleaned_input);
+			free_args(args);
 			return ;
-		}
-		while (commands[i])
-		{
-			printf("commands[%d]: %s\n", i, commands[i]);
-			i++;
 		}
 		fork_processes(pipe_fds, commands, envp);
 		free_commands(commands);
-		free(cleaned_input);
+		free_args(args);
 		return ;
 	}
-	while (args[i])
-	{
-		printf("args[%d]: %s\n", i, args[i]);
-		i++;
-	}
 
+	// Execute builtins if match
 	i = 0;
 	while (builtins[i].cmd != NULL)
 	{
-		if (ft_strncmp(args[0], builtins[i].cmd,
-				ft_strlen(builtins[i].cmd)) == 0)
+		if (ft_strncmp(args[0], builtins[i].cmd, ft_strlen(builtins[i].cmd)) == 0)
 		{
 			builtins[i].func(args);
 			free_args(args);
-			free(cleaned_input);
 			return ;
 		}
 		i++;
 	}
+
+	// Execute external command
 	execute_command(args, envp);
 	free_args(args);
-	free(cleaned_input);
 }

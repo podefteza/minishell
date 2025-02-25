@@ -3,6 +3,7 @@
 ❌❌❌❌ SAVE THE LAST EXIT CODE IN THE GLOBAL VARIABLE WHEN EXITING!!! ❌❌❌❌
 
 ✔️•Display a prompt when waiting for a new command.
+❌❌❌❌❌❌ if the command exceeds the size of the line, instead of being writen in the line bellow, it overrites the current one.
 
 ✔️•Have a working history.
 
@@ -51,7 +52,7 @@ foreground pipeline.
 	◦ctrl-\ does nothing.
 
 •Your shell must implement the following
-	✔️✔️◦echo with option -n ❌ echo with quotes > if command is echo, don't trim the input
+	✔️❌ ◦echo with option -n ❌ echo with quotes > if command is echo, don't trim the input ❌  handle expansible variable as $? or pipes | inside quotes ❌ handle spaces between quotes and first characters (are being incorrectly trimmed)
 	✔️✔️◦cd with only a relative or absolute path ✔️ error when directory does not exist ❌ cd ..\ does not behave like the shell (interactive mode??) ❌ cd ~ (see shorten_path())
 	✔️◦pwd with no options
 	◦export with no options
