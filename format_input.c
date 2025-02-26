@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/25 18:21:53 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/26 14:30:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,16 @@ void	handle_input(char *input, char **envp)
 		// Preserve spaces inside quotes
 		args[1] = ft_strdup(message);
 		args[2] = NULL;
+
+		// **NOW remove quotes, so spaces inside are preserved** ---------------> remove if not working
+		i = 0;
+		while (args[i])
+		{
+			char *cleaned_arg = handle_quotes(args[i]);
+			free(args[i]);
+			args[i] = cleaned_arg;
+			i++;
+		}
 	}
 	else
 	{
@@ -235,3 +245,4 @@ void	handle_input(char *input, char **envp)
 	execute_command(args, envp);
 	free_args(args);
 }
+

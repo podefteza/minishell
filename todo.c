@@ -33,16 +33,17 @@ characters in the quoted sequence except for $ (dollar sign).
 •Implement pipes (| character). The output of each command in the pipeline is
 connected to the input of the next command via a pipe. ✔️ need to handle quotes!! 💡 check multiple pipes (cat | cat | ls)
 
-•Handle environment variables ($ followed by a sequence of characters) which
+❌•Handle environment variables ($ followed by a sequence of characters) which
 should expand to their values.
-
-✔️•Handle $? which should expand to the exit status of the most recently executed
-foreground pipeline.
 	✔️$HOME	/home/user
 	✔️$PATH	/usr/bin:/bin:/usr/local/bin
 	✔️$USER	username
 	✔️$SHELL	/bin/bash (or your shell’s path)
 	✔️$?	Last command’s exit status
+
+✔️•Handle $? which should expand to the exit status of the most recently executed
+foreground pipeline.
+
 
 •Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
 
@@ -52,7 +53,7 @@ foreground pipeline.
 	◦ctrl-\ does nothing.
 
 •Your shell must implement the following
-	✔️❌ ◦echo with option -n ❌ echo with quotes > if command is echo, don't trim the input ❌  handle expansible variable as $? or pipes | inside quotes ❌ handle spaces between quotes and first characters (are being incorrectly trimmed)
+	❌ ◦echo with option -n❌
 	✔️✔️◦cd with only a relative or absolute path ✔️ error when directory does not exist ❌ cd ..\ does not behave like the shell (interactive mode??) ❌ cd ~ (see shorten_path())
 	✔️◦pwd with no options
 	◦export with no options
