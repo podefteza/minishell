@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/26 14:11:25 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/28 15:16:42 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,17 @@ char	*get_env_value(char *var, char **envp)
 	}
 	free(prefix);
 	return (ft_strdup(""));
+}
+
+char *get_shell_name(void)
+{
+	char *shell_name;
+
+	shell_name = getenv("_");
+	if (shell_name)
+		return (shell_name);
+	else
+		return ("shell name is not set"); // or minishell?
 }
 
 char	*expand_variables(char *input, char **envp)
@@ -70,6 +81,22 @@ char	*expand_variables(char *input, char **envp)
 			else if (*input == '?')
 			{
 				var_value = ft_itoa(g_exit_status);
+				input++;
+			}
+			else if (*input == '$')
+			{
+				pid_t shell_pid = getpid();
+				var_value = ft_itoa(shell_pid);
+				input++;
+			}
+			else if (*input == '!')
+			{
+				var_value = ft_itoa(last_background_pid(0));
+				input++;
+			}
+			else if (*input == '0')
+			{
+				var_value = ft_strdup(get_shell_name());
 				input++;
 			}
 			else

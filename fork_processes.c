@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipe.c                                             :+:      :+:    :+:   */
+/*   fork_processes.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/19 14:18:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/28 17:29:58 by carlos-j         ###   ########.fr       */
+/*   Created: 2025/02/28 14:45:59 by carlos-j          #+#    #+#             */
+/*   Updated: 2025/02/28 14:46:02 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!! SE IF ANY OF THOSE FUNCTIONS ARE STILL BEING USED..........
 
 static void	setup_pipes(int *pipe_fds, char **commands, int i)
 {
