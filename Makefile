@@ -5,7 +5,6 @@ CFLAGS = -Wall -Wextra -Werror
 LDFLAGS = -lreadline
 
 SRCS = minishell.c \
-		path_handler.c \
 		command_handler.c \
 		fork_processes.c \
 		shell_setup.c \
@@ -13,6 +12,7 @@ SRCS = minishell.c \
 		exit_status.c \
 		format_input.c \
 		get_pid.c \
+		path_handler.c \
 		./builtins/builtin_setup.c \
 		./builtins/builtin_cd.c \
 		./builtins/builtin_echo.c \
