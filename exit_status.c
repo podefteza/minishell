@@ -6,12 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:47:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/24 11:47:18 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/28 18:51:07 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 char	*last_exit_status(char *input)
 {

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/28 17:41:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/03 14:30:47 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,7 +244,22 @@ void	handle_input(char *input, char **envp)
 	if (count_quotes(input))
 		return ;
 	if (ft_strchr(input, '$'))
+	{
 		modified_input = expand_variables(input, envp);
+		if (!modified_input)
+		{
+			modified_input = ft_strdup("");
+			if (!modified_input)
+				return;
+		}
+		else
+		{
+			char *trimmed = ft_strtrim(modified_input, " ");
+			free(modified_input);
+			modified_input = trimmed;
+		}
+		//printf("modified_input: %s\n", modified_input);
+	}
 	else
 		modified_input = ft_strdup(input);
 	if (!modified_input)
@@ -271,7 +286,7 @@ void	handle_input(char *input, char **envp)
 		if (!args)
 		{
 			free(modified_input);
-			return ;
+			return;
 		}
 	}
 	else

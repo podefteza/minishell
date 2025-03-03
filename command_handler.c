@@ -6,11 +6,26 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/28 14:42:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/03 16:29:32 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	command_not_found(char **args)
+{
+	if (g_exit_status != 42126 && g_exit_status != 42127)
+	{
+		ft_putstr_fd(args[0], 2);
+		ft_putstr_fd(": command not found", 2);
+		ft_putstr_fd("\n", 2);
+		g_exit_status = 127;
+	}
+	if (g_exit_status == 42126)
+		g_exit_status = 126;
+	if (g_exit_status == 42127)
+		g_exit_status = 127;
+}
 
 char	*find_command(char *cmd, char **envp)
 {
@@ -19,19 +34,27 @@ char	*find_command(char *cmd, char **envp)
 
 	full_path = cmd_is_path(cmd);
 	if (full_path)
-		return (full_path);
+		return (full_path); // Return the full path if cmd_is_path succeeded
+
+	// If cmd_is_path returned NULL, it means the command is not a valid path
+	// or it has permission issues, and cmd_is_path has already handled the error.
+	// So, we don't call command_not_found here.
+
 	path = get_path_from_env(envp);
 	if (!path)
+	{
+		command_not_found(&cmd); // Call command_not_found if PATH is not set
 		return (NULL);
-	return (search_in_path(path, cmd));
-}
+	}
 
-void	command_not_found(char **args)
-{
-	ft_putstr_fd("minishell: command not found: ", 2);
-	ft_putstr_fd(args[0], 2);
-	ft_putstr_fd("\n", 2);
-	g_exit_status = 127;
+	full_path = search_in_path(path, cmd);
+	if (!full_path)
+	{
+		command_not_found(&cmd); // Call command_not_found if command is not found in PATH
+		return (NULL);
+	}
+
+	return (full_path);
 }
 
 void	is_directory(char *full_path)
@@ -40,7 +63,6 @@ void	is_directory(char *full_path)
 	ft_putstr_fd(full_path, 2);
 	ft_putstr_fd(": Is a directory\n", 2);
 	g_exit_status = 126;
-	free(full_path);
 }
 
 void	execute_process(char *full_path, char **args, char **envp)
@@ -78,18 +100,22 @@ void	execute_command(char **args, char **envp)
 
 	if (!args || !args[0])
 		return ;
+
 	full_path = find_command(args[0], envp);
 	if (!full_path)
 	{
-		command_not_found(args);
+		// Errors are already handled in cmd_is_path or find_command
 		return ;
 	}
+
 	if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode))
 	{
 		is_directory(full_path);
+		free(full_path); // Free the allocated memory for full_path
 		return ;
 	}
+
 	execute_process(full_path, args, envp);
 	if (full_path != args[0])
-		free(full_path);
+		free(full_path); // Free full_path only if it was allocated by find_command
 }

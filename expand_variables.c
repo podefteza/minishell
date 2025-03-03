@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/28 15:16:42 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/02/28 22:02:50 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ char	*get_env_value(char *var, char **envp)
 		i++;
 	}
 	free(prefix);
-	return (ft_strdup(""));
+	return (NULL);
 }
 
-char *get_shell_name(void)
+char	*get_shell_name(void)
 {
-	char *shell_name;
+	char	*shell_name;
 
 	shell_name = getenv("_");
 	if (shell_name)
@@ -52,6 +52,7 @@ char	*expand_variables(char *input, char **envp)
 	int		in_double_quote;
 	char	var_name[100];
 	int		i;
+	pid_t	shell_pid;
 
 	var_value = NULL;
 	in_single_quote = 0;
@@ -85,7 +86,7 @@ char	*expand_variables(char *input, char **envp)
 			}
 			else if (*input == '$')
 			{
-				pid_t shell_pid = getpid();
+				shell_pid = getpid();
 				var_value = ft_itoa(shell_pid);
 				input++;
 			}
@@ -107,16 +108,13 @@ char	*expand_variables(char *input, char **envp)
 				var_name[i] = '\0';
 				var_value = get_env_value(var_name, envp);
 			}
-			if (var_value)
+			if (var_value && *var_value != '\0')
 			{
 				ft_strlcpy(ptr, var_value, ft_strlen(var_value) + 1);
 				ptr += ft_strlen(var_value);
-				free(var_value);
-				var_value = NULL;
 			}
-			else
-				while (*input && (ft_isalnum(*input) || *input == '_'))
-					*ptr++ = *input++;
+			free(var_value);
+			var_value = NULL;
 		}
 		else
 			*ptr++ = *input++;
