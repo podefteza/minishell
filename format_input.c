@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/03 14:30:47 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/03 17:08:19 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,58 +94,69 @@ int	count_words(char *input)
 	return (count);
 }
 
+char	*get_next_token(char *input)
+{
+	static char	*str;
+	char		*token;
+	int			in_squote = 0, in_dquote = 0;
+	int			i = 0;
+
+	if (input)
+		str = input;
+	if (!str || *str == '\0')
+		return (NULL);
+
+	token = malloc(ft_strlen(str) + 1);
+	if (!token)
+		return (NULL);
+
+	while (*str && (*str == ' ' || *str == '\t'))
+		str++; // Skip leading spaces
+
+	while (*str)
+	{
+		if (*str == '\'' && !in_dquote)
+			in_squote = !in_squote;
+		else if (*str == '\"' && !in_squote)
+			in_dquote = !in_dquote;
+		else if (*str == ' ' && !in_squote && !in_dquote)
+			break; // End token on space outside quotes
+		else
+			token[i++] = *str;
+		str++;
+	}
+	token[i] = '\0';
+
+	while (*str == ' ') // Move to next token
+		str++;
+
+	return (token);
+}
+
+
 char	**split_arguments(char *input)
 {
-	int		i;
-	int		in_single_quote;
-	int		in_double_quote;
 	int		arg_count;
 	char	**args;
-	char	*current_arg;
-	char	*next;
+	char	*token;
+	int		i;
 
-	in_single_quote = 0;
-	in_double_quote = 0;
-	arg_count = 0;
-	args = malloc(sizeof(char *) * (count_words(input) + 1));
+	arg_count = count_words(input);
+	args = malloc(sizeof(char *) * (arg_count + 1));
 	if (!args)
 		return (NULL);
-	while (*input)
+
+	i = 0;
+	token = get_next_token(input);  // Custom tokenizer function
+	while (token)
 	{
-		while (*input == ' ' && !in_single_quote && !in_double_quote)
-			input++;
-		if (!*input)
-			break ;
-		current_arg = malloc(ft_strlen(input) + 1);
-		if (!current_arg)
-			return (free_args(args), NULL);
-		i = 0;
-		while (*input)
-		{
-			if (*input == '\'' && !in_double_quote)
-				in_single_quote = !in_single_quote;
-			else if (*input == '\"' && !in_single_quote)
-				in_double_quote = !in_double_quote;
-			else if (*input == ' ' && !in_single_quote && !in_double_quote)
-			{
-				next = input + 1;
-				while (*next == ' ')
-					next++;
-				if (*next == '\'' || *next == '\"')
-					current_arg[i++] = *input;
-				else
-					break ;
-			}
-			else
-				current_arg[i++] = *input;
-			input++;
-		}
-		current_arg[i] = '\0';
-		args[arg_count++] = current_arg;
+		args[i++] = ft_strdup(token);
+		token = get_next_token(NULL);
 	}
-	args[arg_count] = NULL;
+	args[i] = NULL;
 	return (args);
 }
+
 
 int	is_pipe_outside_quotes(char *input)
 {
@@ -182,6 +193,24 @@ void	execute_pipeline(char **commands)
 
 	input_fd = STDIN_FILENO;
 	i = 0;
+
+	// **Check if the first command is `cat <file>` and if the file exists**
+	args = split_arguments(commands[0]);
+	if (args && args[0] && ft_strncmp(args[0], "cat", 4) == 0 && args[1])
+	{
+		if (access(args[1], F_OK) == -1)
+		{
+			ft_putstr_fd("cat: ", STDERR_FILENO);
+			ft_putstr_fd(args[1], STDERR_FILENO);
+			ft_putstr_fd(": ", STDERR_FILENO);
+			perror(""); // Print system error (e.g., "No such file or directory")
+			free_args(args);
+			g_exit_status = 1;
+			return ; // **Stop execution before forking**
+		}
+	}
+	free_args(args);
+
 	while (commands[i] != NULL)
 	{
 		if (commands[i + 1] != NULL)
@@ -198,7 +227,7 @@ void	execute_pipeline(char **commands)
 			perror("minishell: fork");
 			return ;
 		}
-		if (pid == 0)
+		if (pid == 0) // **Child process**
 		{
 			if (input_fd != STDIN_FILENO)
 			{
@@ -214,11 +243,14 @@ void	execute_pipeline(char **commands)
 			if (args && args[0])
 			{
 				execvp(args[0], args);
-				perror("minishell: execvp");
+				// If execvp fails, print error like Bash
+				ft_putstr_fd(args[0], STDERR_FILENO);
+				ft_putstr_fd(": ", STDERR_FILENO);
+				perror("");
 			}
 			exit(EXIT_FAILURE);
 		}
-		else
+		else // **Parent process**
 		{
 			if (commands[i + 1] != NULL)
 				close(pipe_fds[1]);
@@ -231,6 +263,7 @@ void	execute_pipeline(char **commands)
 	while (wait(NULL) > 0)
 		;
 }
+
 
 void	handle_input(char *input, char **envp)
 {

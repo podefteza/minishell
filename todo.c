@@ -61,7 +61,7 @@ foreground pipeline.
 
 •Your shell must implement the following
 	✔️ ◦echo with option -n
-	✔️✔️◦cd with only a relative or absolute path ✔️ error when directory does not exist ❌ cd ..\ does not behave like the shell (interactive mode??) ❌ cd ~ (see shorten_path())
+	❌◦cd with only a relative or absolute path ✔️ error when directory does not exist ❌ cd ..\ does not behave like the shell (interactive mode??) ❌ cd ~ (see shorten_path()) ❌ cd with multiple arguments
 	✔️◦pwd with no options
 	◦export with no options
 	◦unset with no options
