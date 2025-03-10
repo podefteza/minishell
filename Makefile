@@ -9,10 +9,10 @@ SRCS = minishell.c \
 		fork_processes.c \
 		shell_setup.c \
 		expand_variables.c \
-		exit_status.c \
 		format_input.c \
 		get_pid.c \
 		path_handler.c \
+		cleanup.c \
 		./builtins/builtin_setup.c \
 		./builtins/builtin_cd.c \
 		./builtins/builtin_echo.c \
