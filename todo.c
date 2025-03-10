@@ -29,20 +29,17 @@ characters in the quoted sequence except for $ (dollar sign).
 	delimiter is seen. However, it doesn’t have to update the history!
 	◦>> should redirect output in append mode.
 
-•Implement pipes (| character). The output of each command in the pipeline is
-connected to the input of the next command via a pipe. ✔️ need to handle quotes!! 💡 check multiple pipes (cat | cat | ls)
-❌ so far it assumes that | is a command, not a separator, so we need to sort of create a 2D array separating the commands for each execution after if finds a pipe
-❌❌ if it finds a |, create a new command and execute it, then continue with the next command or pipe
-💡 if the last character of the input is a pipe or space or tab after a pipe | (ls -l | wc -l | ), it should return a message saying that an argument is missing or invalid pipe, instead it just tries to execute the command ""
+✔️•Implement pipes (| character). The output of each command in the pipeline is
+connected to the input of the next command via a pipe.
 
-❌•Handle environment variables ($ followed by a sequence of characters) which
+✔️•Handle environment variables ($ followed by a sequence of characters) which
 should expand to their values.
 	✔️$HOME	/home/user
 	✔️$PATH	/usr/bin:/bin:/usr/local/bin
 	✔️$USER	username
 	✔️$SHELL	/bin/bash (or your shell’s path)
 	✔️$?	Last command’s exit status
-	❌$!	PID of the last background command ❌ see if this is only used/updated when a command is run in the background (with & at the end) or evey time we fork
+	✔️$!	PID of the last background command ❌ if it is -1, instead of printing -1, it should print just \n
 	✔️$$	PID of the shell
 	✔️$0	shell name 💡 ./minishell
 	✔️$PWD	current working directory

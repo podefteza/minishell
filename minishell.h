@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 15:45:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/10 16:58:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,14 @@ void		free_commands(char **commands);
 
 // command_handler.c
 char		*find_command(char *cmd, char **envp, int *exit_status);
-void		execute_command(char **args, char **envp, int *exit_status);
+void		execute_command(char **args, char **envp, int *exit_status,
+				pid_t *last_bg_pid);
 
 // fork_processes.c
 void		handle_pipe(char *input, char **envp);
-int			fork_processes(int *pipe_fds, char **commands, char **envp,
-				int exit_status);
 
+int			fork_processes(int *pipe_fds, char **commands, char **envp,
+				int exit_status, pid_t *last_bg_pid);
 // shell_setup.c
 void		build_prompt(char *prompt, const char *user, const char *hostname,
 				const char *display_path);
@@ -96,11 +97,12 @@ void		setup_shell(t_shell *shell);
 
 // expand_variables.c
 char		*get_env_value(char *var, char **envp);
-char		*expand_variables(char *input, char **envp, int *exit_status);
+char		*expand_variables(char *input, char **envp, int *exit_status,
+				pid_t *last_bg_pid);
 
 // format_input.c
 char		*handle_quotes(char *input);
-void		handle_input(char *input, char **envp, int *exit_status);
+void	handle_input(char *input, char **envp, int *exit_status, pid_t *last_bg_pid);
 
 // get_pid.c
 pid_t		last_background_pid(pid_t pid);

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 13:13:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/10 17:02:50 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,51 +58,80 @@ void	is_directory(char *full_path, int *exit_status)
 	*exit_status = 126;
 }
 
-void	execute_process(char *full_path, char **args, char **envp, int *exit_status)
+void	execute_process(char *full_path, char **args, char **envp,
+	int *exit_status, int is_background, pid_t *last_bg_pid)
 {
 	pid_t	pid;
 	int		status;
 
 	pid = fork();
 	if (pid < 0)
+	{
 		perror("fork");
-	else if (pid == 0)
-	{
-		if (execve(full_path, args, envp) == -1)
-		{
-			perror("execve");
-			*exit_status = 126;
-			exit(EXIT_FAILURE);
-		}
+		return ;
 	}
-	else
+	if (pid == 0) // Child process
 	{
-		last_background_pid(pid);
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			*exit_status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			*exit_status = 128 + WTERMSIG(status);
+		execve(full_path, args, envp);
+		perror("execve"); // Only reached if execve fails
+		exit(1);
+	}
+	else // Parent process
+	{
+		if (is_background)
+		{
+			*last_bg_pid = pid; // Store last background PID
+			printf("[%d] %s started in background\n", pid, args[0]);
+		}
+		else
+		{
+			waitpid(pid, &status, 0);  // Wait for foreground process
+			if (WIFEXITED(status))
+				*exit_status = WEXITSTATUS(status);
+		}
 	}
 }
 
-void	execute_command(char **args, char **envp, int *exit_status)
+
+void	execute_command(char **args, char **envp, int *exit_status, pid_t *last_bg_pid)
 {
 	char		*full_path;
 	struct stat	st;
+	int			arg_count;
+	int			is_background;
 
 	if (!args || !args[0])
 		return ;
+
+	// Count arguments to check for '&'
+	arg_count = 0;
+	while (args[arg_count])
+		arg_count++;
+
+	// Check if last argument is '&'
+	is_background = 0;
+	if (ft_strncmp(args[arg_count - 1], "&", 2) == 0)
+	{
+		is_background = 1;
+		free(args[arg_count - 1]); // Remove '&' from arguments
+		args[arg_count - 1] = NULL;
+	}
+
 	full_path = find_command(args[0], envp, exit_status);
 	if (!full_path)
 		return ;
+
 	if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode))
 	{
 		is_directory(full_path, exit_status);
 		free(full_path);
 		return ;
 	}
-	execute_process(full_path, args, envp, exit_status);
+
+	// Pass is_background flag and last_bg_pid to execute_process
+	execute_process(full_path, args, envp, exit_status, is_background, last_bg_pid);
+
 	if (full_path != args[0])
 		free(full_path);
 }
+

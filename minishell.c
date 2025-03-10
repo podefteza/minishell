@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:13:07 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 15:45:09 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/10 17:02:09 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,9 @@ void	run_shell_loop(t_shell *shell, char **envp, int *exit_status)
 	char	cwd[PATH_MAX];
 	char	prompt[PROMPT_MAX];
 	char	*display_path;
+	pid_t		last_bg_pid;
 
+	last_bg_pid = -1;
 	while (1)
 	{
 		if (getcwd(cwd, sizeof(cwd)) == NULL)
@@ -60,7 +62,7 @@ void	run_shell_loop(t_shell *shell, char **envp, int *exit_status)
 		if (*input)
 		{
 			add_history(input);
-			handle_input(input, envp, exit_status);
+			handle_input(input, envp, exit_status, &last_bg_pid);
 		}
 		free(input);
 	}

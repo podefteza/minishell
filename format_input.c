@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 13:17:36 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/10 16:56:00 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,9 +178,25 @@ int	is_pipe_outside_quotes(char *input)
 	return (0);
 }
 
-char	**split_pipe(char *input)
+char **split_pipe(char *input)
 {
-	return (ft_split(input, '|'));
+    char *temp = input;
+    int has_trailing_pipe = 0;
+
+    while (*temp)
+        temp++;
+
+    temp--;
+    while (temp >= input && (*temp == ' ' || *temp == '\t'))
+        temp--;
+
+    if (temp >= input && *temp == '|')
+        has_trailing_pipe = 1;
+    if (has_trailing_pipe) {
+        printf("minishell: syntax error: unexpected '|'\n");
+        return NULL;
+    }
+    return (ft_split(input, '|'));
 }
 
 void	execute_pipeline(char **commands, int *exit_status)
@@ -262,7 +278,7 @@ void	execute_pipeline(char **commands, int *exit_status)
 }
 
 
-void	handle_input(char *input, char **envp, int *exit_status)
+void	handle_input(char *input, char **envp, int *exit_status, pid_t *last_bg_pid)
 {
 	t_builtin	builtins[8];
 	char		**commands;
@@ -275,7 +291,7 @@ void	handle_input(char *input, char **envp, int *exit_status)
 		return ;
 	if (ft_strchr(input, '$'))
 	{
-		modified_input = expand_variables(input, envp, exit_status);
+		modified_input = expand_variables(input, envp, exit_status, last_bg_pid);
 		if (!modified_input)
 		{
 			modified_input = ft_strdup("");
@@ -298,11 +314,10 @@ void	handle_input(char *input, char **envp, int *exit_status)
 		&& is_pipe_outside_quotes(modified_input))
 	{
 		commands = split_pipe(modified_input);
-		if (!commands || !commands[0])
+		if (!commands)
 		{
-			printf("minishell: syntax error: unexpected '|'\n");
 			free(modified_input);
-			return ;
+			return;
 		}
 		execute_pipeline(commands, exit_status);
 		free_commands(commands);
@@ -348,6 +363,6 @@ void	handle_input(char *input, char **envp, int *exit_status)
 		}
 		i++;
 	}
-	execute_command(args, envp, exit_status);
+	execute_command(args, envp, exit_status, last_bg_pid);
 	free_args(args);
 }
