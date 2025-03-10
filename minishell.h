@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/28 18:54:36 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/10 15:06:53 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <sys/types.h> // for pid_t
 #include "libft/libft/libft.h"
+#include <signal.h>
 // check if all libraries are needed
 
 #define HOSTNAME_MAX 256
@@ -46,37 +47,37 @@
 #define TRUE 1
 #define FALSE 0
 
-// global variable to store the last exit code
-extern int	g_exit_status;
 
+// "using "norm" type structures in the global scope is forbidden."
 typedef struct s_builtin
 {
 	char	*cmd;
-	void	(*func)(char **args);
+	void	(*func)(char **args, int *exit_status);
 }	t_builtin;
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // builtins
 void	builtin_setup(t_builtin *builtins);
-void	builtin_cd(char **args);
-void	builtin_pwd(char **args);
-void	builtin_echo(char **args);
-char **handle_echo(char *modified_input);
-void	builtin_exit(char **args);
+void	builtin_cd(char **args, int *exit_status);
+void	builtin_pwd(char **args, int *exit_status);
+void	builtin_echo(char **args, int *exit_status);
+char	**handle_echo(char *modified_input);
+void	builtin_exit(char **args, int *exit_status);
 
 // path_handler.c
 char	*shorten_path(const char *cwd, const char *home);
-char	*cmd_is_path(char *cmd);
+char	*cmd_is_path(char *cmd, int *exit_status);
 char	*build_path(char *dir, char *cmd);
 char	*get_path_from_env(char **envp);
 char	*search_in_path(char *path, char *cmd);
 
 // command_handler.c
-char	*find_command(char *cmd, char **envp);
-void	execute_command(char **args, char **envp);
+char	*find_command(char *cmd, char **envp, int *exit_status);
+void	execute_command(char **args, char **envp, int *exit_status);
 
 // fork_processes.c
 void	handle_pipe(char *input, char **envp);
-int	fork_processes(int *pipe_fds, char **commands, char **envp);
+int	fork_processes(int *pipe_fds, char **commands, char **envp, int exit_status);
 
 // shell_setup.c
 void	build_prompt(char *prompt, const char *user, const char *hostname,
@@ -85,18 +86,14 @@ void	get_host_name(char *hostname);
 
 // expand_variables.c
 char	*get_env_value(char *var, char **envp);
-char	*expand_variables(char *input, char **envp);
-
-// exit_status.c
-char	*last_exit_status(char *input);
+char	*expand_variables(char *input, char **envp, int *exit_status);
 
 // format_input.c
 char	*handle_quotes(char *input);
-void handle_input(char *input, char **envp);
+void	handle_input(char *input, char **envp, int *exit_status);
 
 // get_pid.c
 pid_t	last_background_pid(pid_t pid);
-
 
 // minishell.c
 void	free_args(char **args);

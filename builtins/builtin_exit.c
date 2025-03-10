@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/28 18:38:56 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/10 13:16:19 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int	builtin_exit_with_code(char **args)
 	return (0);
 }
 
-void	builtin_exit(char **args)
+void	builtin_exit(char **args, int *exit_status)
 {
 	int	exit_code;
 
@@ -102,7 +102,7 @@ void	builtin_exit(char **args)
 		exit_code = builtin_exit_with_code(args);
 		if (exit_code == -1)
 		{
-			g_exit_status = 1;
+			*exit_status = 1;
 			return ;
 		}
 	}

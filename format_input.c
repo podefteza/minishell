@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/03 17:08:19 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/10 13:17:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,12 +178,12 @@ int	is_pipe_outside_quotes(char *input)
 	return (0);
 }
 
-char	**split_commands(char *input)
+char	**split_pipe(char *input)
 {
 	return (ft_split(input, '|'));
 }
 
-void	execute_pipeline(char **commands)
+void	execute_pipeline(char **commands, int *exit_status)
 {
 	int		pipe_fds[2];
 	int		input_fd;
@@ -194,7 +194,6 @@ void	execute_pipeline(char **commands)
 	input_fd = STDIN_FILENO;
 	i = 0;
 
-	// **Check if the first command is `cat <file>` and if the file exists**
 	args = split_arguments(commands[0]);
 	if (args && args[0] && ft_strncmp(args[0], "cat", 4) == 0 && args[1])
 	{
@@ -203,14 +202,13 @@ void	execute_pipeline(char **commands)
 			ft_putstr_fd("cat: ", STDERR_FILENO);
 			ft_putstr_fd(args[1], STDERR_FILENO);
 			ft_putstr_fd(": ", STDERR_FILENO);
-			perror(""); // Print system error (e.g., "No such file or directory")
+			perror("");
 			free_args(args);
-			g_exit_status = 1;
-			return ; // **Stop execution before forking**
+			*exit_status = 1;
+			return ;
 		}
 	}
 	free_args(args);
-
 	while (commands[i] != NULL)
 	{
 		if (commands[i + 1] != NULL)
@@ -227,7 +225,7 @@ void	execute_pipeline(char **commands)
 			perror("minishell: fork");
 			return ;
 		}
-		if (pid == 0) // **Child process**
+		if (pid == 0)
 		{
 			if (input_fd != STDIN_FILENO)
 			{
@@ -243,14 +241,13 @@ void	execute_pipeline(char **commands)
 			if (args && args[0])
 			{
 				execvp(args[0], args);
-				// If execvp fails, print error like Bash
 				ft_putstr_fd(args[0], STDERR_FILENO);
 				ft_putstr_fd(": ", STDERR_FILENO);
 				perror("");
 			}
 			exit(EXIT_FAILURE);
 		}
-		else // **Parent process**
+		else
 		{
 			if (commands[i + 1] != NULL)
 				close(pipe_fds[1]);
@@ -265,7 +262,7 @@ void	execute_pipeline(char **commands)
 }
 
 
-void	handle_input(char *input, char **envp)
+void	handle_input(char *input, char **envp, int *exit_status)
 {
 	t_builtin	builtins[8];
 	char		**commands;
@@ -278,7 +275,7 @@ void	handle_input(char *input, char **envp)
 		return ;
 	if (ft_strchr(input, '$'))
 	{
-		modified_input = expand_variables(input, envp);
+		modified_input = expand_variables(input, envp, exit_status);
 		if (!modified_input)
 		{
 			modified_input = ft_strdup("");
@@ -291,7 +288,6 @@ void	handle_input(char *input, char **envp)
 			free(modified_input);
 			modified_input = trimmed;
 		}
-		//printf("modified_input: %s\n", modified_input);
 	}
 	else
 		modified_input = ft_strdup(input);
@@ -301,14 +297,14 @@ void	handle_input(char *input, char **envp)
 	if (ft_strchr(modified_input, '|')
 		&& is_pipe_outside_quotes(modified_input))
 	{
-		commands = split_commands(modified_input);
+		commands = split_pipe(modified_input);
 		if (!commands || !commands[0])
 		{
 			printf("minishell: syntax error: unexpected '|'\n");
 			free(modified_input);
 			return ;
 		}
-		execute_pipeline(commands);
+		execute_pipeline(commands, exit_status);
 		free_commands(commands);
 		free(modified_input);
 		return ;
@@ -346,12 +342,12 @@ void	handle_input(char *input, char **envp)
 		if (ft_strncmp(args[0], builtins[i].cmd,
 				ft_strlen(builtins[i].cmd)) == 0)
 		{
-			builtins[i].func(args);
+			builtins[i].func(args, exit_status);
 			free_args(args);
 			return ;
 		}
 		i++;
 	}
-	execute_command(args, envp);
+	execute_command(args, envp, exit_status);
 	free_args(args);
 }

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 14:45:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/02/28 14:46:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/10 13:13:41 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void	setup_pipes(int *pipe_fds, char **commands, int i)
 		pipe(pipe_fds);
 }
 
-static void	child_process(int in_fd, int *pipe_fds, char *command, char **envp)
+static void	child_process(int in_fd, int *pipe_fds, char *command, char **envp, int *exit_status)
 {
 	char	**cmd;
 
@@ -36,7 +36,7 @@ static void	child_process(int in_fd, int *pipe_fds, char *command, char **envp)
 		close(pipe_fds[1]);
 		close(pipe_fds[0]);
 	}
-	execute_command(cmd, envp);
+	execute_command(cmd, envp, exit_status);
 	exit(EXIT_FAILURE);
 }
 
@@ -49,7 +49,7 @@ static void	parent_process(int *in_fd, int *pipe_fds, int pid, int *status)
 	close(pipe_fds[1]);
 }
 
-int	fork_processes(int *pipe_fds, char **commands, char **envp)
+int	fork_processes(int *pipe_fds, char **commands, char **envp, int exit_status)
 {
 	pid_t	pid;
 	int		status;
@@ -67,7 +67,7 @@ int	fork_processes(int *pipe_fds, char **commands, char **envp)
 		pid = fork();
 		last_background_pid(pid);
 		if (pid == 0)
-			child_process(in_fd, pipe_fds, commands[i], envp);
+			child_process(in_fd, pipe_fds, commands[i], envp, &exit_status);
 		else if (pid > 0)
 			parent_process(&in_fd, pipe_fds, pid, &status);
 		i++;
