@@ -10,7 +10,6 @@ SRCS = minishell.c \
 		shell_setup.c \
 		expand_variables.c \
 		format_input.c \
-		get_pid.c \
 		path_handler.c \
 		cleanup.c \
 		./builtins/builtin_setup.c \

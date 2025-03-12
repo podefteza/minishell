@@ -1,4 +1,4 @@
-/*Allowed functions:
+Allowed functions:
 1. Readline Library (readline)
 readline
 rl_clear_history
@@ -87,4 +87,3 @@ tgoto
 tputs
 📌 Library: #include <term.h>
 📌 Linking: Requires -ltermcap when compiling.
-*/

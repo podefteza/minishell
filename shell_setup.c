@@ -6,14 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 15:42:43 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:16:31 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	build_prompt(char *prompt, const char *user, const char *hostname,
-		const char *display_path)
+void	build_prompt(char *prompt, t_shell *shell, const char *display_path)
 {
 	size_t	i;
 
@@ -21,9 +20,9 @@ void	build_prompt(char *prompt, const char *user, const char *hostname,
 	i += ft_strlcpy(prompt + i, BOLD GREEN "[minishell]" RESET " ", PROMPT_MAX
 			- i);
 	i += ft_strlcpy(prompt + i, BOLD BLUE, PROMPT_MAX - i);
-	i += ft_strlcpy(prompt + i, user, PROMPT_MAX - i);
+	i += ft_strlcpy(prompt + i, shell->user, PROMPT_MAX - i);
 	i += ft_strlcpy(prompt + i, "@", PROMPT_MAX - i);
-	i += ft_strlcpy(prompt + i, hostname, PROMPT_MAX - i);
+	i += ft_strlcpy(prompt + i, shell->hostname, PROMPT_MAX - i);
 	i += ft_strlcpy(prompt + i, RESET ":", PROMPT_MAX - i);
 	i += ft_strlcpy(prompt + i, display_path, PROMPT_MAX - i);
 	i += ft_strlcpy(prompt + i, GREEN "$" RESET " ", PROMPT_MAX - i);
@@ -57,4 +56,6 @@ void	setup_shell(t_shell *shell)
 	shell->home = getenv("HOME");
 	if (!shell->home)
 		shell->home = "";
+	shell->exit_status = 0;
+	shell->last_bg_pid = -1;
 }

@@ -1,4 +1,4 @@
-/* 📙 TODO, as stated by the subject:
+📙 TODO, as stated by the subject:
 
 ✔️•Display a prompt when waiting for a new command.
 
@@ -13,8 +13,6 @@ main data structures.
 
 ✔️•Not interpret unclosed quotes or special characters which are not required by the
 subject such as \ (backslash) or ; (semicolon).
-	✔️ prints "minishell: syntax error: unclosed quotes"
-	✔️ prints \ and ; as they are
 
 ✔️•Handle ’ (single quote) which should prevent the shell from interpreting the meta-
 characters in the quoted sequence.
@@ -39,7 +37,7 @@ should expand to their values.
 	✔️$USER	username
 	✔️$SHELL	/bin/bash (or your shell’s path)
 	✔️$?	Last command’s exit status
-	✔️$!	PID of the last background command ❌ if it is -1, instead of printing -1, it should print just \n
+	✔️$!	PID of the last background command
 	✔️$$	PID of the shell
 	✔️$0	shell name 💡 ./minishell
 	✔️$PWD	current working directory
@@ -48,12 +46,12 @@ should expand to their values.
 ✔️•Handle $? which should expand to the exit status of the most recently executed
 foreground pipeline.
 
-✔️•Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
+❌•Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
 
 •In interactive mode:
 	✔️◦ctrl-C displays a new prompt on a new line.
 	✔️◦ctrl-D exits the shell.
-	✔️◦ctrl-\ does nothing.
+	❌◦ctrl-\ does nothing.
 
 •Your shell must implement the following
 	✔️ ◦echo with option -n
@@ -65,12 +63,10 @@ foreground pipeline.
 	✔️◦exit with no options
 
 
-❌ when executing a command that is only spaces or tabs, it gives error: "minishell: /home/user/.local/bin/: Is a directory"
 
-*/
+===================================================================================================================================================================
 
 
-/*
 💡 HELPERS:
 	- check functions used: nm -Ud minishell | grep " U "
 	- check global variables used: nm -g minishell | grep " B "
@@ -249,5 +245,3 @@ Surprise! (or not...)
 - Set the USER environment variable.
 - echo "'$USER'" should print the value of the USER variable.
 - echo '"$USER"' should print "$USER".
-
-*/

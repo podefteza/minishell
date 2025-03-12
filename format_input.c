@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 16:56:00 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:16:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,21 +98,20 @@ char	*get_next_token(char *input)
 {
 	static char	*str;
 	char		*token;
-	int			in_squote = 0, in_dquote = 0;
-	int			i = 0;
+	int			in_squote = 0, in_dquote;
+	int			i;
 
+	in_squote = 0, in_dquote = 0;
+	i = 0;
 	if (input)
 		str = input;
 	if (!str || *str == '\0')
 		return (NULL);
-
 	token = malloc(ft_strlen(str) + 1);
 	if (!token)
 		return (NULL);
-
 	while (*str && (*str == ' ' || *str == '\t'))
-		str++; // Skip leading spaces
-
+		str++;
 	while (*str)
 	{
 		if (*str == '\'' && !in_dquote)
@@ -120,19 +119,18 @@ char	*get_next_token(char *input)
 		else if (*str == '\"' && !in_squote)
 			in_dquote = !in_dquote;
 		else if (*str == ' ' && !in_squote && !in_dquote)
-			break; // End token on space outside quotes
+			break ;
 		else
 			token[i++] = *str;
 		str++;
 	}
 	token[i] = '\0';
-
-	while (*str == ' ') // Move to next token
+	while (*str == ' ')
 		str++;
-
+	if (!*str)
+		str = NULL;
 	return (token);
 }
-
 
 char	**split_arguments(char *input)
 {
@@ -145,18 +143,17 @@ char	**split_arguments(char *input)
 	args = malloc(sizeof(char *) * (arg_count + 1));
 	if (!args)
 		return (NULL);
-
 	i = 0;
-	token = get_next_token(input);  // Custom tokenizer function
+	token = get_next_token(input); // Custom tokenizer function
 	while (token)
 	{
-		args[i++] = ft_strdup(token);
+		args[i++] = ft_strdup(token); // Duplicate token
+		free(token);                  // Free token after copying its contents
 		token = get_next_token(NULL);
 	}
 	args[i] = NULL;
 	return (args);
 }
-
 
 int	is_pipe_outside_quotes(char *input)
 {
@@ -178,28 +175,29 @@ int	is_pipe_outside_quotes(char *input)
 	return (0);
 }
 
-char **split_pipe(char *input)
+char	**split_pipe(char *input)
 {
-    char *temp = input;
-    int has_trailing_pipe = 0;
+	char	*temp;
+	int		has_trailing_pipe;
 
-    while (*temp)
-        temp++;
-
-    temp--;
-    while (temp >= input && (*temp == ' ' || *temp == '\t'))
-        temp--;
-
-    if (temp >= input && *temp == '|')
-        has_trailing_pipe = 1;
-    if (has_trailing_pipe) {
-        printf("minishell: syntax error: unexpected '|'\n");
-        return NULL;
-    }
-    return (ft_split(input, '|'));
+	temp = input;
+	has_trailing_pipe = 0;
+	while (*temp)
+		temp++;
+	temp--;
+	while (temp >= input && (*temp == ' ' || *temp == '\t'))
+		temp--;
+	if (temp >= input && *temp == '|')
+		has_trailing_pipe = 1;
+	if (has_trailing_pipe)
+	{
+		printf("minishell: syntax error: unexpected '|'\n");
+		return (NULL);
+	}
+	return (ft_split(input, '|'));
 }
 
-void	execute_pipeline(char **commands, int *exit_status)
+void	execute_pipeline(char **commands, t_shell *shell)
 {
 	int		pipe_fds[2];
 	int		input_fd;
@@ -209,7 +207,6 @@ void	execute_pipeline(char **commands, int *exit_status)
 
 	input_fd = STDIN_FILENO;
 	i = 0;
-
 	args = split_arguments(commands[0]);
 	if (args && args[0] && ft_strncmp(args[0], "cat", 4) == 0 && args[1])
 	{
@@ -220,7 +217,7 @@ void	execute_pipeline(char **commands, int *exit_status)
 			ft_putstr_fd(": ", STDERR_FILENO);
 			perror("");
 			free_args(args);
-			*exit_status = 1;
+			shell->exit_status = 1;
 			return ;
 		}
 	}
@@ -277,8 +274,7 @@ void	execute_pipeline(char **commands, int *exit_status)
 		;
 }
 
-
-void	handle_input(char *input, char **envp, int *exit_status, pid_t *last_bg_pid)
+void	handle_input(char *input, char **envp, t_shell *shell)
 {
 	t_builtin	builtins[8];
 	char		**commands;
@@ -286,21 +282,31 @@ void	handle_input(char *input, char **envp, int *exit_status, pid_t *last_bg_pid
 	int			i;
 	char		*modified_input;
 	char		*cleaned_arg;
+	char		*trimmed_input;
+	char		*trimmed;
 
+	// check if input is empty
+	trimmed_input = ft_strtrim(input, " \t");
+	if (trimmed_input[0] == '\0')
+	{
+		free(trimmed_input);
+		return ;
+	}
+	free(trimmed_input);
 	if (count_quotes(input))
 		return ;
 	if (ft_strchr(input, '$'))
 	{
-		modified_input = expand_variables(input, envp, exit_status, last_bg_pid);
+		modified_input = expand_variables(input, envp, shell);
 		if (!modified_input)
 		{
 			modified_input = ft_strdup("");
 			if (!modified_input)
-				return;
+				return ;
 		}
 		else
 		{
-			char *trimmed = ft_strtrim(modified_input, " ");
+			trimmed = ft_strtrim(modified_input, " ");
 			free(modified_input);
 			modified_input = trimmed;
 		}
@@ -317,9 +323,9 @@ void	handle_input(char *input, char **envp, int *exit_status, pid_t *last_bg_pid
 		if (!commands)
 		{
 			free(modified_input);
-			return;
+			return ;
 		}
-		execute_pipeline(commands, exit_status);
+		execute_pipeline(commands, shell);
 		free_commands(commands);
 		free(modified_input);
 		return ;
@@ -330,7 +336,7 @@ void	handle_input(char *input, char **envp, int *exit_status, pid_t *last_bg_pid
 		if (!args)
 		{
 			free(modified_input);
-			return;
+			return ;
 		}
 	}
 	else
@@ -357,12 +363,12 @@ void	handle_input(char *input, char **envp, int *exit_status, pid_t *last_bg_pid
 		if (ft_strncmp(args[0], builtins[i].cmd,
 				ft_strlen(builtins[i].cmd)) == 0)
 		{
-			builtins[i].func(args, exit_status);
+			builtins[i].func(args, shell);
 			free_args(args);
 			return ;
 		}
 		i++;
 	}
-	execute_command(args, envp, exit_status, last_bg_pid);
+	execute_command(args, envp, shell);
 	free_args(args);
 }

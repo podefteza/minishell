@@ -6,13 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 13:16:23 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:27:03 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	builtin_pwd(char **args, int *exit_status)
+void	builtin_pwd(char **args, t_shell *shell)
 {
 	(void)args;
 	char	cwd[PATH_MAX];
@@ -21,5 +21,5 @@ void	builtin_pwd(char **args, int *exit_status)
 		printf("%s\n", cwd);
 	else
 		perror("minishell: pwd");
-	*exit_status = 0;
+	shell->exit_status = 0;
 }

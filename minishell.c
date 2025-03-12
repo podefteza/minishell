@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:13:07 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 17:02:09 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:10:22 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,15 @@ void	handle_signal(int sig)
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
-	else if (sig == SIGQUIT)
-		write(1, "\b\b  \b\b", 6);
 }
 
-void	run_shell_loop(t_shell *shell, char **envp, int *exit_status)
+void	run_shell_loop(t_shell *shell, char **envp)
 {
 	char	*input;
 	char	cwd[PATH_MAX];
 	char	prompt[PROMPT_MAX];
 	char	*display_path;
-	pid_t		last_bg_pid;
 
-	last_bg_pid = -1;
 	while (1)
 	{
 		if (getcwd(cwd, sizeof(cwd)) == NULL)
@@ -46,12 +42,14 @@ void	run_shell_loop(t_shell *shell, char **envp, int *exit_status)
 			ft_strlcpy(cwd, "unknown", sizeof(cwd));
 		}
 		display_path = shorten_path(cwd, shell->home);
-		if (!g_signal_status)
-			build_prompt(prompt, shell->user, shell->hostname, display_path);
-		else
+		if (g_signal_status)
 		{
 			g_signal_status = 0;
-			prompt[0] = '\0';
+			build_prompt(prompt, shell, display_path);
+		}
+		else
+		{
+			build_prompt(prompt, shell, display_path);
 		}
 		input = readline(prompt);
 		if (!input)
@@ -62,7 +60,7 @@ void	run_shell_loop(t_shell *shell, char **envp, int *exit_status)
 		if (*input)
 		{
 			add_history(input);
-			handle_input(input, envp, exit_status, &last_bg_pid);
+			handle_input(input, envp, shell);
 		}
 		free(input);
 	}
@@ -71,9 +69,7 @@ void	run_shell_loop(t_shell *shell, char **envp, int *exit_status)
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
-	int		exit_status;
 
-	exit_status = 0;
 	(void)argv;
 	if (argc != 1)
 	{
@@ -81,9 +77,9 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	}
 	setup_shell(&shell);
+	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, handle_signal);
-	signal(SIGQUIT, handle_signal);
 	g_signal_status = 0;
-	run_shell_loop(&shell, envp, &exit_status);
-	return (exit_status);
+	run_shell_loop(&shell, envp);
+	return (shell.exit_status);
 }

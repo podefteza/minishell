@@ -6,13 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 13:17:10 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/12 13:26:52 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	builtin_echo(char **args, int *exit_status)
+void	builtin_echo(char **args, t_shell *shell)
 {
 	int	i;
 	int	newline;
@@ -33,7 +33,7 @@ void	builtin_echo(char **args, int *exit_status)
 	}
 	if (newline)
 		printf("\n");
-	*exit_status = 0;
+	shell->exit_status = 0;
 }
 
 void	dash_n_option(char **args, char *message)
