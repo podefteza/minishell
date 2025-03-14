@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 11:27:07 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 16:07:42 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,9 @@ int					is_valid_identifier(const char *str);
 int					find_env_var(t_shell *shell, const char *key);
 void				builtin_export(char **args, t_shell *shell);
 void				builtin_unset(char **args, t_shell *shell);
+void				builtin_env(char **args, t_shell *shell);
+char				**add_or_update_env(t_shell *shell, const char *key,
+						const char *value);
 
 // path_handler.c
 char				*shorten_path(const char *cwd, const char *home);
@@ -90,8 +93,8 @@ char				*get_path_from_env(t_shell *shell);
 char				*search_in_path(char *path, char *cmd);
 
 // cleanup.c
-void				free_args(char **args);
-void				free_commands(char **commands);
+void				free_array(char **array);
+void				free_shell_resources(t_shell *shell);
 
 // command_handler.c
 char				*find_command(char *cmd, t_shell *shell);

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/12 13:27:03 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 16:31:55 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void	builtin_pwd(char **args, t_shell *shell)
 {
-	(void)args;
 	char	cwd[PATH_MAX];
 
+	(void)args;
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 		printf("%s\n", cwd);
 	else

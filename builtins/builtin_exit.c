@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/12 13:24:23 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 14:07:12 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	validate_and_get_exit_code(char *exit_code_str, char **args, int i)
 		{
 			ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 			free(exit_code_str);
-			free_args(args);
+			free_array(args);
 			exit(2);
 		}
 		i++;
@@ -68,7 +68,7 @@ int	handle_exit_in_second_arg(char **args)
 		if (!ft_isdigit(args[1][i]))
 		{
 			ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
-			free_args(args);
+			free_array(args);
 			exit(2);
 		}
 		i++;
@@ -107,6 +107,6 @@ void	builtin_exit(char **args, t_shell *shell)
 		}
 	}
 	ft_putstr_fd("exit\n", 1);
-	free_args(args);
+	free_array(args);
 	exit(exit_code);
 }

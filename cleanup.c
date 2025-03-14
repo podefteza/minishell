@@ -6,32 +6,38 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 15:44:13 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/10 15:45:06 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 16:36:58 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	free_args(char **args)
+void	free_array(char **array)
 {
 	size_t	i;
 
-	if (!args)
+	if (!array)
 		return ;
 	i = 0;
-	while (args[i])
-		free(args[i++]);
-	free(args);
+	while (array[i])
+		free(array[i++]);
+	free(array);
 }
 
-void	free_commands(char **commands)
+void	free_shell_resources(t_shell *shell)
 {
 	int	i;
 
-	if (!commands)
-		return ;
 	i = 0;
-	while (commands[i])
-		free(commands[i++]);
-	free(commands);
+	if (shell->envp)
+	{
+		while (shell->envp[i] != NULL)
+		{
+			free(shell->envp[i]);
+			shell->envp[i] = NULL;
+			i++;
+		}
+		free(shell->envp);
+		shell->envp = NULL;
+	}
 }

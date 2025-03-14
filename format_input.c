@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 13:39:54 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 15:25:35 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,8 @@ void	execute_pipeline(char **commands, t_shell *shell)
 	input_fd = STDIN_FILENO;
 	i = 0;
 	args = split_arguments(commands[0]);
+
+	// Check for specific conditions before proceeding
 	if (args && args[0] && ft_strncmp(args[0], "cat", 4) == 0 && args[1])
 	{
 		if (access(args[1], F_OK) == -1)
@@ -216,19 +218,24 @@ void	execute_pipeline(char **commands, t_shell *shell)
 			ft_putstr_fd(args[1], STDERR_FILENO);
 			ft_putstr_fd(": ", STDERR_FILENO);
 			perror("");
-			free_args(args);
+			free_array(args);
 			shell->exit_status = 1;
 			return ;
 		}
 	}
+
+	// Handle the 'export' command early
 	if (args && args[0] && ft_strncmp(args[0], "export", 7) == 0)
-    {
-        // This handles the case where 'export' is the first command in the pipeline.
-        free_args(args);
-        shell->exit_status = 1;
-        return;
-    }
-	free_args(args);
+	{
+		free_array(args);
+		shell->exit_status = 1;
+		return;
+	}
+
+	// Free arguments after the initial checks
+	free_array(args);
+
+	// Start processing the pipeline
 	while (commands[i] != NULL)
 	{
 		if (commands[i + 1] != NULL)
@@ -239,27 +246,41 @@ void	execute_pipeline(char **commands, t_shell *shell)
 				return ;
 			}
 		}
+
 		pid = fork();
 		if (pid == -1)
 		{
 			perror("minishell: fork");
 			return ;
 		}
+
 		if (pid == 0)
 		{
+			// Redirect input if necessary
 			if (input_fd != STDIN_FILENO)
 			{
 				dup2(input_fd, STDIN_FILENO);
 				close(input_fd);
 			}
+
+			// Redirect output if this is not the last command in the pipeline
 			if (commands[i + 1] != NULL)
 			{
 				dup2(pipe_fds[1], STDOUT_FILENO);
 				close(pipe_fds[1]);
 			}
+
+			// Split arguments and check if the command is "env"
 			args = split_arguments(commands[i]);
 			if (args && args[0])
 			{
+				// Check if the command is "env" and call the builtin function instead of execvp
+				if (ft_strncmp(args[0], "env", 4) == 0)
+				{
+					builtin_env(args, shell);  // Call the builtin_env function
+					exit(EXIT_SUCCESS);  // Exit the child process after calling the builtin
+				}
+				// If not "env", proceed to execute the command normally
 				execvp(args[0], args);
 				ft_putstr_fd(args[0], STDERR_FILENO);
 				ft_putstr_fd(": ", STDERR_FILENO);
@@ -269,113 +290,130 @@ void	execute_pipeline(char **commands, t_shell *shell)
 		}
 		else
 		{
+			// Close pipes in the parent process
 			if (commands[i + 1] != NULL)
 				close(pipe_fds[1]);
 			if (input_fd != STDIN_FILENO)
 				close(input_fd);
+
+			// Update input_fd to the pipe read end for the next iteration
 			input_fd = pipe_fds[0];
 		}
 		i++;
 	}
+
+	// Wait for all child processes to finish
 	while (wait(NULL) > 0)
 		;
 }
 
-void	handle_input(char *input, t_shell *shell)
-{
-	t_builtin	builtins[8];
-	char		**commands;
-	char		**args;
-	int			i;
-	char		*modified_input;
-	char		*cleaned_arg;
-	char		*trimmed_input;
-	char		*trimmed;
 
-	// check if input is empty
-	trimmed_input = ft_strtrim(input, " \t");
-	if (trimmed_input[0] == '\0')
-	{
-		free(trimmed_input);
-		return ;
-	}
-	free(trimmed_input);
-	if (count_quotes(input))
-		return ;
-	if (ft_strchr(input, '$'))
-	{
-		modified_input = expand_variables(input, shell);
-		if (!modified_input)
-		{
-			modified_input = ft_strdup("");
-			if (!modified_input)
-				return ;
-		}
-		else
-		{
-			trimmed = ft_strtrim(modified_input, " ");
-			free(modified_input);
-			modified_input = trimmed;
-		}
-	}
-	else
-		modified_input = ft_strdup(input);
-	if (!modified_input)
-		return ;
-	builtin_setup(builtins);
-	if (ft_strchr(modified_input, '|')
-		&& is_pipe_outside_quotes(modified_input))
-	{
-		commands = split_pipe(modified_input);
-		if (!commands)
-		{
-			free(modified_input);
-			return ;
-		}
-		execute_pipeline(commands, shell);
-		free_commands(commands);
-		free(modified_input);
-		return ;
-	}
-	if (ft_strnstr(modified_input, "echo", ft_strlen(modified_input)))
-	{
-		args = handle_echo(modified_input);
-		if (!args)
-		{
-			free(modified_input);
-			return ;
-		}
-	}
-	else
-	{
-		args = split_arguments(modified_input);
-		free(modified_input);
-		if (!args || !args[0])
-		{
-			free_args(args);
-			return ;
-		}
-		i = 0;
-		while (args[i])
-		{
-			cleaned_arg = handle_quotes(args[i]);
-			free(args[i]);
-			args[i] = cleaned_arg;
-			i++;
-		}
-	}
-	i = 0;
-	while (builtins[i].cmd != NULL)
-	{
-		if (ft_strncmp(args[0], builtins[i].cmd,
-				ft_strlen(builtins[i].cmd)) == 0)
-		{
-			builtins[i].func(args, shell);
-			free_args(args);
-			return ;
-		}
-		i++;
-	}
-	execute_command(args, shell);
-	free_args(args);
+void handle_input(char *input, t_shell *shell)
+{
+    t_builtin    builtins[8];
+    char        **commands;
+    char        **args;
+    int         i;
+    char        *modified_input = NULL;
+    char        *cleaned_arg;
+    char        *trimmed_input;
+    char        *trimmed;
+
+    // Check if input is empty
+    trimmed_input = ft_strtrim(input, " \t");
+    if (trimmed_input[0] == '\0')
+    {
+        free(trimmed_input);
+        return ;
+    }
+    free(trimmed_input);
+
+    if (count_quotes(input))
+        return ;
+
+    if (ft_strchr(input, '$'))
+    {
+        modified_input = expand_variables(input, shell);
+        if (!modified_input)
+        {
+            modified_input = ft_strdup(""); // Handle case when expansion fails
+            if (!modified_input)
+                return ;
+        }
+        else
+        {
+            trimmed = ft_strtrim(modified_input, " ");
+            free(modified_input);
+            modified_input = trimmed;
+        }
+    }
+    else
+    {
+        modified_input = ft_strdup(input);
+    }
+
+    if (!modified_input)
+        return ;
+
+    builtin_setup(builtins); // Move this to shell setup if necessary
+
+    // Handle pipeline case
+    if (ft_strchr(modified_input, '|') && is_pipe_outside_quotes(modified_input))
+    {
+        commands = split_pipe(modified_input);
+        free(modified_input);  // Freeing modified_input before using it for pipeline
+        if (!commands)
+        {
+            free(modified_input);  // Just in case commands is NULL
+            return ;
+        }
+        execute_pipeline(commands, shell);
+        free_array(commands);
+        return ;
+    }
+
+    // Handle echo
+    if (ft_strnstr(modified_input, "echo", ft_strlen(modified_input)))
+    {
+        args = handle_echo(modified_input);
+        free(modified_input);
+        if (!args)
+            return ;
+    }
+    else
+    {
+        args = split_arguments(modified_input);
+        free(modified_input);
+        if (!args || !args[0])
+        {
+            free_array(args);
+            return ;
+        }
+        i = 0;
+        while (args[i])
+        {
+            cleaned_arg = handle_quotes(args[i]);
+            free(args[i]);
+            args[i] = cleaned_arg;
+            i++;
+        }
+    }
+
+    // Handle built-in commands
+    i = 0;
+    while (builtins[i].cmd != NULL)
+    {
+        if (ft_strncmp(args[0], builtins[i].cmd, ft_strlen(builtins[i].cmd)) == 0)
+        {
+            builtins[i].func(args, shell);
+            free_array(args);
+            return ;
+        }
+        i++;
+    }
+
+    // Execute external command
+    execute_command(args, shell);
+    free_array(args);
 }
+

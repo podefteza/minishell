@@ -49,7 +49,7 @@ foreground pipeline.
 ✔️•Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
 
 ✔️•In interactive mode:
-	✔️◦ctrl-C displays a new prompt on a new line.
+	✔️◦ctrl-C displays a new prompt on a new line. ⚠️⚠️⚠️ when using ctrl+c in the middle of a process, it puts the promp duplicated !!!!!
 	✔️◦ctrl-D exits the shell.
 	✔️◦ctrl-\ does nothing.
 

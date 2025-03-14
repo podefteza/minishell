@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 09:14:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 11:43:24 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 16:24:37 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,69 +28,7 @@ int	is_valid_identifier(const char *str)
 	return (TRUE);
 }
 
-int	find_env_var(t_shell *shell, const char *key)
-{
-	int		i;
-	size_t	key_len;
-
-	if (!shell->envp || !key)
-		return (-1);
-	key_len = ft_strlen(key);
-	i = 0;
-	while (shell->envp[i])
-	{
-		if (ft_strncmp(shell->envp[i], key, key_len) == 0
-			&& shell->envp[i][key_len] == '=')
-			return (i);
-		i++;
-	}
-	return (-1);
-}
-
-char	**add_or_update_env(t_shell *shell, const char *key, const char *value)
-{
-	int		existing_index;
-	char	*new_entry;
-	char	**new_envp;
-	char	*tmp;
-
-	int i, env_count;
-	existing_index = find_env_var(shell, key);
-	env_count = 0;
-	tmp = ft_strjoin(key, "=");
-	if (!tmp)
-		return (NULL);
-	new_entry = ft_strjoin(tmp, value);
-	free(tmp);
-	if (!new_entry)
-		return (NULL);
-	if (existing_index != -1)
-	{
-		free(shell->envp[existing_index]);
-		shell->envp[existing_index] = new_entry;
-		return (shell->envp);
-	}
-	while (shell->envp[env_count])
-		env_count++;
-	new_envp = malloc((env_count + 2) * sizeof(char *));
-	if (!new_envp)
-	{
-		free(new_entry);
-		return (shell->envp);
-	}
-	i = 0;
-	while (i < env_count)
-	{
-		new_envp[i] = shell->envp[i];
-		i++;
-	}
-	new_envp[env_count] = new_entry;
-	new_envp[env_count + 1] = NULL;
-	free(shell->envp);
-	return (new_envp);
-}
-
-void	sort_export(char **envp)
+void	sort_env(char **envp)
 {
 	int		swapped;
 	int		i;
@@ -115,57 +53,51 @@ void	sort_export(char **envp)
 	}
 }
 
-void	builtin_export(char **args, t_shell *shell)
+void	print_export_error(char *arg, t_shell *shell)
 {
-	int		i;
+	ft_putstr_fd("minishell: export: `", 2);
+	ft_putstr_fd(arg, 2);
+	ft_putstr_fd("': not a valid identifier\n", 2);
+	shell->exit_status = 1;
+}
+
+void	handle_export_assignment(char *arg, t_shell *shell)
+{
 	char	*key;
 	char	*value;
 	char	*equal_sign;
-	int		env_count;
+
+	equal_sign = ft_strchr(arg, '=');
+	if (equal_sign)
+	{
+		*equal_sign = '\0';
+		key = arg;
+		value = equal_sign + 1;
+		if (!is_valid_identifier(key))
+			print_export_error(arg, shell);
+		else
+			shell->envp = add_or_update_env(shell, key, value);
+		*equal_sign = '=';
+	}
+	else if (is_valid_identifier(arg))
+		shell->envp = add_or_update_env(shell, arg, "");
+	else
+		print_export_error(arg, shell);
+}
+
+void	builtin_export(char **args, t_shell *shell)
+{
+	int	i;
 
 	if (!args[1])
 	{
-		env_count = 0;
-		while (shell->envp[env_count])
-			env_count++;
-		sort_export(shell->envp);
+		sort_env(shell->envp);
 		i = 0;
 		while (shell->envp[i])
-		{
-			printf("declare -x %s\n", shell->envp[i]);
-			i++;
-		}
+			printf("declare -x %s\n", shell->envp[i++]);
 		return ;
 	}
 	i = 1;
 	while (args[i])
-	{
-		equal_sign = ft_strchr(args[i], '=');
-		if (equal_sign)
-		{
-			*equal_sign = '\0';
-			key = args[i];
-			value = equal_sign + 1;
-			if (!is_valid_identifier(key))
-			{
-				ft_putstr_fd("minishell: export: `", 2);
-				ft_putstr_fd(args[i], 2);
-				ft_putstr_fd("': not a valid identifier\n", 2);
-				shell->exit_status = 1;
-			}
-			else
-				shell->envp = add_or_update_env(shell, key, value);
-			*equal_sign = '=';
-		}
-		else if (is_valid_identifier(args[i]))
-			shell->envp = add_or_update_env(shell, args[i], "");
-		else
-		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(args[i], 2);
-			ft_putstr_fd("': not a valid identifier\n", 2);
-			shell->exit_status = 1;
-		}
-		i++;
-	}
+		handle_export_assignment(args[i++], shell);
 }

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 10:46:07 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 16:48:15 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ void	is_directory(char *full_path, t_shell *shell)
 	shell->exit_status = 126;
 }
 
-void	execute_process(char *full_path, char **args, int is_background, t_shell *shell)
+void	execute_process(char *full_path, char **args, int is_background,
+		t_shell *shell)
 {
 	pid_t	pid;
 	int		status;

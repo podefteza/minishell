@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:26:04 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 11:23:58 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 14:30:45 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ void	builtin_setup(t_builtin *builtins)
 	builtins[3].func = &builtin_export;
 	builtins[4].cmd = "unset";
 	builtins[4].func = &builtin_unset;
-	builtins[5].cmd = "42424242"; // env
-	builtins[5].func = &builtin_echo; // builtin_env
+	builtins[5].cmd = "env";
+	builtins[5].func = &builtin_env;
 	builtins[6].cmd = "exit";
 	builtins[6].func = &builtin_exit;
 	builtins[7].cmd = NULL;
