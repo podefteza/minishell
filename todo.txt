@@ -39,29 +39,28 @@ should expand to their values.
 	✔️$?	Last command’s exit status
 	✔️$!	PID of the last background command
 	✔️$$	PID of the shell
-	✔️$0	shell name 💡 ./minishell
+	✔️$0	shell name
 	✔️$PWD	current working directory
 	✔️$OLDPWD	previous working directory
 
 ✔️•Handle $? which should expand to the exit status of the most recently executed
 foreground pipeline.
 
-❌•Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
+✔️•Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
 
-•In interactive mode:
+✔️•In interactive mode:
 	✔️◦ctrl-C displays a new prompt on a new line.
 	✔️◦ctrl-D exits the shell.
-	❌◦ctrl-\ does nothing.
+	✔️◦ctrl-\ does nothing.
 
 •Your shell must implement the following
-	✔️ ◦echo with option -n
-	❌◦cd with only a relative or absolute path ✔️ error when directory does not exist ❌ cd ..\ does not behave like the shell (interactive mode??)
+	✔️◦echo with option -n
+	✔️◦cd with only a relative or absolute path
 	✔️◦pwd with no options
-	◦export with no options
-	◦unset with no options
-	◦env with no options or arguments 💡 why is this necessary? are we gonna unset env?
+	✔️◦export with no options
+	✔️◦unset with no options
+	✔️◦env with no options or arguments
 	✔️◦exit with no options
-
 
 
 ===================================================================================================================================================================
@@ -71,7 +70,6 @@ foreground pipeline.
 	- check functions used: nm -Ud minishell | grep " U "
 	- check global variables used: nm -g minishell | grep " B "
 	- find where a function is used: grep -rnw . -e 'function_name'
-
 
 
 ===================================================================================================================================================================

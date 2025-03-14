@@ -6,25 +6,25 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/12 11:51:43 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 10:38:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*get_env_value(char *var, char **envp)
+char	*get_env_value(char *var, t_shell *shell)
 {
 	int		i;
 	char	*prefix;
 
 	i = 0;
 	prefix = ft_strjoin(var, "=");
-	while (envp[i])
+	while (shell->envp[i])
 	{
-		if (ft_strncmp(envp[i], prefix, ft_strlen(prefix)) == 0)
+		if (ft_strncmp(shell->envp[i], prefix, ft_strlen(prefix)) == 0)
 		{
 			free(prefix);
-			return (ft_strdup(envp[i] + ft_strlen(var) + 1));
+			return (ft_strdup(shell->envp[i] + ft_strlen(var) + 1));
 		}
 		i++;
 	}
@@ -43,7 +43,7 @@ char	*get_shell_name(void)
 		return ("shell name is not set"); // or minishell?
 }
 
-char	*expand_variables(char *input, char **envp, t_shell *shell)
+char	*expand_variables(char *input, t_shell *shell)
 {
 	char	*result;
 	char	*ptr;
@@ -114,7 +114,7 @@ char	*expand_variables(char *input, char **envp, t_shell *shell)
 				while (*input && (ft_isalnum(*input) || *input == '_'))
 					var_name[i++] = *input++;
 				var_name[i] = '\0';
-				var_value = get_env_value(var_name, envp);
+				var_value = get_env_value(var_name, shell);
 			}
 			if (var_value && *var_value != '\0')
 			{

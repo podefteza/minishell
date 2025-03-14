@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/12 13:16:31 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 09:37:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,15 +47,31 @@ void	get_host_name(char *hostname)
 		ft_strlcpy(hostname, "unknown", HOSTNAME_MAX);
 }
 
-void	setup_shell(t_shell *shell)
+void setup_shell(t_shell *shell, char **envp)
 {
-	shell->user = getenv("USER");
-	if (!shell->user)
-		shell->user = "unknown";
-	get_host_name(shell->hostname);
-	shell->home = getenv("HOME");
-	if (!shell->home)
-		shell->home = "";
-	shell->exit_status = 0;
-	shell->last_bg_pid = -1;
+    int i, env_count;
+
+    shell->user = getenv("USER");
+    if (!shell->user)
+        shell->user = "unknown";
+    get_host_name(shell->hostname);
+    shell->home = getenv("HOME");
+    if (!shell->home)
+        shell->home = "";
+    shell->exit_status = 0;
+    shell->last_bg_pid = -1;
+
+    // Count envp entries
+    for (env_count = 0; envp[env_count]; env_count++);
+
+    // Allocate new environment
+    shell->envp = malloc((env_count + 1) * sizeof(char *));
+    if (!shell->envp)
+        return;
+
+    // Copy environment variables
+    for (i = 0; i < env_count; i++)
+        shell->envp[i] = ft_strdup(envp[i]); // Duplicate each string
+    shell->envp[env_count] = NULL;
 }
+// WHILE LOOP!

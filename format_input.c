@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/12 14:16:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 13:39:54 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,6 +221,13 @@ void	execute_pipeline(char **commands, t_shell *shell)
 			return ;
 		}
 	}
+	if (args && args[0] && ft_strncmp(args[0], "export", 7) == 0)
+    {
+        // This handles the case where 'export' is the first command in the pipeline.
+        free_args(args);
+        shell->exit_status = 1;
+        return;
+    }
 	free_args(args);
 	while (commands[i] != NULL)
 	{
@@ -274,7 +281,7 @@ void	execute_pipeline(char **commands, t_shell *shell)
 		;
 }
 
-void	handle_input(char *input, char **envp, t_shell *shell)
+void	handle_input(char *input, t_shell *shell)
 {
 	t_builtin	builtins[8];
 	char		**commands;
@@ -297,7 +304,7 @@ void	handle_input(char *input, char **envp, t_shell *shell)
 		return ;
 	if (ft_strchr(input, '$'))
 	{
-		modified_input = expand_variables(input, envp, shell);
+		modified_input = expand_variables(input, shell);
 		if (!modified_input)
 		{
 			modified_input = ft_strdup("");
@@ -369,6 +376,6 @@ void	handle_input(char *input, char **envp, t_shell *shell)
 		}
 		i++;
 	}
-	execute_command(args, envp, shell);
+	execute_command(args, shell);
 	free_args(args);
 }

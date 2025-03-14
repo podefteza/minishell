@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/12 13:28:46 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 10:46:07 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	command_not_found(char **args, t_shell *shell)
 		shell->exit_status = 127;
 }
 
-char	*find_command(char *cmd, char **envp, t_shell *shell)
+char	*find_command(char *cmd, t_shell *shell)
 {
 	char	*path;
 	char	*full_path;
@@ -35,7 +35,7 @@ char	*find_command(char *cmd, char **envp, t_shell *shell)
 	full_path = cmd_is_path(cmd, shell);
 	if (full_path)
 		return (full_path);
-	path = get_path_from_env(envp);
+	path = get_path_from_env(shell);
 	if (!path)
 	{
 		command_not_found(&cmd, shell);
@@ -58,8 +58,7 @@ void	is_directory(char *full_path, t_shell *shell)
 	shell->exit_status = 126;
 }
 
-void	execute_process(char *full_path, char **args, char **envp,
-		int is_background, t_shell *shell)
+void	execute_process(char *full_path, char **args, int is_background, t_shell *shell)
 {
 	pid_t	pid;
 	int		status;
@@ -72,7 +71,7 @@ void	execute_process(char *full_path, char **args, char **envp,
 	}
 	if (pid == 0)
 	{
-		execve(full_path, args, envp);
+		execve(full_path, args, shell->envp);
 		perror("execve");
 		exit(1);
 	}
@@ -92,7 +91,7 @@ void	execute_process(char *full_path, char **args, char **envp,
 	}
 }
 
-void	execute_command(char **args, char **envp, t_shell *shell)
+void	execute_command(char **args, t_shell *shell)
 {
 	char		*full_path;
 	struct stat	st;
@@ -111,7 +110,7 @@ void	execute_command(char **args, char **envp, t_shell *shell)
 		free(args[arg_count - 1]);
 		args[arg_count - 1] = NULL;
 	}
-	full_path = find_command(args[0], envp, shell);
+	full_path = find_command(args[0], shell);
 	if (!full_path)
 		return ;
 	if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode))
@@ -120,7 +119,7 @@ void	execute_command(char **args, char **envp, t_shell *shell)
 		free(full_path);
 		return ;
 	}
-	execute_process(full_path, args, envp, is_background, shell);
+	execute_process(full_path, args, is_background, shell);
 	if (full_path != args[0])
 		free(full_path);
 }

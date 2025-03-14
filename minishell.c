@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:13:07 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/12 14:10:22 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 10:01:20 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	handle_signal(int sig)
 	}
 }
 
-void	run_shell_loop(t_shell *shell, char **envp)
+void	run_shell_loop(t_shell *shell)
 {
 	char	*input;
 	char	cwd[PATH_MAX];
@@ -60,7 +60,7 @@ void	run_shell_loop(t_shell *shell, char **envp)
 		if (*input)
 		{
 			add_history(input);
-			handle_input(input, envp, shell);
+			handle_input(input, shell);
 		}
 		free(input);
 	}
@@ -76,10 +76,10 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("error: minishell should not have any arguments.\n", 2);
 		return (1);
 	}
-	setup_shell(&shell);
+	setup_shell(&shell, envp);
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, handle_signal);
 	g_signal_status = 0;
-	run_shell_loop(&shell, envp);
+	run_shell_loop(&shell);
 	return (shell.exit_status);
 }

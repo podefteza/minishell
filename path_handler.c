@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:13:36 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/12 11:56:17 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/14 10:46:06 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,15 +99,15 @@ char	*build_path(char *dir, char *cmd)
 	return (NULL);
 }
 
-char	*get_path_from_env(char **envp)
+char	*get_path_from_env(t_shell *shell)
 {
 	int	i;
 
 	i = 0;
-	while (envp[i])
+	while (shell->envp[i])
 	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-			return (envp[i] + 5);
+		if (ft_strncmp(shell->envp[i], "PATH=", 5) == 0)
+			return (shell->envp[i] + 5);
 		i++;
 	}
 	return (NULL);
