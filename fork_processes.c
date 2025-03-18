@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/28 14:45:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 15:10:09 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/18 14:05:37 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ static void	setup_pipes(int *pipe_fds, char **commands, int i)
 		pipe(pipe_fds);
 }
 
-static void	child_process(int in_fd, int *pipe_fds, char *command, t_shell *shell)
+static void	child_process(int in_fd, int *pipe_fds, char *command,
+		t_shell *shell)
 {
 	char	**cmd;
 

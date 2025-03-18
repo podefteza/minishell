@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 16:07:42 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/18 14:20:00 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,12 @@ void				build_prompt(char *prompt, t_shell *shell,
 void				get_host_name(char *hostname);
 void				setup_shell(t_shell *shell, char **envp);
 
+// expansions.c
+char				*expand_dollar_sign(char **input, t_shell *shell,
+						pid_t shell_pid);
+
 // expand_variables.c
-char				*get_env_value(char *var, t_shell *shell);
+char				*get_shell_name(void);
 char				*expand_variables(char *input, t_shell *shell);
 
 // format_input.c
