@@ -6,13 +6,17 @@ LDFLAGS = -lreadline
 
 SRCS = minishell.c \
 		command_handler.c \
-		fork_processes.c \
 		shell_setup.c \
 		expand_variables.c \
-		format_input.c \
+		input.c \
 		path_handler.c \
 		cleanup.c \
 		expansions.c \
+		pipeline.c \
+		pipeline_utils.c \
+		quotes.c \
+		redirections.c \
+		tokenize.c \
 		./builtins/builtin_setup.c \
 		./builtins/builtin_cd.c \
 		./builtins/builtin_echo.c \

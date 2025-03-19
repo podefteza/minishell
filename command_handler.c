@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 16:48:15 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:39:43 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ void	execute_process(char *full_path, char **args, int is_background,
 	{
 		execve(full_path, args, shell->envp);
 		perror("execve");
+		shell->exit_status = 1;
 		exit(1);
 	}
 	else
@@ -88,6 +89,8 @@ void	execute_process(char *full_path, char **args, int is_background,
 			waitpid(pid, &status, 0);
 			if (WIFEXITED(status))
 				shell->exit_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+				shell->exit_status = 128 + WTERMSIG(status);
 		}
 	}
 }
@@ -98,14 +101,26 @@ void	execute_command(char **args, t_shell *shell)
 	struct stat	st;
 	int			arg_count;
 	int			is_background;
+	int			original_stdin;
+	int			original_stdout;
 
 	if (!args || !args[0])
 		return ;
+	original_stdin = dup(STDIN_FILENO);
+	original_stdout = dup(STDOUT_FILENO);
+	if (handle_redirections(args, shell) == -1)
+	{
+		dup2(original_stdin, STDIN_FILENO);
+		dup2(original_stdout, STDOUT_FILENO);
+		close(original_stdin);
+		close(original_stdout);
+		return ;
+	}
 	arg_count = 0;
 	while (args[arg_count])
 		arg_count++;
 	is_background = 0;
-	if (ft_strncmp(args[arg_count - 1], "&", 2) == 0)
+	if (arg_count > 0 && ft_strncmp(args[arg_count - 1], "&", 2) == 0)
 	{
 		is_background = 1;
 		free(args[arg_count - 1]);
@@ -113,14 +128,28 @@ void	execute_command(char **args, t_shell *shell)
 	}
 	full_path = find_command(args[0], shell);
 	if (!full_path)
+	{
+		dup2(original_stdin, STDIN_FILENO);
+		dup2(original_stdout, STDOUT_FILENO);
+		close(original_stdin);
+		close(original_stdout);
 		return ;
+	}
 	if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode))
 	{
 		is_directory(full_path, shell);
 		free(full_path);
+		dup2(original_stdin, STDIN_FILENO);
+		dup2(original_stdout, STDOUT_FILENO);
+		close(original_stdin);
+		close(original_stdout);
 		return ;
 	}
 	execute_process(full_path, args, is_background, shell);
 	if (full_path != args[0])
 		free(full_path);
+	dup2(original_stdin, STDIN_FILENO);
+	dup2(original_stdout, STDOUT_FILENO);
+	close(original_stdin);
+	close(original_stdout);
 }

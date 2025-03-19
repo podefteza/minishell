@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:13:36 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/18 14:20:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/19 19:35:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,9 @@ char	*cmd_is_path(char *cmd, t_shell *shell)
 
 	if (ft_strchr(cmd, '/'))
 	{
-		if (access(cmd, F_OK) == 0) // Check if the file exists
+		if (access(cmd, F_OK) == 0)
 		{
-			if (access(cmd, X_OK) == 0) // Check if the file is executable
+			if (access(cmd, X_OK) == 0)
 			{
 				full_path = malloc(ft_strlen(cmd) + 1);
 				if (full_path)
@@ -62,7 +62,6 @@ char	*cmd_is_path(char *cmd, t_shell *shell)
 			}
 			else
 			{
-				// File exists but is not executable
 				ft_putstr_fd("minishell: ", 2);
 				ft_putstr_fd(cmd, 2);
 				ft_putstr_fd(": Permission denied\n", 2);
@@ -72,7 +71,6 @@ char	*cmd_is_path(char *cmd, t_shell *shell)
 		}
 		else
 		{
-			// File does not exist
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(cmd, 2);
 			ft_putstr_fd(": No such file or directory\n", 2);
@@ -80,7 +78,7 @@ char	*cmd_is_path(char *cmd, t_shell *shell)
 			return (NULL);
 		}
 	}
-	return (NULL); // Not a path, return NULL to search in PATH
+	return (NULL);
 }
 
 char	*build_path(char *dir, char *cmd)

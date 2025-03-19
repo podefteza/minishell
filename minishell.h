@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/18 14:20:00 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/19 19:34:50 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,10 +100,6 @@ void				free_shell_resources(t_shell *shell);
 char				*find_command(char *cmd, t_shell *shell);
 void				execute_command(char **args, t_shell *shell);
 
-// fork_processes.c
-int					fork_processes(int *pipe_fds, char **commands,
-						t_shell *shell);
-
 // shell_setup.c
 void				build_prompt(char *prompt, t_shell *shell,
 						const char *display_path);
@@ -118,9 +114,32 @@ char				*expand_dollar_sign(char **input, t_shell *shell,
 char				*get_shell_name(void);
 char				*expand_variables(char *input, t_shell *shell);
 
-// format_input.c
+// input.c
 char				*handle_quotes(char *input);
 void				handle_input(char *input, t_shell *shell);
+
+// quotes.c
+int					count_quotes(char *input);
+char				*handle_quotes(char *input);
+
+// tokenize.c
+int					count_words(char *input);
+char				*get_next_token(char *input);
+char				**split_arguments(char *input);
+
+// pipeline.c
+int					is_pipe_outside_quotes(char *input);
+char				**split_pipe(char *input);
+void				execute_pipeline(char **commands, t_shell *shell);
+
+// pipeline_utils.c
+int					check_command_access(char **args, t_shell *shell);
+int					setup_pipe(int pipe_fds[2]);
+int					has_trailing_pipe(char *input);
+
+// redirections.c
+int					handle_redirections(char **args, t_shell *shell);
+int					handle_heredoc(char *delimiter);
 
 // minishell.c
 void				free_args(char **args);

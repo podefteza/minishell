@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 14:36:54 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/19 19:42:15 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,8 @@ void	get_host_name(char *hostname)
 		ft_strlcpy(hostname, "unknown", HOSTNAME_MAX);
 }
 
-void	setup_shell(t_shell *shell, char **envp)
+void	user_hostname(t_shell *shell)
 {
-	int	i = 0, env_count = 0;
-
 	shell->user = getenv("USER");
 	if (!shell->user)
 		shell->user = "unknown";
@@ -60,6 +58,15 @@ void	setup_shell(t_shell *shell, char **envp)
 		shell->home = "";
 	shell->exit_status = 0;
 	shell->last_bg_pid = -1;
+}
+
+void	setup_shell(t_shell *shell, char **envp)
+{
+	int	i;
+	int	env_count;
+
+	env_count = 0;
+	user_hostname(shell);
 	while (envp[env_count])
 		env_count++;
 	shell->envp = malloc((env_count + 1) * sizeof(char *));
@@ -81,4 +88,3 @@ void	setup_shell(t_shell *shell, char **envp)
 	}
 	shell->envp[env_count] = NULL;
 }
-
