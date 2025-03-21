@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/19 19:34:12 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/21 16:59:21 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,16 @@ void	handle_input(char *input, t_shell *shell)
 			i++;
 		}
 	}
+
+	/*// print args >>>>>>>>>>> modify from here to split args if the first or last characters on them are < << > >>
+	i = 0;
+	while (args[i])
+	{
+		printf("cmd %i %s\n", i, args[i]);
+		i++;
+	}*/
+
+
 	i = 0;
 	while (builtins[i].cmd != NULL)
 	{

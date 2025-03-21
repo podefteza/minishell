@@ -1,4 +1,5 @@
 📙 TODO, as stated by the subject:
+>> need to compile lift_bonus too
 
 ✔️•Display a prompt when waiting for a new command.
 
