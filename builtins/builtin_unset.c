@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 11:22:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 16:31:19 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/28 14:15:10 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,14 +74,14 @@ void	process_unset_arg(char *arg, t_shell *shell)
 		remove_env_var(shell, arg);
 }
 
-void	builtin_unset(char **args, t_shell *shell)
+int	builtin_unset(char **args, t_shell *shell)
 {
 	int	i;
 
 	if (!args[1])
 	{
 		shell->exit_status = 0;
-		return ;
+		return (0);
 	}
 	i = 1;
 	while (args[i])
@@ -91,4 +91,6 @@ void	builtin_unset(char **args, t_shell *shell)
 	}
 	if (shell->exit_status != 1)
 		shell->exit_status = 0;
+	return (shell->exit_status);
 }
+

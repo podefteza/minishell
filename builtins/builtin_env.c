@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 14:10:50 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 16:34:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/28 14:15:00 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ char	**add_or_update_env(t_shell *shell, const char *key, const char *value)
 	return (new_envp);
 }
 
-void	builtin_env(char **args, t_shell *shell)
+int	builtin_env(char **args, t_shell *shell)
 {
 	int	i;
 
@@ -99,7 +99,7 @@ void	builtin_env(char **args, t_shell *shell)
 	{
 		ft_putstr_fd("env: environment not set\n", 2);
 		shell->exit_status = 1;
-		return ;
+		return (1);  // Return failure
 	}
 	i = 0;
 	while (shell->envp[i])
@@ -108,4 +108,6 @@ void	builtin_env(char **args, t_shell *shell)
 		i++;
 	}
 	shell->exit_status = 0;
+	return (0);  // Return success
 }
+

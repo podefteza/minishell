@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 09:14:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/14 16:24:37 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/31 14:38:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	handle_export_assignment(char *arg, t_shell *shell)
 		print_export_error(arg, shell);
 }
 
-void	builtin_export(char **args, t_shell *shell)
+int	builtin_export(char **args, t_shell *shell)
 {
 	int	i;
 
@@ -95,9 +95,12 @@ void	builtin_export(char **args, t_shell *shell)
 		i = 0;
 		while (shell->envp[i])
 			printf("declare -x %s\n", shell->envp[i++]);
-		return ;
+		return (0);  // Success
 	}
 	i = 1;
 	while (args[i])
 		handle_export_assignment(args[i++], shell);
+
+	return (shell->exit_status);  // Return the last exit status
 }
+

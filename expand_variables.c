@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/18 14:05:10 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/31 10:41:05 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ char	*get_shell_name(void)
 
 	shell_name = getenv("_");
 	if (shell_name)
-		return (shell_name);
+		return (ft_strdup(shell_name));
 	else
-		return ("shell name is not set");
+		return (ft_strdup("shell name is not set"));
 }
 
 void	expand_handle_quotes(char **input, char **ptr, int *in_single,
@@ -50,12 +50,12 @@ void	expand_process_input(char **input, char **ptr, t_shell *shell,
 		else if (**input == '$' && !(*in_single_quote))
 		{
 			var_value = expand_dollar_sign(input, shell, shell_pid);
-			if (var_value && *var_value != '\0')
+			if (var_value)
 			{
 				ft_strlcpy(*ptr, var_value, ft_strlen(var_value) + 1);
 				*ptr += ft_strlen(var_value);
+				free(var_value);
 			}
-			free(var_value);
 		}
 		else
 			*(*ptr)++ = *(*input)++;

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/19 19:34:50 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/31 10:41:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,14 @@
 #define TRUE 1
 #define FALSE 0
 
+struct s_shell; // Forward declaration of s_shell
+
+typedef struct s_builtin
+{
+	char			*cmd;
+	int				(*func)(char **, struct s_shell *);
+}					t_builtin;
+
 typedef struct s_shell
 {
 	char			*user;
@@ -54,13 +62,8 @@ typedef struct s_shell
 	char			**envp;
 	int				exit_status;
 	pid_t			last_bg_pid;
+	t_builtin builtins[8]; // Now it's valid
 }					t_shell;
-
-typedef struct s_builtin
-{
-	char			*cmd;
-	void			(*func)(char **args, t_shell *shell);
-}					t_builtin;
 
 typedef struct s_env
 {
@@ -72,16 +75,17 @@ typedef struct s_env
 
 // builtins
 void				builtin_setup(t_builtin *builtins);
-void				builtin_cd(char **args, t_shell *shell);
-void				builtin_pwd(char **args, t_shell *shell);
-void				builtin_echo(char **args, t_shell *shell);
-char				**handle_echo(char *modified_input);
-void				builtin_exit(char **args, t_shell *shell);
+int					builtin_cd(char **args, t_shell *shell);
+int					builtin_pwd(char **args, t_shell *shell);
+int					builtin_echo(char **args, t_shell *shell);
+int					builtin_exit(char **args, t_shell *shell);
+int					builtin_export(char **args, t_shell *shell);
+int					builtin_unset(char **args, t_shell *shell);
+int					builtin_env(char **args, t_shell *shell);
+char				**handle_echo(char *modified_input, t_shell *shell);
 int					is_valid_identifier(const char *str);
 int					find_env_var(t_shell *shell, const char *key);
-void				builtin_export(char **args, t_shell *shell);
-void				builtin_unset(char **args, t_shell *shell);
-void				builtin_env(char **args, t_shell *shell);
+
 char				**add_or_update_env(t_shell *shell, const char *key,
 						const char *value);
 
@@ -117,6 +121,7 @@ char				*expand_variables(char *input, t_shell *shell);
 // input.c
 char				*handle_quotes(char *input);
 void				handle_input(char *input, t_shell *shell);
+int					execute_builtin(char **args, t_shell *shell);
 
 // quotes.c
 int					count_quotes(char *input);
@@ -126,6 +131,7 @@ char				*handle_quotes(char *input);
 int					count_words(char *input);
 char				*get_next_token(char *input);
 char				**split_arguments(char *input);
+int					is_redirection(char c);
 
 // pipeline.c
 int					is_pipe_outside_quotes(char *input);

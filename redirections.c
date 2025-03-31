@@ -6,11 +6,26 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/21 16:05:49 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/31 14:40:17 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	is_redirection_operator(char *str)
+{
+	if (!str)
+		return (0);
+	if (ft_strncmp(str, "<", 2) == 0)
+		return (1);
+	if (ft_strncmp(str, ">", 2) == 0)
+		return (1);
+	if (ft_strncmp(str, "<<", 3) == 0)
+		return (1);
+	if (ft_strncmp(str, ">>", 3) == 0)
+		return (1);
+	return (0);
+}
 
 int	handle_heredoc(char *delimiter)
 {
@@ -30,119 +45,60 @@ int	handle_heredoc(char *delimiter)
 	}
 	free(line);
 	close(fd[1]);
-	return (open(delimiter, O_RDONLY)); // Temporary placeholder.
+	return (open(delimiter, O_RDONLY));
+}
+
+static int	redirect_command(char *op, char *filename, t_shell *shell)
+{
+	int	fd;
+	int	is_output;
+
+	is_output = (op[0] == '>');
+	if (ft_strncmp(op, ">", 2) == 0)
+		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else if (ft_strncmp(op, ">>", 3) == 0)
+		fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else if (ft_strncmp(op, "<", 2) == 0)
+		fd = open(filename, O_RDONLY);
+	else if (ft_strncmp(op, "<<", 3) == 0)
+		fd = handle_heredoc(filename);
+	else
+		return (-1);
+	if (fd == -1)
+	{
+		perror(filename);
+		shell->exit_status = 1;
+		return (-1);
+	}
+	if (is_output)
+		dup2(fd, STDOUT_FILENO);
+	else
+		dup2(fd, STDIN_FILENO);
+	close(fd);
+	return (0);
 }
 
 int	handle_redirections(char **args, t_shell *shell)
 {
-	int		fd;
-	int		i;
-	int		j;
-	char	*file;
+	int	i;
+	int	j;
 
 	i = 0;
 	j = 0;
 	while (args[i])
 	{
-		if (args[i][0] == '<' || args[i][0] == '>')
+		if (is_redirection_operator(args[i]))
 		{
-			if (args[i][0] == '>' && args[i][1] != '>' && args[i][1] != '\0')
+			if (!args[i + 1])
 			{
-				file = ft_strdup(args[i] + 1);
-				fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-				if (fd == -1)
-				{
-					perror(file);
-					free(file);
-					shell->exit_status = 1;
-					return (-1);
-				}
-				dup2(fd, STDOUT_FILENO);
-				close(fd);
-				free(file);
-				i++;
+				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n",
+					STDERR_FILENO);
+				shell->exit_status = 2;
+				return (-1);
 			}
-			else if (args[i][0] == '>' && args[i][1] == '>'
-				&& args[i][2] != '\0')
-			{
-				file = ft_strdup(args[i] + 2);
-				fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-				if (fd == -1)
-				{
-					perror(file);
-					free(file);
-					shell->exit_status = 1;
-					return (-1);
-				}
-				dup2(fd, STDOUT_FILENO);
-				close(fd);
-				free(file);
-				i++;
-			}
-			else if (args[i][0] == '<' && args[i][1] != '<'
-				&& args[i][1] != '\0')
-			{
-				file = ft_strdup(args[i] + 1);
-				fd = open(file, O_RDONLY);
-				if (fd == -1)
-				{
-					perror(file);
-					free(file);
-					shell->exit_status = 1;
-					return (-1);
-				}
-				dup2(fd, STDIN_FILENO);
-				close(fd);
-				free(file);
-				i++;
-			}
-			else if (args[i][0] == '<' && args[i][1] == '<'
-				&& args[i][2] != '\0')
-			{
-				file = ft_strdup(args[i] + 2);
-				fd = handle_heredoc(file);
-				if (fd == -1)
-				{
-					free(file);
-					shell->exit_status = 1;
-					return (-1);
-				}
-				dup2(fd, STDIN_FILENO);
-				close(fd);
-				free(file);
-				i++;
-			}
-			else
-			{
-				if (!args[i + 1])
-				{
-					perror("Missing filename/delimiter for redirection");
-						// or syntax error
-					shell->exit_status = 2;
-					return (-1);
-				}
-				file = args[i + 1];
-				if (ft_strncmp(args[i], ">", 2) == 0)
-					fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-				else if (ft_strncmp(args[i], ">>", 3) == 0)
-					fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-				else if (ft_strncmp(args[i], "<", 2) == 0)
-					fd = open(file, O_RDONLY);
-				else if (ft_strncmp(args[i], "<<", 3) == 0)
-					fd = handle_heredoc(file);
-				if (fd == -1)
-				{
-					perror(file);
-					shell->exit_status = 1;
-					return (-1);
-				}
-				if (args[i][0] == '>')
-					dup2(fd, STDOUT_FILENO);
-				else
-					dup2(fd, STDIN_FILENO);
-				close(fd);
-				i += 2;
-			}
+			if (redirect_command(args[i], args[i + 1], shell) == -1)
+				return (-1);
+			i += 2;
 		}
 		else
 			args[j++] = args[i++];

@@ -1,5 +1,8 @@
 📙 TODO, as stated by the subject:
 >> need to compile lift_bonus too
+>> remove "repetitive" code. some tasks are duplicated in separated functions, like trimming spaces and other special characters.
+
+>> minishell_tester: 106/146 on 27/03/2025 11:11
 
 ✔️•Display a prompt when waiting for a new command.
 

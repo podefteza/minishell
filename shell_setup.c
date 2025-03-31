@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/19 19:42:15 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/31 09:38:25 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,4 +87,5 @@ void	setup_shell(t_shell *shell, char **envp)
 		i++;
 	}
 	shell->envp[env_count] = NULL;
+	builtin_setup(shell->builtins);
 }

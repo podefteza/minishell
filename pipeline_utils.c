@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:44:30 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/19 18:12:58 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/31 10:42:04 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,27 @@ int	has_trailing_pipe(char *input)
 
 char	**split_pipe(char *input)
 {
+	char	**commands;
+	int		i;
+	char	*trimmed;
+
 	if (has_trailing_pipe(input))
 	{
 		printf("minishell: syntax error: unexpected '|'\n");
 		return (NULL);
 	}
-	return (ft_split(input, '|'));
+	commands = ft_split(input, '|');
+	if (!commands)
+		return (NULL);
+	i = 0;
+	while (commands[i])
+	{
+		trimmed = ft_strtrim(commands[i], " \t");
+		free(commands[i]);
+		commands[i] = trimmed;
+		i++;
+	}
+	return (commands);
 }
 
 int	setup_pipe(int pipe_fds[2])

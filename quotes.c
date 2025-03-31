@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:28:26 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/19 14:33:55 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/03/27 13:10:56 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,29 +37,53 @@ int	count_quotes(char *input)
 
 char	*handle_quotes(char *input)
 {
-	int		i;
-	int		j;
-	int		in_single_quote;
-	int		in_double_quote;
-	char	*output;
+	char	*result;
+	int		i, j;
+	int		in_squote, in_dquote;
+	int		squote_count, dquote_count;
+
+	if (!input)
+		return (NULL);
+
+	squote_count = 0;
+	dquote_count = 0;
+	i = 0;
+	while (input[i]) // Count total quotes, different from count_quotes
+	{
+		if (input[i] == '\'')
+			squote_count++;
+		else if (input[i] == '"')
+			dquote_count++;
+		i++;
+	}
+	result = malloc(ft_strlen(input) + 1);
+	if (!result)
+		return (NULL);
 
 	i = 0;
 	j = 0;
-	in_single_quote = 0;
-	in_double_quote = 0;
-	output = malloc(ft_strlen(input) + 1);
-	if (!output)
-		return (NULL);
+	in_squote = 0;
+	in_dquote = 0;
 	while (input[i])
 	{
-		if (input[i] == '\'' && !in_double_quote)
-			in_single_quote = !in_single_quote;
-		else if (input[i] == '\"' && !in_single_quote)
-			in_double_quote = !in_double_quote;
+		if (input[i] == '\'' && !in_dquote)
+		{
+			in_squote = !in_squote;
+			if (squote_count % 2 != 0) // Keep unmatched single quotes
+				result[j++] = input[i];
+		}
+		else if (input[i] == '"' && !in_squote)
+		{
+			in_dquote = !in_dquote;
+			if (dquote_count % 2 != 0) // Keep unmatched double quotes
+				result[j++] = input[i];
+		}
 		else
-			output[j++] = input[i];
+			result[j++] = input[i]; // Copy normal characters
 		i++;
 	}
-	output[j] = '\0';
-	return (output);
+	result[j] = '\0';
+	free(input);
+	return (result);
 }
+
