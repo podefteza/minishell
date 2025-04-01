@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 11:22:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/28 14:15:10 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/01 13:47:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	print_unset_error(char *arg, t_shell *shell)
 {
 	ft_putstr_fd("minishell: unset: `", 2);
 	ft_putstr_fd(arg, 2);
-	ft_putstr_fd("': not a valid identifier\n", 2);
+	ft_putstr_fd("': options aren't supported\n", 2);
 	shell->exit_status = 1;
 }
 

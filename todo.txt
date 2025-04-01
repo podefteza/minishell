@@ -247,3 +247,111 @@ Surprise! (or not...)
 - Set the USER environment variable.
 - echo "'$USER'" should print the value of the USER variable.
 - echo '"$USER"' should print "$USER".
+
+
+===================================================================================================================================================================
+
+Other tests (waltergcc on GitHub):
+
+who
+-> check if it's supposed to return something
+
+exit
+-> leaks on main -> run_shell_loop -> handle_input -> malloc // not by exit itself...
+
+nonexistent | nocommand
+-> leaks + error not correct + tries to open a file instead of command + exit_status is 126 instead of 127
+
+ctrl-c on empty prompt or after writing something
+-> should set shell->exit_status to 130
+
+ctrl-c in cat without arguments
+-> correctly sets exit_status to 130, but duplicates the prompt
+
+ctrl-\ in cat without arguments
+-> Quit (core dumped) + exit_status should be 131
+
+"echo Hello World"
+-> should be "minishell: echo Hello World: command not found", instead, the output is [o Hello World"]
+-> same with single quotes, returns [o Hello World']
+
+env PATH
+-> should display an error message saying env can't be executed with options
+	-> if string after env is not a pipe or redirection symbol, return error message
+	-> env with grep, ok
+	-> env with ls, segfault?
+
+export NEW_VAR="   -l  |"
+-> when echo $NEW_VAR, the result should be "-l |", instead it seems to try to execute -l |
+-> echo $NEW_VAR: minishell: syntax error: unexpected '|'
+
+-> pwd -L
+	-> should be "minishell: pwd: options aren't supported", but instead just executes pwd and ignores the rest
+
+-> errors in here_doc <<
+	-> 	[minishell] carlos-j@DESKTOP-FF2OML1:~/minishell$ cat << EOF   		carlos-j@DESKTOP-FF2OML1:~/minishell$ cat << EOF
+		> this																> this
+		> is																> is
+		> a																	> a
+		> test																> test
+		> EOF																> EOF
+		EOF: No such file or directory										this
+																			is
+																			a
+																			test
+
+cat | cat | ls
+-> should list files and open the interactive mode
+	-> just prints files
+
+echo ~
+-> prints "~" instead of the home directory:
+	-> 	[minishell] carlos-j@DESKTOP-FF2OML1:~/minishell$ echo ~			carlos-j@DESKTOP-FF2OML1:~/minishell$ echo ~
+		~																	/home/carlos-j
+	-> make sure to print the home directory when the argument is just ~, since "echo ~test" prints "~test"
+
+
+echo ~/test
+-> same as above, but in this case should print the home/user/test directory instead of printing "~/test"
+
+echo -n -n -n -n -n Hello World
+-> should just do an echo -n and "ignore" the rest of the -name
+
+echo -nnnnnnnnn Hello World
+-> same as before, should treat it like -n
+
+< .
+-> exits the minishell, should not do anything...
+
+|
+-> 	minishell: syntax error: unexpected '|'
+	free(): double free detected in tcache 2
+	Aborted (core dumped)
+
+with d| or ls | wc |
+-> same as above
+
+ls | wc >
+ls | wc <
+- > memory allocation error
+
+ls | cat << > | wc
+
+export =
+or
+export =test
+-> small typo on the error: minishell: export: `': options aren't supported
+	-> it must always be putting the error with the name of the argument export + 2, so in this case where there's just 2 args, it should put what's after the "="
+
+export TEST.=test
+-> error message...
+
+cd -
+-> go to previous directory
+
+> *something*
+-> > is the same as "touch", as it creates a file *something*
+	-> it works, but after the command is executed, it enters interactive mode, needs ctrl+d to exit
+
+>> *something*
+-> >> is the same as "append"

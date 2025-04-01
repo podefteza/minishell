@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/31 09:55:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/01 14:38:59 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,8 +170,8 @@ char **split_arguments(char *input)
             }
             else
             {
-                ft_putstr_fd("Error: missing filename after redirection operator\n", 2);
-				// update exit status...
+                ft_putstr_fd("minishell: error: missing filename after redirection operator\n", 2);
+				// update exit status... need to pass shell as argument
                 return (NULL);
             }
         }
