@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/31 10:41:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:28:34 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@
 #define TRUE 1
 #define FALSE 0
 
+extern volatile sig_atomic_t g_signal_status; // 🔹 Declare it for global access
+
 struct s_shell; // Forward declaration of s_shell
 
 typedef struct s_builtin
@@ -73,11 +75,28 @@ typedef struct s_env
 	struct s_env	*next;
 }					t_env;
 
-// builtins
+// ../builtins/builtin_setup.c
 void				builtin_setup(t_builtin *builtins);
+
+// ../builtins/cd/builtin_cd.c
 int					builtin_cd(char **args, t_shell *shell);
-int					builtin_pwd(char **args, t_shell *shell);
+
+// ../builtins/cd/builtin_cd_utils.c
+void				cd_error(t_shell *shell);
+char				*expand_tilde(char *path);
+
+// ../builtins/echo/builtin_echo.c
 int					builtin_echo(char **args, t_shell *shell);
+
+// ../builtins/echo/builtin_echo_utils.c
+int is_redirection_token(char *token);
+char *get_next_token_for_echo(char **str);
+char **handle_echo(char *modified_input, t_shell *shell);
+
+
+int					builtin_pwd(char **args, t_shell *shell);
+
+
 int					builtin_exit(char **args, t_shell *shell);
 int					builtin_export(char **args, t_shell *shell);
 int					builtin_unset(char **args, t_shell *shell);
@@ -129,7 +148,7 @@ char				*handle_quotes(char *input);
 
 // tokenize.c
 int					count_words(char *input);
-char				*get_next_token(char *input);
+char				*get_next_token(char **input_ptr);
 char				**split_arguments(char *input);
 int					is_redirection(char c);
 

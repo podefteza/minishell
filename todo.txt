@@ -2,7 +2,7 @@
 >> need to compile lift_bonus too
 >> remove "repetitive" code. some tasks are duplicated in separated functions, like trimming spaces and other special characters.
 
->> minishell_tester: 106/146 on 27/03/2025 11:11
+>> minishell_tester: 145/146 on 01/04/2025 12:11
 
 ✔️•Display a prompt when waiting for a new command.
 
@@ -24,12 +24,12 @@ characters in the quoted sequence.
 ✔️•Handle " (double quote) which should prevent the shell from interpreting the meta-
 characters in the quoted sequence except for $ (dollar sign).
 
-•Implement redirections:
-	◦< should redirect input.
-	◦> should redirect output.
-	◦<< should be given a delimiter, then read the input until a line containing the
+✔️•Implement redirections:
+	✔️◦< should redirect input.
+	✔️◦> should redirect output.
+	✔️◦<< should be given a delimiter, then read the input until a line containing the
 	delimiter is seen. However, it doesn’t have to update the history!
-	◦>> should redirect output in append mode.
+	✔️◦>> should redirect output in append mode.
 
 ✔️•Implement pipes (| character). The output of each command in the pipeline is
 connected to the input of the next command via a pipe.
@@ -253,17 +253,9 @@ Surprise! (or not...)
 
 Other tests (waltergcc on GitHub):
 
-who
--> check if it's supposed to return something
-
 exit
 -> leaks on main -> run_shell_loop -> handle_input -> malloc // not by exit itself...
-
-nonexistent | nocommand
--> leaks + error not correct + tries to open a file instead of command + exit_status is 126 instead of 127
-
-ctrl-c on empty prompt or after writing something
--> should set shell->exit_status to 130
+-> exit with a very large number should treat it as a string (therefore exiting with exit code 2 and "-bash: exit: 23824789327547832459873495873492853245: numeric argument required")
 
 ctrl-c in cat without arguments
 -> correctly sets exit_status to 130, but duplicates the prompt
@@ -320,10 +312,13 @@ echo -n -n -n -n -n Hello World
 echo -nnnnnnnnn Hello World
 -> same as before, should treat it like -n
 
+echo $"'$USER'"
+-> is printing the $
+
 < .
 -> exits the minishell, should not do anything...
 
-|
+| (or "|")
 -> 	minishell: syntax error: unexpected '|'
 	free(): double free detected in tcache 2
 	Aborted (core dumped)
@@ -355,3 +350,21 @@ cd -
 
 >> *something*
 -> >> is the same as "append"
+
+
+" " | " " | " "
+-> mixes the shell name and tries to open something that does not have permissions, instead of executing command "*empty*" (NULL?)
+
+| command
+-> if the first string of the input is a pipe, it should give the error "minishell: syntax error near unexpected token `|'" and exit_status = 2
+
+all syntax errors should set exit_status to 2 (?)
+
+env | env
+-> leaks!!
+
+"          nonexistent    "
+-> print must trim spaces
+
+> something
+-> breaks....

@@ -6,11 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 09:14:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/01 13:40:44 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:13:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
 int	is_valid_identifier(const char *str)
 {
@@ -57,7 +57,7 @@ void	print_export_error(char *arg, t_shell *shell)
 {
 	ft_putstr_fd("minishell: export: `", 2);
 	ft_putstr_fd(arg, 2);
-	ft_putstr_fd("': options aren't supported\n", 2);
+	ft_putstr_fd("': not a valid identifier\n", 2);
 	shell->exit_status = 1;
 }
 
@@ -95,12 +95,12 @@ int	builtin_export(char **args, t_shell *shell)
 		i = 0;
 		while (shell->envp[i])
 			printf("declare -x %s\n", shell->envp[i++]);
-		return (0);  // Success
+		return (0);
 	}
 	i = 1;
 	while (args[i])
 		handle_export_assignment(args[i++], shell);
 
-	return (shell->exit_status);  // Return the last exit status
+	return (shell->exit_status);
 }
 

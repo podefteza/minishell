@@ -6,11 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/28 14:21:38 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:13:17 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
 int	builtin_pwd(char **args, t_shell *shell)
 {

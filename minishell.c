@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:13:07 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/31 10:41:44 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/04 13:42:20 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void	run_shell_loop(t_shell *shell)
 		if (g_signal_status)
 		{
 			g_signal_status = 0;
+			shell->exit_status = 130;
 			build_prompt(prompt, shell, display_path);
 		}
 		else
@@ -60,9 +61,10 @@ void	run_shell_loop(t_shell *shell)
 			add_history(input);
 			handle_input(input, shell);
 		}
-		free(input);
+		//free(input); // already free'd on input.c
 	}
 	free_shell_resources(shell);
+	clear_history();
 }
 
 int	main(int argc, char **argv, char **envp)

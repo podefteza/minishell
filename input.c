@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/31 11:47:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:10:30 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,82 @@ int	execute_builtin(char **args, t_shell *shell)
 	return (0);
 }
 
-void	handle_input(char *input, t_shell *shell)
+char	*trim_spaces(const char *input)
 {
-	char	**commands;
-	char	**args;
-	char	*modified_input;
-	char	*cleaned_arg;
-	char	*trimmed_input;
+	int		start;
+	int		end;
 	char	*trimmed;
+	int		i;
+
+	if (!input)
+		return (NULL);
+	start = 0;
+	while (input[start] == ' ' || input[start] == '\t')
+		start++;
+	end = strlen(input) - 1;
+	while (end > start && (input[end] == ' ' || input[end] == '\t'))
+		end--;
+	trimmed = malloc((end - start + 2) * sizeof(char));
+	if (!trimmed)
+		return (NULL);
+	i = 0;
+	while (start <= end)
+		trimmed[i++] = input[start++];
+	trimmed[i] = '\0';
+	return (trimmed);
+}
+
+char	*trim_quotes(const char *input)
+{
+	int		start;
+	int		end;
+	char	*trimmed;
+	char	quote;
+	int		i;
+
+	if (!input || !*input)
+		return (NULL);
+	start = 0;
+	end = strlen(input) - 1;
+	quote = input[start];
+	if ((quote == '\'' || quote == '\"') && input[end] == quote)
+	{
+		start++;
+		end--;
+	}
+	trimmed = malloc((end - start + 2) * sizeof(char));
+	if (!trimmed)
+		return (NULL);
+	i = 0;
+	while (start <= end)
+		trimmed[i++] = input[start++];
+	trimmed[i] = '\0';
+	return (trimmed);
+}
+
+void	handle_signal_status(t_shell *shell)
+{
+	if (g_signal_status)
+	{
+		shell->exit_status = 130;
+		g_signal_status = 0;
+	}
+}
+
+char	*input_with_expansion(char *final_input, t_shell *shell)
+{
+	char	*trimmed;
+
+	final_input = expand_variables(final_input, shell);
+	if (!final_input)
+		return (ft_strdup(""));
+	trimmed = ft_strtrim(final_input, " ");
+	free(final_input);
+	return (trimmed);
+}
+
+int	input_with_echo(char *final_input, char ***args_ptr, t_shell *shell)
+{
 	char	**raw_args;
 	char	**echo_args;
 	int		echo_len;
@@ -57,98 +125,141 @@ void	handle_input(char *input, t_shell *shell)
 	int		i;
 	int		j;
 
-	modified_input = NULL;
-	trimmed_input = ft_strtrim(input, " \t");
-	if (trimmed_input[0] == '\0')
+	i = 0;
+	j = 0;
+	if (!ft_strnstr(final_input, "echo", ft_strlen(final_input)))
+		return (0);
+	raw_args = split_arguments(final_input);
+	if (!raw_args)
+		return (1);
+	echo_args = handle_echo(raw_args[0], shell);
+	if (!echo_args)
 	{
-		free(trimmed_input);
-		return ;
+		free_array(raw_args);
+		return (1);
 	}
-	free(trimmed_input);
-	if (count_quotes(input))
-		return ;
-	if (ft_strchr(input, '$'))
+	echo_len = 0;
+	raw_len = 0;
+	while (echo_args[echo_len])
+		echo_len++;
+	while (raw_args[raw_len])
+		raw_len++;
+	final_args = malloc(sizeof(char *) * (echo_len + raw_len));
+	if (!final_args)
 	{
-		modified_input = expand_variables(input, shell);
-		if (!modified_input)
-		{
-			modified_input = ft_strdup("");
-			if (!modified_input)
-				return ;
-		}
-		else
-		{
-			trimmed = ft_strtrim(modified_input, " ");
-			free(modified_input);
-			modified_input = trimmed;
-		}
-	}
-	else
-		modified_input = ft_strdup(input);
-	if (!modified_input)
-		return ;
-	if (ft_strchr(modified_input, '|')
-		&& is_pipe_outside_quotes(modified_input))
-	{
-		commands = split_pipe(modified_input);
-		free(modified_input);
-		if (!commands)
-		{
-			free(modified_input);
-			return ;
-		}
-		execute_pipeline(commands, shell);
-		free_array(commands);
-		return ;
-	}
-	if (ft_strnstr(modified_input, "echo", ft_strlen(modified_input)))
-	{
-		raw_args = split_arguments(modified_input);
-		if (!raw_args)
-		{
-			free(modified_input);
-			return ;
-		}
-		echo_args = handle_echo(raw_args[0], shell);
-		echo_len = 0;
-		raw_len = 0;
-		while (echo_args[echo_len])
-			echo_len++;
-		while (raw_args[raw_len])
-			raw_len++;
-		final_args = malloc(sizeof(char *) * (echo_len + raw_len + 1));
-		if (!final_args)
-		{
-			free_array(echo_args);
-			free_array(raw_args);
-			free(modified_input);
-			return ;
-		}
-		i = 0;
-		while (i < echo_len)
-		{
-			final_args[i] = ft_strdup(echo_args[i]);
-			i++;
-		}
-		j = 1;
-		while (raw_args[j])
-		{
-			final_args[i] = ft_strdup(raw_args[j]);
-			i++;
-			j++;
-		}
-		final_args[i] = NULL;
 		free_array(echo_args);
 		free_array(raw_args);
-		free(modified_input);
-		args = final_args;
+		return (1);
+	}
+	i = 0;
+	while (i < echo_len)
+	{
+		final_args[i] = ft_strdup(echo_args[i]);
+		i++;
+	}
+	j = 1;
+	while (raw_args[j])
+	{
+		final_args[i] = ft_strdup(raw_args[j]);
+		i++;
+		j++;
+	}
+	final_args[i] = NULL;
+	free_array(echo_args);
+	free_array(raw_args);
+	*args_ptr = final_args;
+	return (1);
+}
+
+int input_with_pipe(char *final_input, t_shell *shell)
+{
+    char **commands;
+
+    if (!ft_strchr(final_input, '|') || !is_pipe_outside_quotes(final_input))
+        return 0;
+
+    commands = split_pipe(final_input);
+    if (!commands)
+        return 1;
+
+    if (ft_strncmp(commands[0], "|", 1) == 0 && ft_strlen(commands[0]) == 1)
+    {
+        printf("minishell: syntax error near unexpected token `|'\n");
+        shell->exit_status = 2;
+        free_array(commands);
+        return 1;
+    }
+
+    execute_pipeline(commands, shell);
+    free_array(commands);
+    return 1;
+}
+
+void	handle_input(char *input, t_shell *shell)
+{
+	char	**args;
+	char	*modified_input;
+	char	*cleaned_arg;
+	int		i;
+	char	*final_input;
+	char	*expanded;
+
+	handle_signal_status(shell);
+	modified_input = trim_spaces(input);
+	free(input);
+	if (!modified_input)
+		return ;
+	final_input = trim_quotes(modified_input);
+	free(modified_input);
+	if (!final_input)
+		return ;
+	if (count_quotes(final_input))
+		return ;
+	if (ft_strchr(final_input, '$'))
+	{
+		expanded = input_with_expansion(final_input, shell);
+		free(final_input);
+		final_input = expanded;
+	}
+	if (!final_input)
+		return ;
+	if (input_with_pipe(final_input, shell))
+	{
+		free(final_input);
+		return;
+	}
+	if (ft_strnstr(final_input, "echo", ft_strlen(final_input))
+		&& input_with_echo(final_input, &args, shell))
+	{
+		free(final_input);
 		if (!args)
 			return ;
 	}
+	else if (ft_strnstr(final_input, "export", ft_strlen(final_input)))
+	{
+		args = split_arguments(final_input);
+		free(final_input);
+		if (!args || !args[0])
+		{
+			free_array(args);
+			return ;
+		}
+		if (is_echo_command(args[0]))
+		{
+			i = 0;
+			while (args[i])
+			{
+				cleaned_arg = handle_quotes(args[i]);
+				free(args[i]);
+				args[i] = cleaned_arg;
+				i++;
+			}
+		}
+	}
 	else
 	{
-		args = split_arguments(modified_input);
-		free(modified_input);
+		args = split_arguments(final_input);
+		free(final_input);
 		if (!args || !args[0])
 		{
 			free_array(args);
@@ -176,5 +287,7 @@ void	handle_input(char *input, t_shell *shell)
 	if (execute_builtin(args, shell))
 		return ;
 	execute_command(args, shell);
-	free_array(args);
+	// if...?
+	if (args)
+		free_array(args);
 }
