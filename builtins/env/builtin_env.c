@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 14:10:50 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/04 16:13:01 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/07 11:21:40 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	builtin_env(char **args, t_shell *shell)
 	{
 		ft_putstr_fd("env: environment not set\n", 2);
 		shell->exit_status = 1;
-		return (1);  // Return failure
+		return (1);
 	}
 	i = 0;
 	while (shell->envp[i])
@@ -108,6 +108,17 @@ int	builtin_env(char **args, t_shell *shell)
 		i++;
 	}
 	shell->exit_status = 0;
-	return (0);  // Return success
-}
+	return (0);
 
+}
+// TODO:
+/*
+check env options, like --z
+
+env with a command should run that command instead of env (?), like env ls just runs ls
+error if command does not exist
+
+env with a file next to it gives error no such file or directory
+
+
+*/

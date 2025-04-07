@@ -75,6 +75,8 @@ foreground pipeline.
 	- check functions used: nm -Ud minishell | grep " U "
 	- check global variables used: nm -g minishell | grep " B "
 	- find where a function is used: grep -rnw . -e 'function_name'
+	- to run valgrind with the suppressed errors related to readline library:
+		valgrind --suppressions=readline.supp -s --leak-check=full --show-leak-kinds=all ./minishell
 
 
 ===================================================================================================================================================================
@@ -255,8 +257,7 @@ Surprise! (or not...)
 Other tests (waltergcc on GitHub):
 
 exit
--> leaks on main -> run_shell_loop -> handle_input -> malloc // not by exit itself...
--> exit with a very large number should treat it as a string (therefore exiting with exit code 2 and "-bash: exit: 23824789327547832459873495873492853245: numeric argument required")
+-> leaks on main -> run_shell_loop -> handle_input -> malloc // not by exit itself... >>>>>>>> can't replicate this...
 
 ctrl-c in cat without arguments
 -> correctly sets exit_status to 130, but duplicates the prompt
@@ -271,8 +272,8 @@ ctrl-\ in cat without arguments
 env PATH
 -> should display an error message saying env can't be executed with options
 	-> if string after env is not a pipe or redirection symbol, return error message
-	-> env with grep, ok
-	-> env with ls, segfault?
+	-> env with grep, ok >> leaks with "env | grep USER"
+	-> env with ls, segfault? >> shouldn't do anything...
 
 export NEW_VAR="   -l  |"
 -> when echo $NEW_VAR, the result should be "-l |", instead it seems to try to execute -l |

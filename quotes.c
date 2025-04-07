@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:28:26 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/27 13:10:56 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/07 11:47:04 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,17 +38,16 @@ int	count_quotes(char *input)
 char	*handle_quotes(char *input)
 {
 	char	*result;
-	int		i, j;
-	int		in_squote, in_dquote;
-	int		squote_count, dquote_count;
 
+	int i, j;
+	int in_squote, in_dquote;
+	int squote_count, dquote_count;
 	if (!input)
 		return (NULL);
-
 	squote_count = 0;
 	dquote_count = 0;
 	i = 0;
-	while (input[i]) // Count total quotes, different from count_quotes
+	while (input[i])
 	{
 		if (input[i] == '\'')
 			squote_count++;
@@ -59,7 +58,6 @@ char	*handle_quotes(char *input)
 	result = malloc(ft_strlen(input) + 1);
 	if (!result)
 		return (NULL);
-
 	i = 0;
 	j = 0;
 	in_squote = 0;
@@ -69,21 +67,20 @@ char	*handle_quotes(char *input)
 		if (input[i] == '\'' && !in_dquote)
 		{
 			in_squote = !in_squote;
-			if (squote_count % 2 != 0) // Keep unmatched single quotes
+			if (squote_count % 2 != 0)
 				result[j++] = input[i];
 		}
 		else if (input[i] == '"' && !in_squote)
 		{
 			in_dquote = !in_dquote;
-			if (dquote_count % 2 != 0) // Keep unmatched double quotes
+			if (dquote_count % 2 != 0)
 				result[j++] = input[i];
 		}
 		else
-			result[j++] = input[i]; // Copy normal characters
+			result[j++] = input[i];
 		i++;
 	}
 	result[j] = '\0';
 	free(input);
 	return (result);
 }
-

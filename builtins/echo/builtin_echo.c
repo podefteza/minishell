@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/04 16:35:43 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/07 15:09:47 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	builtin_echo(char **args, t_shell *shell)
 		dup2(original_stdin, STDIN_FILENO);
 		close(original_stdout);
 		close(original_stdin);
-		return (1);
+		return (shell->exit_status);
 	}
 	i = 1;
 	newline = 1;

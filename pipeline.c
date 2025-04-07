@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:32:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/02 00:11:10 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/07 11:47:46 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,7 @@ char	**copy_args(char **args)
 		}
 		i++;
 	}
+	//free(copy[i]); // leak here??
 	copy[count] = NULL;
 	return (copy);
 }
@@ -165,7 +166,7 @@ int safe_execute_command(char **args, t_shell *shell)
         ft_putstr_fd(": command not found\n", STDERR_FILENO);
         exit(127);
     }
-    return (0); // This line is theoretically unreachable
+    return (0);
 }
 
 int	process_command(char **commands, int i, int *input_fd, t_shell *shell)

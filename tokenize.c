@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/04 15:39:33 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/07 14:06:53 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,13 @@ int	count_words(char *input)
 	return (count);
 }
 
+// change for, to while loops
 char	*get_next_token(char **input_ptr)
 {
 	char	*str;
 	char	*token;
 	int		in_squote, in_dquote, i;
+	int		count;
 
 	str = *input_ptr;
 	in_squote = 0;
@@ -58,13 +60,30 @@ char	*get_next_token(char **input_ptr)
 		str++;
 	if (*str == '<' || *str == '>')
 	{
-		token = malloc(3);
-		if (!token)
-			return (NULL);
-		token[i++] = *str++;
-		if ((*str == '>' && token[0] == '>') || (*str == '<' && token[0] == '<'))
+		count = 1;
+		char first_char = *str;
+		while (str[count] == first_char)
+			count++;
+
+		if (count >= 3)
+		{
+			token = malloc(count + 1);
+			if (!token)
+				return (NULL);
+			for (i = 0; i < count; i++)
+				token[i] = *str++;
+			token[i] = '\0';
+		}
+		else
+		{
+			token = malloc(3);
+			if (!token)
+				return (NULL);
 			token[i++] = *str++;
-		token[i] = '\0';
+			if ((*str == '>' && token[0] == '>') || (*str == '<' && token[0] == '<'))
+				token[i++] = *str++;
+			token[i] = '\0';
+		}
 		*input_ptr = str;
 		return (token);
 	}

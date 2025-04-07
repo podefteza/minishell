@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:44:30 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/31 10:42:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/07 13:52:54 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,15 +47,16 @@ int	has_trailing_pipe(char *input)
 	return (0);
 }
 
-char	**split_pipe(char *input)
+char	**split_pipe(char *input, t_shell *shell)
 {
 	char	**commands;
 	int		i;
 	char	*trimmed;
 
-	if (has_trailing_pipe(input))
+	if (has_trailing_pipe(input) || input[0] == '|')
 	{
-		printf("minishell: syntax error: unexpected '|'\n");
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+		shell->exit_status = 2;
 		return (NULL);
 	}
 	commands = ft_split(input, '|');

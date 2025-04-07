@@ -6,26 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/03/31 14:40:17 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:02:45 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int	is_redirection_operator(char *str)
-{
-	if (!str)
-		return (0);
-	if (ft_strncmp(str, "<", 2) == 0)
-		return (1);
-	if (ft_strncmp(str, ">", 2) == 0)
-		return (1);
-	if (ft_strncmp(str, "<<", 3) == 0)
-		return (1);
-	if (ft_strncmp(str, ">>", 3) == 0)
-		return (1);
-	return (0);
-}
 
 int	handle_heredoc(char *delimiter)
 {
@@ -78,15 +63,65 @@ static int	redirect_command(char *op, char *filename, t_shell *shell)
 	return (0);
 }
 
+int	is_redirection_operator(char *str)
+{
+	if (!str)
+		return (0);
+	if (ft_strncmp(str, "<", 2) == 0)
+		return (1);
+	if (ft_strncmp(str, ">", 2) == 0)
+		return (1);
+	if (ft_strncmp(str, "<<", 3) == 0)
+		return (1);
+	if (ft_strncmp(str, ">>", 3) == 0)
+		return (1);
+	return (0);
+}
+
+int	is_invalid_redirection(char *str)
+{
+	int	len;
+
+	if (!str)
+		return (0);
+	if (str[0] == '<' || str[0] == '>')
+	{
+		len = ft_strlen(str);
+		if (len >= 3)
+			return (1);
+		if (len == 2 && str[0] != str[1])
+			return (1);
+	}
+	return (0);
+}
+
 int	handle_redirections(char **args, t_shell *shell)
 {
-	int	i;
-	int	j;
+	int i;
+	int j;
 
 	i = 0;
 	j = 0;
 	while (args[i])
 	{
+		if (is_invalid_redirection(args[i]))
+		{
+			if (!args[i - 1] || ((args[i - 1]) && (ft_strncmp(args[i - 1], "echo", 5) != 0)))
+			{
+				ft_putstr_fd("minishell: syntax error near unexpected token `",
+					STDERR_FILENO);
+				if (ft_strlen(args[i]) == 3)
+					ft_putstr_fd(args[i] + (ft_strlen(args[i]) - 1), STDERR_FILENO);
+				else
+				{
+					ft_putstr_fd(args[i] + (ft_strlen(args[i]) - 1), STDERR_FILENO);
+					ft_putstr_fd(args[i] + (ft_strlen(args[i]) - 1), STDERR_FILENO);
+				}
+				ft_putstr_fd("'\n", STDERR_FILENO);
+				shell->exit_status = 2;
+				return (-1);
+			}
+		}
 		if (is_redirection_operator(args[i]))
 		{
 			if (!args[i + 1])
@@ -107,3 +142,4 @@ int	handle_redirections(char **args, t_shell *shell)
 	shell->exit_status = 0;
 	return (0);
 }
+

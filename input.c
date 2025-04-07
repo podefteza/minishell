@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/04 16:10:30 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/07 15:08:47 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	execute_builtin(char **args, t_shell *shell)
 	int	i;
 
 	i = 0;
-	if (!args || !args[0] || !shell->builtins || !shell)
+	if (!args || !args[0] || !shell)
 		return (0);
 	while (shell->builtins[i].cmd != NULL)
 	{
@@ -171,28 +171,18 @@ int	input_with_echo(char *final_input, char ***args_ptr, t_shell *shell)
 	return (1);
 }
 
-int input_with_pipe(char *final_input, t_shell *shell)
+int	input_with_pipe(char *final_input, t_shell *shell)
 {
-    char **commands;
+	char	**commands;
 
-    if (!ft_strchr(final_input, '|') || !is_pipe_outside_quotes(final_input))
-        return 0;
-
-    commands = split_pipe(final_input);
-    if (!commands)
-        return 1;
-
-    if (ft_strncmp(commands[0], "|", 1) == 0 && ft_strlen(commands[0]) == 1)
-    {
-        printf("minishell: syntax error near unexpected token `|'\n");
-        shell->exit_status = 2;
-        free_array(commands);
-        return 1;
-    }
-
-    execute_pipeline(commands, shell);
-    free_array(commands);
-    return 1;
+	if (!ft_strchr(final_input, '|') || !is_pipe_outside_quotes(final_input))
+		return (0);
+	commands = split_pipe(final_input, shell);
+	if (!commands)
+		return (1);
+	execute_pipeline(commands, shell);
+	free_array(commands);
+	return (1);
 }
 
 void	handle_input(char *input, t_shell *shell)
@@ -204,6 +194,7 @@ void	handle_input(char *input, t_shell *shell)
 	char	*final_input;
 	char	*expanded;
 
+	// if a command is passed to the input with quotes, we assume it is already separated, so "ls -l" or "echo hello world" should not trim to separate arguments
 	handle_signal_status(shell);
 	modified_input = trim_spaces(input);
 	free(input);
@@ -226,7 +217,7 @@ void	handle_input(char *input, t_shell *shell)
 	if (input_with_pipe(final_input, shell))
 	{
 		free(final_input);
-		return;
+		return ;
 	}
 	if (ft_strnstr(final_input, "echo", ft_strlen(final_input))
 		&& input_with_echo(final_input, &args, shell))
@@ -285,9 +276,18 @@ void	handle_input(char *input, t_shell *shell)
 		i++;
 	}
 	if (execute_builtin(args, shell))
+	{
+		free_array(args);
 		return ;
+	}
+	// print args
+	/*z = 0;
+	while(args[z])
+	{
+		printf("arg[%d]: %s\n", z, args[z]);
+		z++;
+	}*/
 	execute_command(args, shell);
-	// if...?
 	if (args)
 		free_array(args);
 }
