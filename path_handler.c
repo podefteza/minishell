@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:13:36 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/08 12:07:21 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/08 14:27:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,10 @@ char	*cmd_is_path(char *cmd, t_shell *shell)
 		return (NULL);
 	if (access(cmd, F_OK))
 	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd, 2);
-		ft_putstr_fd(NFD, 2);
+		//ft_putstr_fd("minishell: ", 2);
+		//ft_putstr_fd(cmd, 2);
+		//ft_putstr_fd(NFD, 2);
+		ft_printf("minishell: %s %s\n", cmd, NFD);
 		shell->exit_status = 127;
 		return (NULL);
 	}

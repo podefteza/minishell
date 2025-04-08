@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/08 12:07:21 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/08 14:27:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <unistd.h>
 //#include <string.h>
 #include "libft/libft/libft.h"
+#include "libft/libft/ft_printf/ft_printf/ft_printf.h"
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/stat.h>
@@ -47,9 +48,9 @@
 #define FALSE 0
 
 #define CNF ": command not found"
-#define IAD ": is a directory\n"
-#define NFD ": No such file or directory\n"
-#define PND ": Permission denied\n"
+#define IAD ": is a directory"
+#define NFD ": No such file or directory"
+#define PND ": Permission denied"
 
 
 

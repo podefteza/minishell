@@ -4,6 +4,8 @@
 >> when we modify shell->envp durint execution (export, unset), do we update it?
 >> add ft_printf to shorten the code
 >> before pushing to vogsphere, delete unnecessary files
+>> change makefile to display on green the messages related to success +++++++++++++ check if the makefile relinks!!!
+
 
 >> minishell_tester: 145/146 on 01/04/2025 12:11
 
