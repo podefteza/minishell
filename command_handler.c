@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 14:49:51 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/08 12:01:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ void	command_not_found(char **args, t_shell *shell)
 	if (shell->exit_status != 42126 && shell->exit_status != 42127)
 	{
 		ft_putstr_fd(args[0], 2);
-		ft_putstr_fd(": command not found", 2);
-		ft_putstr_fd("\n", 2);
+		ft_putstr_fd(CNF, 2);
+		ft_putstr_fd("\n", 2); // check if we can put \n on the header
 		shell->exit_status = 127;
 	}
 	if (shell->exit_status == 42126)
@@ -29,8 +29,8 @@ void	command_not_found(char **args, t_shell *shell)
 
 char	*find_command(char *cmd, t_shell *shell)
 {
-	char	*path;
 	char	*full_path;
+	char	*path;
 
 	full_path = cmd_is_path(cmd, shell);
 	if (full_path)
@@ -54,7 +54,7 @@ void	is_directory(char *full_path, t_shell *shell)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(full_path, 2);
-	ft_putstr_fd(": Is a directory\n", 2);
+	ft_putstr_fd(IAD, 2);
 	shell->exit_status = 126;
 }
 
@@ -75,6 +75,7 @@ void	execute_process(char *full_path, char **args, int is_background,
 		execve(full_path, args, shell->envp);
 		perror("execve");
 		shell->exit_status = 1;
+		free_shell_resources(shell); // FREE SHELL RESOURCES
 		exit(1);
 	}
 	else

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:44:30 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 13:52:54 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/08 11:21:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,32 @@ int	has_trailing_pipe(char *input)
 	return (0);
 }
 
+int	has_invalid_pipe_syntax(char *input)
+{
+	char	*trimmed;
+
+	trimmed = input;
+	while (*trimmed == ' ' || *trimmed == '\t')
+		trimmed++;
+	if (*trimmed == '|')
+		return (1);
+	while (*input)
+	{
+		if (*input == '<' && *(input + 1) == '|')
+			return (1);
+		input++;
+	}
+	return (has_trailing_pipe(input));
+}
+
 char	**split_pipe(char *input, t_shell *shell)
 {
 	char	**commands;
 	int		i;
 	char	*trimmed;
 
-	if (has_trailing_pipe(input) || input[0] == '|')
+	if (has_trailing_pipe(input) || has_invalid_pipe_syntax(input)
+		|| input[0] == '|')
 	{
 		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
 		shell->exit_status = 2;
@@ -71,36 +90,4 @@ char	**split_pipe(char *input, t_shell *shell)
 		i++;
 	}
 	return (commands);
-}
-
-int	setup_pipe(int pipe_fds[2])
-{
-	if (pipe(pipe_fds) == -1)
-	{
-		perror("minishell: pipe");
-		return (-1);
-	}
-	return (0);
-}
-
-int	check_command_access(char **args, t_shell *shell)
-{
-	if (args && args[0] && ft_strncmp(args[0], "cat", 4) == 0 && args[1])
-	{
-		if (access(args[1], F_OK) == -1)
-		{
-			ft_putstr_fd("cat: ", STDERR_FILENO);
-			ft_putstr_fd(args[1], STDERR_FILENO);
-			ft_putstr_fd(": ", STDERR_FILENO);
-			perror("");
-			shell->exit_status = 1;
-			return (0);
-		}
-	}
-	if (args && args[0] && ft_strncmp(args[0], "export", 7) == 0)
-	{
-		shell->exit_status = 1;
-		return (0);
-	}
-	return (1);
 }

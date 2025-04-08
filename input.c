@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 15:08:47 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/08 11:48:41 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,13 +280,6 @@ void	handle_input(char *input, t_shell *shell)
 		free_array(args);
 		return ;
 	}
-	// print args
-	/*z = 0;
-	while(args[z])
-	{
-		printf("arg[%d]: %s\n", z, args[z]);
-		z++;
-	}*/
 	execute_command(args, shell);
 	if (args)
 		free_array(args);

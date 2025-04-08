@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 10:54:06 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 10:57:27 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/07 21:17:33 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ int	handle_exit_in_second_arg(char **args)
 	{
 		ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 		free_array(args);
+		//free_shell_resources(shell); // FREE SHELL RESOURCES
 		exit(2);
 	}
 	if (args[2])

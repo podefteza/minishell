@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 16:02:45 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/08 11:54:33 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	handle_heredoc(char *delimiter)
 	return (open(delimiter, O_RDONLY));
 }
 
-static int	redirect_command(char *op, char *filename, t_shell *shell)
+int	redirect_command(char *op, char *filename, t_shell *shell)
 {
 	int	fd;
 	int	is_output;
@@ -63,6 +63,46 @@ static int	redirect_command(char *op, char *filename, t_shell *shell)
 	return (0);
 }
 
+char	*get_unexpected_redir_token(char *token)
+{
+	static char	single_gt[] = ">";
+	static char	double_gt[] = ">>";
+	static char	single_lt[] = "<";
+	static char	double_lt[] = "<<";
+
+	if (!token)
+		return (NULL);
+	if (ft_strncmp(token, ">>", 3) == 0 && token[2] == '\0')
+		return (double_gt);
+	if (ft_strncmp(token, "<<", 3) == 0 && token[2] == '\0')
+		return (double_lt);
+	if (ft_strncmp(token, ">", 2) == 0 && token[1] == '\0')
+		return (single_gt);
+	if (ft_strncmp(token, "<", 2) == 0 && token[1] == '\0')
+		return (single_lt);
+	if (token[0] == '>')
+	{
+		if (ft_strlen(token) == 3 && token[1] == '>' && token[2] == '>')
+			return (single_gt);
+		else if (ft_strlen(token) > 3)
+			return (double_gt);
+		else if (token[1] == '>')
+			return (double_gt);
+		return (single_gt);
+	}
+	if (token[0] == '<')
+	{
+		if (ft_strlen(token) == 3 && token[1] == '<' && token[2] == '<')
+			return (single_lt);
+		else if (ft_strlen(token) > 3)
+			return (double_lt);
+		else if (token[1] == '<')
+			return (double_lt);
+		return (single_lt);
+	}
+	return (token);
+}
+
 int	is_redirection_operator(char *str)
 {
 	if (!str)
@@ -78,50 +118,32 @@ int	is_redirection_operator(char *str)
 	return (0);
 }
 
-int	is_invalid_redirection(char *str)
+int	is_invalid_redirection(char *token)
 {
-	int	len;
-
-	if (!str)
+	if (!token)
 		return (0);
-	if (str[0] == '<' || str[0] == '>')
+	if ((token[0] == '>' || token[0] == '<') && (token[1] == '>'
+			|| token[1] == '<' || token[1] == '\0'))
 	{
-		len = ft_strlen(str);
-		if (len >= 3)
-			return (1);
-		if (len == 2 && str[0] != str[1])
-			return (1);
+		if ((ft_strncmp(token, ">", 2) == 0 && token[1] == '\0')
+			|| (ft_strncmp(token, ">>", 3) == 0 && token[2] == '\0')
+			|| (ft_strncmp(token, "<", 2) == 0 && token[1] == '\0')
+			|| (ft_strncmp(token, "<<", 3) == 0 && token[2] == '\0'))
+			return (0);
+		return (1);
 	}
 	return (0);
 }
 
 int	handle_redirections(char **args, t_shell *shell)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 0;
 	j = 0;
 	while (args[i])
 	{
-		if (is_invalid_redirection(args[i]))
-		{
-			if (!args[i - 1] || ((args[i - 1]) && (ft_strncmp(args[i - 1], "echo", 5) != 0)))
-			{
-				ft_putstr_fd("minishell: syntax error near unexpected token `",
-					STDERR_FILENO);
-				if (ft_strlen(args[i]) == 3)
-					ft_putstr_fd(args[i] + (ft_strlen(args[i]) - 1), STDERR_FILENO);
-				else
-				{
-					ft_putstr_fd(args[i] + (ft_strlen(args[i]) - 1), STDERR_FILENO);
-					ft_putstr_fd(args[i] + (ft_strlen(args[i]) - 1), STDERR_FILENO);
-				}
-				ft_putstr_fd("'\n", STDERR_FILENO);
-				shell->exit_status = 2;
-				return (-1);
-			}
-		}
 		if (is_redirection_operator(args[i]))
 		{
 			if (!args[i + 1])
@@ -131,9 +153,35 @@ int	handle_redirections(char **args, t_shell *shell)
 				shell->exit_status = 2;
 				return (-1);
 			}
+			// if arg is a redirect command && args + 1 is also a redirect command
+			if (is_redirection_operator(args[i + 1]))
+			{
+				ft_putstr_fd("minishell: syntax error near unexpected token `",
+					STDERR_FILENO);
+				ft_putstr_fd(get_unexpected_redir_token(args[i + 1]),
+					STDERR_FILENO);
+				ft_putstr_fd("'\n", STDERR_FILENO);
+				shell->exit_status = 2;
+				return (-1);
+			}
 			if (redirect_command(args[i], args[i + 1], shell) == -1)
 				return (-1);
 			i += 2;
+			//i++;
+		}
+		else if (is_invalid_redirection(args[i]))
+		{
+			if (i == 0 || (i > 0 && ft_strncmp(args[i - 1], "echo", 5) != 0))
+			{
+				ft_putstr_fd("minishell: syntax error near unexpected token `",
+					STDERR_FILENO);
+				ft_putstr_fd(get_unexpected_redir_token(args[i]),
+					STDERR_FILENO);
+				ft_putstr_fd("'\n", STDERR_FILENO);
+				shell->exit_status = 2;
+				return (-1);
+			}
+			args[j++] = args[i++];
 		}
 		else
 			args[j++] = args[i++];
@@ -142,4 +190,3 @@ int	handle_redirections(char **args, t_shell *shell)
 	shell->exit_status = 0;
 	return (0);
 }
-
