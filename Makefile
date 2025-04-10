@@ -1,8 +1,7 @@
 CC = cc
-
 CFLAGS = -Wall -Wextra -Werror
-
 LDFLAGS = -lreadline
+NAME = minishell
 
 SRCS = minishell.c \
 		command_handler.c \
@@ -17,6 +16,7 @@ SRCS = minishell.c \
 		quotes.c \
 		redirections.c \
 		tokenize.c \
+		error.c \
 		./builtins/builtin_setup.c \
 		./builtins/cd/builtin_cd.c \
 		./builtins/cd/builtin_cd_utils.c \
@@ -30,61 +30,38 @@ SRCS = minishell.c \
 		./builtins/unset/builtin_unset.c
 
 OBJ_DIR = obj
-BUILTINS_DIRS = $(OBJ_DIR)/builtins $(OBJ_DIR)/builtins/cd $(OBJ_DIR)/builtins/echo \
-	$(OBJ_DIR)/builtins/env $(OBJ_DIR)/builtins/export $(OBJ_DIR)/builtins/exit \
-	$(OBJ_DIR)/builtins/pwd $(OBJ_DIR)/builtins/unset
+OBJS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))
 
-OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
-NAME = minishell
-
-# Paths to libft and ft_printf
 LIBFT_DIR = ./libft/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-FT_PRINTF_DIR = ./libft/libft/ft_printf/ft_printf  # Adjust path if needed
-FT_PRINTF = $(FT_PRINTF_DIR)/libftprintf.a
+LIBS = -L$(LIBFT_DIR) -lft
 
-# Combined libraries (libft + ft_printf)
-LIBS = -L$(LIBFT_DIR) -lft -L$(FT_PRINTF_DIR) -lftprintf
+OBJ_SUBDIRS = $(sort $(dir $(OBJS)))
 
-all: $(LIBFT) $(FT_PRINTF) $(NAME)
+all: $(LIBFT) $(NAME)
 
-# Build libft (with bonus)
 $(LIBFT):
 	@$(MAKE) -C $(LIBFT_DIR) bonus
 	@echo "Libft compiled successfully."
 
-# Build ft_printf
-$(FT_PRINTF):
-	@$(MAKE) -C $(FT_PRINTF_DIR)
-	@echo "ft_printf compiled successfully."
+$(OBJ_SUBDIRS):
+	@mkdir -p $@
 
-# Create object directories
-$(OBJ_DIR):
-	@mkdir -p $(OBJ_DIR)
-
-$(BUILTINS_DIRS): | $(OBJ_DIR)
-	@mkdir -p $(BUILTINS_DIRS)
-
-# Compile minishell objects
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR) $(BUILTINS_DIRS)
+$(OBJ_DIR)/%.o: %.c | $(OBJ_SUBDIRS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Link minishell with libft + ft_printf
-$(NAME): $(OBJS) $(LIBFT) $(FT_PRINTF)
+$(NAME): $(OBJS) $(LIBFT)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LDFLAGS) $(LIBS)
 	@echo "Minishell compiled successfully."
 
-# Clean everything
 clean:
 	@$(MAKE) -C $(LIBFT_DIR) clean
-	@$(MAKE) -C $(FT_PRINTF_DIR) clean
 	@rm -rf $(OBJ_DIR)
 	@echo "Object files removed."
 
 fclean: clean
 	@$(MAKE) -C $(LIBFT_DIR) fclean
-	@$(MAKE) -C $(FT_PRINTF_DIR) fclean
 	@rm -f $(NAME)
 	@echo "Executable and libraries removed."
 

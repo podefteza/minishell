@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:28:26 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 11:47:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/10 09:27:45 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	count_quotes(char *input)
 	}
 	if (in_single_quote || in_double_quote)
 	{
-		printf("minishell: syntax error: unclosed quotes\n");
+		ft_puterr("minishell", UNQ, "\n", "");
 		return (1);
 	}
 	return (0);

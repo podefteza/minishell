@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:13:36 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/08 14:27:08 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/10 10:11:37 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,22 +50,17 @@ char	*cmd_is_path(char *cmd, t_shell *shell)
 		return (NULL);
 	if (access(cmd, F_OK))
 	{
-		//ft_putstr_fd("minishell: ", 2);
-		//ft_putstr_fd(cmd, 2);
-		//ft_putstr_fd(NFD, 2);
-		ft_printf("minishell: %s %s\n", cmd, NFD);
+		ft_puterr("minishell: ", cmd, NFD, "\n");
 		shell->exit_status = 127;
 		return (NULL);
 	}
 	if (access(cmd, X_OK))
 	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd, 2);
-		ft_putstr_fd(PND, 2);
+		ft_puterr("minishell: ", cmd, PND, "\n");
 		shell->exit_status = 126;
 		return (NULL);
 	}
-	return (ft_strdup(cmd)); // Return a copy of the valid path
+	return (ft_strdup(cmd));
 }
 
 char	*build_path(char *dir, char *cmd)

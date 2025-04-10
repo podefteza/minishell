@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/08 12:01:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/10 10:06:58 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,9 @@ void	command_not_found(char **args, t_shell *shell)
 {
 	if (shell->exit_status != 42126 && shell->exit_status != 42127)
 	{
-		ft_putstr_fd(args[0], 2);
-		ft_putstr_fd(CNF, 2);
-		ft_putstr_fd("\n", 2); // check if we can put \n on the header
+		ft_puterr("minishell: ", args[0], CNF, "\n");
 		shell->exit_status = 127;
 	}
-	if (shell->exit_status == 42126)
-		shell->exit_status = 126;
-	if (shell->exit_status == 42127)
-		shell->exit_status = 127;
 }
 
 char	*find_command(char *cmd, t_shell *shell)
@@ -33,6 +27,8 @@ char	*find_command(char *cmd, t_shell *shell)
 	char	*path;
 
 	full_path = cmd_is_path(cmd, shell);
+	if (shell->exit_status == 126 || shell->exit_status == 127)
+		return (NULL);
 	if (full_path)
 		return (full_path);
 	path = get_path_from_env(shell);
@@ -52,9 +48,7 @@ char	*find_command(char *cmd, t_shell *shell)
 
 void	is_directory(char *full_path, t_shell *shell)
 {
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(full_path, 2);
-	ft_putstr_fd(IAD, 2);
+	ft_puterr("minishell: ", full_path, IAD, "\n");
 	shell->exit_status = 126;
 }
 
@@ -104,6 +98,7 @@ void	execute_command(char **args, t_shell *shell)
 	int			is_background;
 	int			original_stdin;
 	int			original_stdout;
+
 
 	if (!args || !args[0])
 		return ;

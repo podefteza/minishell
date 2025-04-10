@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:32:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/08 11:52:41 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/10 10:13:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int	safe_execute_command(char **args, t_shell *shell)
 		perror(args[0]);
 		free(cmd_path);
 		free_shell_resources(shell); // FREE SHELL RESOURCES
-		exit(126);                   // Command is found but not executable
+		exit(126);
 	}
 	else if (ft_strchr(args[0], '/'))
 	{
@@ -89,9 +89,10 @@ int	safe_execute_command(char **args, t_shell *shell)
 	}
 	else
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(args[0], STDERR_FILENO);
-		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		ft_puterr("minishell: ", args[0], CNF, "\n");
+		//ft_putstr_fd("minishell: ", STDERR_FILENO);
+		//ft_putstr_fd(args[0], STDERR_FILENO);
+		//ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		free_shell_resources(shell); // FREE SHELL RESOURCES
 		exit(127);
 	}

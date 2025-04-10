@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/08 14:27:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/10 10:18:21 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-//#include <string.h>
+//#include "libft/libft/ft_printf/ft_printf/ft_printf.h"
 #include "libft/libft/libft.h"
-#include "libft/libft/ft_printf/ft_printf/ft_printf.h"
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <sys/types.h> // for pid_t
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <time.h>
 // check if all libraries are needed
@@ -48,14 +47,11 @@
 #define FALSE 0
 
 #define CNF ": command not found"
-#define IAD ": is a directory"
+#define IAD ": Is a directory"
 #define NFD ": No such file or directory"
 #define PND ": Permission denied"
-
-
-
-
-
+#define SNT ": syntax error near unexpected token"
+#define UNQ ": syntax error: unclosed quotes"
 
 // GLOBAL VARIABLE
 extern volatile sig_atomic_t	g_signal_status;
@@ -140,6 +136,10 @@ void							is_directory(char *full_path, t_shell *shell);
 void							execute_process(char *full_path, char **args,
 									int is_background, t_shell *shell);
 void							execute_command(char **args, t_shell *shell);
+
+// ../error.c
+void							ft_puterr(char *msg1, char *msg2, char *msg3,
+									char *msg4);
 
 // ../expand_variables.c
 char							*get_shell_name(void);

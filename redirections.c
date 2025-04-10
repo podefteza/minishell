@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/08 11:54:33 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/10 10:15:39 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ int	redirect_command(char *op, char *filename, t_shell *shell)
 		return (-1);
 	if (fd == -1)
 	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(filename);
 		shell->exit_status = 1;
 		return (-1);
@@ -148,18 +149,13 @@ int	handle_redirections(char **args, t_shell *shell)
 		{
 			if (!args[i + 1])
 			{
-				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n",
-					STDERR_FILENO);
+				ft_puterr("minishell", SNT, " `newline'", "\n");
 				shell->exit_status = 2;
 				return (-1);
 			}
-			// if arg is a redirect command && args + 1 is also a redirect command
 			if (is_redirection_operator(args[i + 1]))
 			{
-				ft_putstr_fd("minishell: syntax error near unexpected token `",
-					STDERR_FILENO);
-				ft_putstr_fd(get_unexpected_redir_token(args[i + 1]),
-					STDERR_FILENO);
+				ft_puterr("minishell", SNT, " `", get_unexpected_redir_token(args[i + 1]));
 				ft_putstr_fd("'\n", STDERR_FILENO);
 				shell->exit_status = 2;
 				return (-1);
@@ -167,16 +163,12 @@ int	handle_redirections(char **args, t_shell *shell)
 			if (redirect_command(args[i], args[i + 1], shell) == -1)
 				return (-1);
 			i += 2;
-			//i++;
 		}
 		else if (is_invalid_redirection(args[i]))
 		{
 			if (i == 0 || (i > 0 && ft_strncmp(args[i - 1], "echo", 5) != 0))
 			{
-				ft_putstr_fd("minishell: syntax error near unexpected token `",
-					STDERR_FILENO);
-				ft_putstr_fd(get_unexpected_redir_token(args[i]),
-					STDERR_FILENO);
+				ft_puterr("minishell", SNT, " `", get_unexpected_redir_token(args[i]));
 				ft_putstr_fd("'\n", STDERR_FILENO);
 				shell->exit_status = 2;
 				return (-1);
