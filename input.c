@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/08 11:48:41 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/11 13:41:00 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,37 +53,9 @@ char	*trim_spaces(const char *input)
 	start = 0;
 	while (input[start] == ' ' || input[start] == '\t')
 		start++;
-	end = strlen(input) - 1;
+	end = ft_strlen(input) - 1;
 	while (end > start && (input[end] == ' ' || input[end] == '\t'))
 		end--;
-	trimmed = malloc((end - start + 2) * sizeof(char));
-	if (!trimmed)
-		return (NULL);
-	i = 0;
-	while (start <= end)
-		trimmed[i++] = input[start++];
-	trimmed[i] = '\0';
-	return (trimmed);
-}
-
-char	*trim_quotes(const char *input)
-{
-	int		start;
-	int		end;
-	char	*trimmed;
-	char	quote;
-	int		i;
-
-	if (!input || !*input)
-		return (NULL);
-	start = 0;
-	end = strlen(input) - 1;
-	quote = input[start];
-	if ((quote == '\'' || quote == '\"') && input[end] == quote)
-	{
-		start++;
-		end--;
-	}
 	trimmed = malloc((end - start + 2) * sizeof(char));
 	if (!trimmed)
 		return (NULL);
@@ -128,6 +100,9 @@ int	input_with_echo(char *final_input, char ***args_ptr, t_shell *shell)
 	i = 0;
 	j = 0;
 	if (!ft_strnstr(final_input, "echo", ft_strlen(final_input)))
+		return (0);
+	if ((final_input[0] == '\"' || final_input[0] == '\'')
+			&& final_input[ft_strlen(final_input) - 1] == final_input[0])
 		return (0);
 	raw_args = split_arguments(final_input);
 	if (!raw_args)
@@ -185,36 +160,53 @@ int	input_with_pipe(char *final_input, t_shell *shell)
 	return (1);
 }
 
-void	handle_input(char *input, t_shell *shell)
+char	*check_for_expansion(char *final_input, t_shell *shell)
 {
-	char	**args;
-	char	*modified_input;
-	char	*cleaned_arg;
-	int		i;
-	char	*final_input;
 	char	*expanded;
 
-	// if a command is passed to the input with quotes, we assume it is already separated, so "ls -l" or "echo hello world" should not trim to separate arguments
-	handle_signal_status(shell);
-	modified_input = trim_spaces(input);
-	free(input);
-	if (!modified_input)
-		return ;
-	final_input = trim_quotes(modified_input);
-	free(modified_input);
-	if (!final_input)
-		return ;
-	if (count_quotes(final_input))
-		return ;
 	if (ft_strchr(final_input, '$'))
 	{
 		expanded = input_with_expansion(final_input, shell);
 		free(final_input);
-		final_input = expanded;
+		return (expanded);
 	}
-	if (!final_input)
+	return (final_input);
+}
+
+/*char	**clean_quotes_from_args(char **args)
+{
+	char	*cleaned_arg;
+	int		i;
+
+	printf("clean_quotes_from_args\n");
+
+	if (!args)
+		return (NULL);
+	i = 0;
+	while (args[i])
+	{
+		cleaned_arg = handle_quotes(args[i]);
+		free(args[i]);
+		args[i] = cleaned_arg;
+		i++;
+	}
+	return (args);
+}*/
+
+void	handle_input(char *input, t_shell *shell)
+{
+	char	**args;
+	char	*cleaned_arg;
+	int		i;
+	char	*final_input;
+
+	handle_signal_status(shell);
+	final_input = trim_spaces(input);
+	free(input);
+	if (!final_input || count_quotes(final_input))
 		return ;
-	if (input_with_pipe(final_input, shell))
+	final_input = check_for_expansion(final_input, shell);
+	if (!final_input || input_with_pipe(final_input, shell))
 	{
 		free(final_input);
 		return ;
@@ -235,17 +227,8 @@ void	handle_input(char *input, t_shell *shell)
 			free_array(args);
 			return ;
 		}
-		if (is_echo_command(args[0]))
-		{
-			i = 0;
-			while (args[i])
-			{
-				cleaned_arg = handle_quotes(args[i]);
-				free(args[i]);
-				args[i] = cleaned_arg;
-				i++;
-			}
-		}
+		//if (is_echo_command(args[0]))
+		//	clean_quotes_from_args(args);
 	}
 	else
 	{
@@ -256,17 +239,8 @@ void	handle_input(char *input, t_shell *shell)
 			free_array(args);
 			return ;
 		}
-		if (is_echo_command(args[0]))
-		{
-			i = 0;
-			while (args[i])
-			{
-				cleaned_arg = handle_quotes(args[i]);
-				free(args[i]);
-				args[i] = cleaned_arg;
-				i++;
-			}
-		}
+		//if (is_echo_command(args[0]))
+		//	clean_quotes_from_args(args);
 	}
 	i = 0;
 	while (args[i])

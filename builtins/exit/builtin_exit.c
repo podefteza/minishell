@@ -6,18 +6,18 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 21:18:11 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/11 14:22:16 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-int	builtin_exit_with_code(char **args)
+int	builtin_exit_with_code(char **args, t_shell *shell)
 {
 	if (!args[1] && ft_strlen(args[0]) > 4)
-		return (handle_exit_in_first_arg(args));
+		return (handle_exit_in_first_arg(args, shell));
 	if (args[1])
-		return (handle_exit_in_second_arg(args));
+		return (handle_exit_in_second_arg(args, shell));
 	return (0);
 }
 
@@ -29,7 +29,7 @@ int	builtin_exit(char **args, t_shell *shell)
 		exit_code = 0;
 	else
 	{
-		exit_code = builtin_exit_with_code(args);
+		exit_code = builtin_exit_with_code(args, shell);
 		if (exit_code == -1)
 		{
 			shell->exit_status = 1;

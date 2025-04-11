@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/10 10:06:58 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/11 11:28:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,12 @@ void	execute_process(char *full_path, char **args, int is_background,
 	}
 	if (pid == 0)
 	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		execve(full_path, args, shell->envp);
 		perror("execve");
 		shell->exit_status = 1;
-		free_shell_resources(shell); // FREE SHELL RESOURCES
+		free_shell_resources(shell);
 		exit(1);
 	}
 	else
@@ -85,7 +87,11 @@ void	execute_process(char *full_path, char **args, int is_background,
 			if (WIFEXITED(status))
 				shell->exit_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
+			{
+				if (WTERMSIG(status) == SIGQUIT)
+					write(STDERR_FILENO, "Quit (core dumped)\n", 20);
 				shell->exit_status = 128 + WTERMSIG(status);
+			}
 		}
 	}
 }
@@ -98,7 +104,6 @@ void	execute_command(char **args, t_shell *shell)
 	int			is_background;
 	int			original_stdin;
 	int			original_stdout;
-
 
 	if (!args || !args[0])
 		return ;

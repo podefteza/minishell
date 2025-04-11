@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 15:44:13 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 21:22:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/11 14:22:11 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ void	free_shell_resources(t_shell *shell)
 		while (shell->envp[i] != NULL)
 		{
 			free(shell->envp[i]);
-			shell->envp[i] = NULL;
 			i++;
 		}
 		free(shell->envp);

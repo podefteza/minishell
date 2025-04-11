@@ -1,10 +1,9 @@
 📙 TODO, as stated by the subject:
 >> remove "repetitive" code. some tasks are duplicated in separated functions, like trimming spaces and other special characters.
 >> check ./tester syntax + ./tester os_specific
->> when we modify shell->envp durint execution (export, unset), do we update it?
->> add ft_printf to shorten the code
+>> when we modify shell->envp during execution (export, unset), do we update it?
 >> before pushing to vogsphere, delete unnecessary files
->> change makefile to display on green the messages related to success +++++++++++++ check if the makefile relinks!!!
+>> check if the makefile relinks!!!
 
 
 >> minishell_tester: 145/146 on 01/04/2025 12:11
@@ -259,15 +258,6 @@ Surprise! (or not...)
 ===================================================================================================================================================================
 
 Other tests (waltergcc on GitHub):
-
-exit
--> leaks on main -> run_shell_loop -> handle_input -> malloc // not by exit itself... >>>>>>>> can't replicate this...
-
-ctrl-c in cat without arguments
--> correctly sets exit_status to 130, but duplicates the prompt
-
-ctrl-\ in cat without arguments
--> Quit (core dumped) + exit_status should be 131
 
 "echo Hello World"
 -> should be "minishell: echo Hello World: command not found", instead, the output is [o Hello World"]

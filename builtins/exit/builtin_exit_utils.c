@@ -6,16 +6,17 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 10:54:06 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 21:17:33 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/11 14:22:54 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-int	validate_and_get_exit_code(char *exit_code_str, char **args, int i)
+int	validate_and_get_exit_code(char *exit_code_str, char **args, int i, t_shell *shell)
 {
 	long	exit_code;
 
+	//is validate_and_get_exit_code ever being called?
 	while (exit_code_str[i])
 	{
 		if (!ft_isdigit(exit_code_str[i]))
@@ -23,6 +24,8 @@ int	validate_and_get_exit_code(char *exit_code_str, char **args, int i)
 			ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 			free(exit_code_str);
 			free_array(args);
+			free_shell_resources(shell);
+			// also free_shell_resources?
 			exit(2);
 		}
 		i++;
@@ -32,7 +35,7 @@ int	validate_and_get_exit_code(char *exit_code_str, char **args, int i)
 	return ((unsigned char)exit_code);
 }
 
-int	handle_exit_in_first_arg(char **args)
+int	handle_exit_in_first_arg(char **args, t_shell *shell)
 {
 	int		i;
 	long	exit_code;
@@ -51,7 +54,7 @@ int	handle_exit_in_first_arg(char **args)
 	i = 0;
 	if (exit_code_str[i] == '+' || exit_code_str[i] == '-')
 		i++;
-	exit_code = validate_and_get_exit_code(exit_code_str, args, i);
+	exit_code = validate_and_get_exit_code(exit_code_str, args, i, shell);
 	return (exit_code);
 }
 
@@ -103,7 +106,7 @@ static int	is_overflow(const char *str)
 	return (0);
 }
 
-int	handle_exit_in_second_arg(char **args)
+int	handle_exit_in_second_arg(char **args, t_shell *shell)
 {
 	long exit_code;
 
@@ -111,7 +114,7 @@ int	handle_exit_in_second_arg(char **args)
 	{
 		ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 		free_array(args);
-		//free_shell_resources(shell); // FREE SHELL RESOURCES
+		free_shell_resources(shell);
 		exit(2);
 	}
 	if (args[2])

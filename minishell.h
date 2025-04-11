@@ -6,26 +6,26 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/10 10:18:21 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/11 14:22:10 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft/libft.h"
 #include <errno.h>
+#include <fcntl.h>
 #include <limits.h>
 #include <linux/limits.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <signal.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-//#include "libft/libft/ft_printf/ft_printf/ft_printf.h"
-#include "libft/libft/libft.h"
-#include <fcntl.h>
-#include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <unistd.h>
 // check if all libraries are needed
 
 #define HOSTNAME_MAX 256
@@ -71,6 +71,7 @@ typedef struct s_shell
 	char						*home;
 	char						**envp;
 	int							exit_status;
+	int							is_prompting;
 	pid_t						last_bg_pid;
 	t_builtin					builtins[8];
 }								t_shell;
@@ -112,8 +113,8 @@ char							**add_or_update_env(t_shell *shell,
 int								builtin_exit(char **args, t_shell *shell);
 
 // ../builtins/exit/builtin_exit_utils.c
-int								handle_exit_in_first_arg(char **args);
-int								handle_exit_in_second_arg(char **args);
+int								handle_exit_in_first_arg(char **args, t_shell *shell);
+int								handle_exit_in_second_arg(char **args, t_shell *shell);
 
 // ../builtins/export/builtin_export.c
 int								builtin_export(char **args, t_shell *shell);
