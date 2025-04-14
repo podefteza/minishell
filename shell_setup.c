@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/11 13:53:43 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:27:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,28 +65,47 @@ void	setup_shell(t_shell *shell, char **envp)
 	int	i;
 	int	env_count;
 
+	if (!shell || !envp)
+		return ;
+
 	env_count = 0;
 	user_hostname(shell);
 	while (envp[env_count])
 		env_count++;
+
 	shell->envp = malloc((env_count + 1) * sizeof(char *));
-	if (!shell->envp)
+	shell->export_list = malloc((env_count + 1) * sizeof(char *));
+	if (!shell->envp || !shell->export_list)
+	{
+		free(shell->envp);
+		free(shell->export_list);
+		shell->envp = NULL;
+		shell->export_list = NULL;
 		return ;
+	}
+
 	i = 0;
 	while (i < env_count)
 	{
 		shell->envp[i] = ft_strdup(envp[i]);
-		if (!shell->envp[i])
+		shell->export_list[i] = ft_strdup(envp[i]);
+		if (!shell->envp[i] || !shell->export_list[i])
 		{
 			while (i-- > 0)
+			{
 				free(shell->envp[i]);
+				free(shell->export_list[i]);
+			}
 			free(shell->envp);
+			free(shell->export_list);
 			shell->envp = NULL;
+			shell->export_list = NULL;
 			return ;
 		}
 		i++;
 	}
 	shell->envp[env_count] = NULL;
+	shell->export_list[env_count] = NULL;
 	shell->is_prompting = 0;
 	builtin_setup(shell->builtins);
 }

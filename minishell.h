@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 14:17:38 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:13:58 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ typedef struct s_shell
 	char						hostname[HOSTNAME_MAX];
 	char						*home;
 	char						**envp;
+	char						**export_list;
 	int							exit_status;
 	int							is_prompting;
 	pid_t						last_bg_pid;

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 09:14:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 13:28:08 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:35:38 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	is_valid_identifier(const char *str)
 {
 	int	i;
 
-	if (!str || (!ft_isalpha(str[0]) && str[0] != '_'))
+	if (!str || str[0] == '\0' || (!ft_isalpha(str[0]) && str[0] != '_'))
 		return (FALSE);
 	i = 1;
 	while (str[i])
@@ -44,7 +44,9 @@ void	sort_env(char **envp)
 		i = 0;
 		while (envp[i + 1])
 		{
-			if (strcmp(envp[i], envp[i + 1]) > 0)
+			if (ft_strncmp(envp[i], envp[i + 1],
+					ft_strlen(envp[i]) > ft_strlen(envp[i + 1])
+					? ft_strlen(envp[i]) : ft_strlen(envp[i + 1])) > 0)
 			{
 				temp = envp[i];
 				envp[i] = envp[i + 1];
@@ -56,6 +58,81 @@ void	sort_env(char **envp)
 	}
 }
 
+
+char	*create_export_entry(const char *key, const char *value)
+{
+	char	*tmp;
+	char	*entry;
+
+	if (!value)
+		return (ft_strdup(key));
+	tmp = ft_strjoin(key, "=");
+	if (!value)
+		return (ft_strdup(key));
+	entry = ft_strjoin(tmp, value);
+	free(tmp);
+	return (entry);
+}
+
+int	find_export_var(char **export_list, const char *key)
+{
+	int		i;
+	size_t	key_len;
+
+	if (!export_list || !key)
+		return (-1);
+	key_len = ft_strlen(key);
+	i = 0;
+	while (export_list[i])
+	{
+		if (ft_strncmp(export_list[i], key, key_len) == 0
+			&& (export_list[i][key_len] == '=' || export_list[i][key_len] == '\0'))
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+char	**add_or_update_export_list(char **export_list, const char *key, const char *value)
+{
+	int		existing_index;
+	char	*new_entry;
+	char	**new_list;
+	int		count;
+	int		i;
+
+	existing_index = find_export_var(export_list, key);
+	new_entry = create_export_entry(key, value);
+	if (!new_entry)
+		return (export_list);
+	if (existing_index != -1)
+	{
+		free(export_list[existing_index]);
+		export_list[existing_index] = new_entry;
+		return (export_list);
+	}
+	count = 0;
+	while (export_list && export_list[count])
+		count++;
+	new_list = malloc((count + 2) * sizeof(char *));
+	if (!new_list)
+	{
+		free(new_entry);
+		return (export_list);
+	}
+	i = 0;
+	while (i < count)
+	{
+		new_list[i] = export_list[i];
+		i++;
+	}
+	new_list[i++] = new_entry;
+	new_list[i] = NULL;
+	free(export_list);
+	return (new_list);
+}
+
+
 void	print_export_error(char *arg, t_shell *shell)
 {
 	ft_putstr_fd("minishell: export: `", 2);
@@ -66,27 +143,37 @@ void	print_export_error(char *arg, t_shell *shell)
 
 void	handle_export_assignment(char *arg, t_shell *shell)
 {
+	char	*copy;
 	char	*key;
 	char	*value;
 	char	*equal_sign;
 
-	equal_sign = ft_strchr(arg, '=');
+	copy = ft_strdup(arg);
+	if (!copy)
+		return ;
+	equal_sign = ft_strchr(copy, '=');
 	if (equal_sign)
 	{
 		*equal_sign = '\0';
-		key = arg;
+		key = copy;
 		value = equal_sign + 1;
 		if (!is_valid_identifier(key))
 			print_export_error(arg, shell);
 		else
+		{
+			shell->export_list = add_or_update_export_list(shell->export_list, key, value);
 			shell->envp = add_or_update_env(shell, key, value);
-		*equal_sign = '=';
+		}
 	}
-	else if (is_valid_identifier(arg))
-		shell->envp = add_or_update_env(shell, arg, "");
+	else if (is_valid_identifier(copy))
+		shell->export_list = add_or_update_export_list(shell->export_list, copy, NULL);
 	else
 		print_export_error(arg, shell);
+	free(copy);
 }
+
+
+
 
 int	builtin_export(char **args, t_shell *shell)
 {
@@ -94,16 +181,15 @@ int	builtin_export(char **args, t_shell *shell)
 
 	if (!args[1])
 	{
-		sort_env(shell->envp);
+		sort_env(shell->export_list);
 		i = 0;
-		while (shell->envp[i])
-			printf("declare -x %s\n", shell->envp[i++]);
+		while (shell->export_list[i])
+			printf("declare -x %s\n", shell->export_list[i++]);
 		return (0);
 	}
 	i = 1;
 	while (args[i])
 		handle_export_assignment(args[i++], shell);
-
 	return (shell->exit_status);
 }
 

@@ -299,9 +299,6 @@ echo $"'$USER'"
 																			a
 																			test
 
-cat | cat | ls
--> should list files and open the interactive mode
-	-> just prints files
 
 < .
 -> exits the minishell, should not do anything...
@@ -309,20 +306,7 @@ cat | cat | ls
 with d| or ls | wc |
 -> same as above
 
-ls | wc >
-ls | wc <
-- > memory allocation error
-
 ls | cat << > | wc
-
-export =
-or
-export =test
--> small typo on the error: minishell: export: `': options aren't supported
-	-> it must always be putting the error with the name of the argument export + 2, so in this case where there's just 2 args, it should put what's after the "="
-
-export TEST.=test
--> error message should be "export: `TEST.=test': not a valid identifier"
 
 > *something*
 -> > is the same as "touch", as it creates a file *something*

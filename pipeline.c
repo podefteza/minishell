@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:32:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/10 10:13:08 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:53:50 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,7 @@ void	child_process_work(char **args, int input_fd, int pipe_fds[2],
 	if (redir_status != 0 || !args[0])
 	{
 		free_shell_resources(shell);
-		exit(redir_status != 0 ? shell->exit_status : 0);
+		exit(redir_status != 0 ? shell->exit_status : 0); // cant use this...
 	}
 	args_copy = copy_args(args);
 	if (!args_copy)
