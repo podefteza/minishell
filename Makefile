@@ -1,3 +1,4 @@
+//////////////////teste push
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 LDFLAGS = -lreadline
