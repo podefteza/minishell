@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 15:37:35 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/14 16:49:02 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void	execute_command(char **args, t_shell *shell)
 		args[arg_count - 1] = NULL;
 	}
 	if (!args[0] || args[0][0] == '\0')
-		return ;
+		return;
 	full_path = find_command(args[0], shell);
 	if (!full_path)
 	{

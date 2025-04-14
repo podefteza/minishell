@@ -306,11 +306,6 @@ cat | cat | ls
 < .
 -> exits the minishell, should not do anything...
 
-| (or "|")
--> 	minishell: syntax error: unexpected '|'
-	free(): double free detected in tcache 2
-	Aborted (core dumped)
-
 with d| or ls | wc |
 -> same as above
 
@@ -328,9 +323,6 @@ export =test
 
 export TEST.=test
 -> error message...
-
-cd -
--> go to previous directory
 
 > *something*
 -> > is the same as "touch", as it creates a file *something*
