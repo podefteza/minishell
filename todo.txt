@@ -322,7 +322,7 @@ export =test
 	-> it must always be putting the error with the name of the argument export + 2, so in this case where there's just 2 args, it should put what's after the "="
 
 export TEST.=test
--> error message...
+-> error message should be "export: `TEST.=test': not a valid identifier"
 
 > *something*
 -> > is the same as "touch", as it creates a file *something*
@@ -331,20 +331,16 @@ export TEST.=test
 >> *something*
 -> >> is the same as "append"
 
+> something
+-> keeps on looping....
+
 
 " " | " " | " "
 -> mixes the shell name and tries to open something that does not have permissions, instead of executing command "*empty*" (NULL?)
-
-| command
--> if the first string of the input is a pipe, it should give the error "minishell: syntax error near unexpected token `|'" and exit_status = 2
 
 all syntax errors should set exit_status to 2 (?)
 
 env | env
 -> leaks!!
 
-"          nonexistent    "
--> print must trim spaces
 
-> something
--> breaks....
