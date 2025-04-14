@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/11 14:22:10 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/14 14:17:38 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,10 @@ char							**add_or_update_env(t_shell *shell,
 int								builtin_exit(char **args, t_shell *shell);
 
 // ../builtins/exit/builtin_exit_utils.c
-int								handle_exit_in_first_arg(char **args, t_shell *shell);
-int								handle_exit_in_second_arg(char **args, t_shell *shell);
+int								handle_exit_in_first_arg(char **args,
+									t_shell *shell);
+int								handle_exit_in_second_arg(char **args,
+									t_shell *shell);
 
 // ../builtins/export/builtin_export.c
 int								builtin_export(char **args, t_shell *shell);
@@ -149,6 +151,8 @@ void							expand_handle_quotes(char **input, char **ptr,
 void							expand_process_input(char **input, char **ptr,
 									t_shell *shell, int *in_single_quote);
 char							*expand_variables(char *input, t_shell *shell);
+char							*check_for_expansion(char *final_input,
+									t_shell *shell);
 
 // ../expansions.c
 char							*expand_last_bg_pid(t_shell *shell);

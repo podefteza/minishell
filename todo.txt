@@ -4,6 +4,7 @@
 >> when we modify shell->envp during execution (export, unset), do we update it?
 >> before pushing to vogsphere, delete unnecessary files
 >> check if the makefile relinks!!!
+>> is_redirection_token // is_redirection_operator do the same...
 
 
 >> minishell_tester: 145/146 on 01/04/2025 12:11
@@ -259,22 +260,32 @@ Surprise! (or not...)
 
 Other tests (waltergcc on GitHub):
 
-"echo Hello World"
--> should be "minishell: echo Hello World: command not found", instead, the output is [o Hello World"]
--> same with single quotes, returns [o Hello World']
+echo ~
+-> prints "~" instead of the home directory:
+	-> 	[minishell] carlos-j@DESKTOP-FF2OML1:~/minishell$ echo ~			carlos-j@DESKTOP-FF2OML1:~/minishell$ echo ~
+		~																	/home/carlos-j
+	-> make sure to print the home directory when the argument is just ~, since "echo ~test" prints "~test"
 
-env PATH
--> should display an error message saying env can't be executed with options
-	-> if string after env is not a pipe or redirection symbol, return error message
-	-> env with grep, ok >> leaks with "env | grep USER"
-	-> env with ls, segfault? >> shouldn't do anything...
 
-export NEW_VAR="   -l  |"
--> when echo $NEW_VAR, the result should be "-l |", instead it seems to try to execute -l |
--> echo $NEW_VAR: minishell: syntax error: unexpected '|'
+	-> on check_for_expansion()
+echo ~/test
+-> same as above, but in this case should print the home/user/test directory instead of printing "~/test"
 
--> pwd -L
-	-> should be "minishell: pwd: options aren't supported", but instead just executes pwd and ignores the rest
+echo -n -n -n -n -n Hello World
+-> should just do an echo -n and "ignore" the rest of the -name
+
+echo -nnnnnnnnn Hello World
+-> same as before, should treat it like -n
+
+echo $"'$USER'"
+-> is printing the $
+
+"echo test"
+-> execute command
+
+/bin/echo teste
+-> print text after "echo"
+
 
 -> errors in here_doc <<
 	-> 	[minishell] carlos-j@DESKTOP-FF2OML1:~/minishell$ cat << EOF   		carlos-j@DESKTOP-FF2OML1:~/minishell$ cat << EOF
@@ -291,25 +302,6 @@ export NEW_VAR="   -l  |"
 cat | cat | ls
 -> should list files and open the interactive mode
 	-> just prints files
-
-echo ~
--> prints "~" instead of the home directory:
-	-> 	[minishell] carlos-j@DESKTOP-FF2OML1:~/minishell$ echo ~			carlos-j@DESKTOP-FF2OML1:~/minishell$ echo ~
-		~																	/home/carlos-j
-	-> make sure to print the home directory when the argument is just ~, since "echo ~test" prints "~test"
-
-
-echo ~/test
--> same as above, but in this case should print the home/user/test directory instead of printing "~/test"
-
-echo -n -n -n -n -n Hello World
--> should just do an echo -n and "ignore" the rest of the -name
-
-echo -nnnnnnnnn Hello World
--> same as before, should treat it like -n
-
-echo $"'$USER'"
--> is printing the $
 
 < .
 -> exits the minishell, should not do anything...

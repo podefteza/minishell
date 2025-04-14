@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 13:25:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/14 14:34:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,3 +77,30 @@ char	*expand_variables(char *input, t_shell *shell)
 	*ptr = '\0';
 	return (result);
 }
+
+char	*input_with_expansion(char *final_input, t_shell *shell)
+{
+	char	*trimmed;
+
+	final_input = expand_variables(final_input, shell);
+	if (!final_input)
+		return (ft_strdup(""));
+	trimmed = ft_strtrim(final_input, " ");
+	free(final_input);
+	return (trimmed);
+}
+
+char	*check_for_expansion(char *final_input, t_shell *shell)
+{
+	char	*expanded;
+
+	if (ft_strchr(final_input, '$'))
+	{
+		expanded = input_with_expansion(final_input, shell);
+		free(final_input);
+		return (expanded);
+	}
+	return (final_input);
+}
+
+

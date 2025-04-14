@@ -6,11 +6,14 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 09:14:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/08 11:23:41 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/14 13:28:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
+
+// export NEW_VAR without any value should export it but not pass it to env
+// export NEW_VAR2= should export it, export should return NEW_VAR2="", pass it to env as NEW_VAR2=
 
 int	is_valid_identifier(const char *str)
 {
