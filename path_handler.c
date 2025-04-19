@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:13:36 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/11 11:12:29 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/19 11:10:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,16 +66,22 @@ char	*cmd_is_path(char *cmd, t_shell *shell)
 char	*build_path(char *dir, char *cmd)
 {
 	char	*full_path;
+	size_t	total_len;
 
-	full_path = malloc(ft_strlen(dir) + ft_strlen(cmd) + 2);
+	total_len = ft_strlen(dir) + ft_strlen(cmd) + 2;
+	full_path = malloc(total_len);
 	if (!full_path)
 		return (NULL);
-	sprintf(full_path, "%s/%s", dir, cmd);
+	full_path[0] = '\0';
+	ft_strlcpy(full_path, dir, total_len);
+	ft_strlcat(full_path, "/", total_len);
+	ft_strlcat(full_path, cmd, total_len);
 	if (access(full_path, X_OK) == 0)
 		return (full_path);
 	free(full_path);
 	return (NULL);
 }
+
 
 char	*get_path_from_env(t_shell *shell)
 {

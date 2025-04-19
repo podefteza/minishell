@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 21:46:24 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/16 11:30:47 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,11 @@ int	handle_heredoc(char *delimiter)
 	}
 	free(line);
 	close(fd[1]);
-	return (open(delimiter, O_RDONLY));
+	return (fd[0]);
 }
 
-int	redirect_command(char *op, char *filename, t_shell *shell)
+
+int	redirect_command(int redirect, char *op, char *filename, t_shell *shell)
 {
 	int	fd;
 	int	is_output;
@@ -56,7 +57,9 @@ int	redirect_command(char *op, char *filename, t_shell *shell)
 		shell->exit_status = 1;
 		return (-1);
 	}
-	if (is_output)
+	if (!redirect)
+		return 0;
+	if (is_output && redirect)
 		dup2(fd, STDOUT_FILENO);
 	else
 		dup2(fd, STDIN_FILENO);
@@ -160,10 +163,12 @@ int	handle_redirections(char **args, t_shell *shell)
 				shell->exit_status = 2;
 				return (-1);
 			}
-			if (redirect_command(args[i], args[i + 1], shell) == -1)
+			int redirect = (i > 0);
+			if (redirect_command(redirect, args[i], args[i + 1], shell) == -1)
 				return (-1);
 			i += 2;
 		}
+
 		else if (is_invalid_redirection(args[i]))
 		{
 			if (i == 0 || (i > 0 && ft_strncmp(args[i - 1], "echo", 5) != 0))
@@ -179,6 +184,8 @@ int	handle_redirections(char **args, t_shell *shell)
 			args[j++] = args[i++];
 	}
 	args[j] = NULL;
+	if (j == 0)
+		return (0);
 	shell->exit_status = 0;
 	return (0);
 }

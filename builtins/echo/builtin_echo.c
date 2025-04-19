@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/07 15:09:47 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/19 09:51:56 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 int	builtin_echo(char **args, t_shell *shell)
 {
-	int i;
-	int newline;
-	int original_stdout;
-	int original_stdin;
+	int	i;
+	int	newline;
+	int	original_stdout;
+	int	original_stdin;
+	int	j;
 
 	original_stdout = dup(STDOUT_FILENO);
 	original_stdin = dup(STDIN_FILENO);
@@ -36,10 +37,18 @@ int	builtin_echo(char **args, t_shell *shell)
 	}
 	i = 1;
 	newline = 1;
-	if (args[i] && ft_strncmp(args[i], "-n", 3) == 0)
+	while (args[i] && args[i][0] == '-' && args[i][1] != '\0')
 	{
-		newline = 0;
-		i++;
+		j = 1;
+		while (args[i][j] == 'n')
+			j++;
+		if (args[i][j] == '\0')
+		{
+			newline = 0;
+			i++;
+		}
+		else
+			break ;
 	}
 	while (args[i])
 	{

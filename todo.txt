@@ -260,71 +260,41 @@ Surprise! (or not...)
 
 Other tests (waltergcc on GitHub):
 
-echo ~
--> prints "~" instead of the home directory:
-	-> 	[minishell] carlos-j@DESKTOP-FF2OML1:~/minishell$ echo ~			carlos-j@DESKTOP-FF2OML1:~/minishell$ echo ~
-		~																	/home/carlos-j
-	-> make sure to print the home directory when the argument is just ~, since "echo ~test" prints "~test"
-
-
-	-> on check_for_expansion()
-echo ~/test
--> same as above, but in this case should print the home/user/test directory instead of printing "~/test"
-
-echo -n -n -n -n -n Hello World
--> should just do an echo -n and "ignore" the rest of the -name
-
-echo -nnnnnnnnn Hello World
--> same as before, should treat it like -n
-
-echo $"'$USER'"
--> is printing the $
-
-"echo test"
--> execute command
-
-/bin/echo teste
--> print text after "echo"
-
-
--> errors in here_doc <<
-	-> 	[minishell] carlos-j@DESKTOP-FF2OML1:~/minishell$ cat << EOF   		carlos-j@DESKTOP-FF2OML1:~/minishell$ cat << EOF
-		> this																> this
-		> is																> is
-		> a																	> a
-		> test																> test
-		> EOF																> EOF
-		EOF: No such file or directory										this
-																			is
-																			a
-																			test
-
-
-< .
--> exits the minishell, should not do anything...
-
-with d| or ls | wc |
--> same as above
-
 ls | cat << > | wc
-
-> *something*
--> > is the same as "touch", as it creates a file *something*
-	-> it works, but after the command is executed, it enters interactive mode, needs ctrl+d to exit
-
->> *something*
--> >> is the same as "append"
-
-> something
--> keeps on looping....
-
+❌? when executing a pipe, if the character next to it is a redirection signal to it, give "syntax error near unexpected token `token'"
+or???? when two pipes are followed = error
 
 " " | " " | " "
--> mixes the shell name and tries to open something that does not have permissions, instead of executing command "*empty*" (NULL?)
+❌ mixes the shell name and tries to open something that does not have permissions, instead of executing command "*empty*" (NULL?)
 
 all syntax errors should set exit_status to 2 (?)
 
 env | env
--> leaks!!
+❌ leaks!!
 
+here_doc with pipe such as "cat << EOF | wc -l"
+❌ freezes...
 
+< Makefile grep NAME | wc -l > out
+❌ freezes...
+
+echo with ~ when the tilde is at the start or end of the echoed string and not followed by /, should stay intact instead of expanding. if the string is "alone", should expand
+	carlos-j@podefteza:~/minishell$ echo ~
+	/home/carlos-j
+	carlos-j@podefteza:~/minishell$ echo ~test
+	~test
+	carlos-j@podefteza:~/minishell$ echo test~
+	test~
+	carlos-j@podefteza:~/minishell$ echo ~/test
+	/home/carlos-j/test
+
+	✔️[minishell] carlos-j@podefteza:~/minishell$ echo ~
+	/home/carlos-j
+	❌[minishell] carlos-j@podefteza:~/minishell$ echo ~test
+	/home/carlos-jtest
+	❌[minishell] carlos-j@podefteza:~/minishell$ echo test~
+	test~
+	✔️[minishell] carlos-j@podefteza:~/minishell$ echo ~/test
+	/home/carlos-j/test
+
+check how " >ls || ls " should be handle (2 pipes??)

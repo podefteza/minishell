@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 21:13:58 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/19 10:52:37 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ int								builtin_cd(char **args, t_shell *shell);
 
 // ../builtins/cd/builtin_cd_utils.c
 void							cd_error(t_shell *shell);
-char							*expand_tilde(char *path);
+char	*expand_tilde_unquoted(char *input);
 
 // ../builtins/echo/builtin_echo.c
 int								builtin_echo(char **args, t_shell *shell);
@@ -159,8 +159,7 @@ char							*check_for_expansion(char *final_input,
 char							*expand_last_bg_pid(t_shell *shell);
 char							*expand_env_variable(char **input,
 									t_shell *shell);
-char							*expand_dollar_sign(char **input,
-									t_shell *shell, pid_t shell_pid);
+char							*expand_dollar_sign(char **input, t_shell *shell);
 
 // ../input.c
 int								is_echo_command(char *cmd);
@@ -175,6 +174,7 @@ int								input_with_echo(char *final_input,
 int								input_with_pipe(char *final_input,
 									t_shell *shell);
 void							handle_input(char *input, t_shell *shell);
+
 
 // path_handler.c
 char							*shorten_path(const char *cwd,
@@ -222,11 +222,11 @@ void							execute_pipeline(char **commands,
 // quotes.c
 int								count_quotes(char *input);
 char							*handle_quotes(char *input);
+int	is_quoted(char *str);
+
 
 // redirections.c
 int								handle_heredoc(char *delimiter);
-int								redirect_command(char *op, char *filename,
-									t_shell *shell);
 char							*get_unexpected_redir_token(char *token);
 int								is_redirection_operator(char *str);
 int								is_invalid_redirection(char *token);

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 21:27:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/19 11:02:21 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,14 +90,55 @@ int	input_with_echo(char *final_input, char ***args_ptr, t_shell *shell)
 	char	**final_args;
 	char	**temp_args;
 	int		new_raw_len;
+	int		has_echo;
+	char	*trimmed;
+	char	*cmd;
+
+	if ((final_input[0] == '\"' || final_input[0] == '\'') && final_input[1] == final_input[0])
+		final_input += 2;
 
 	int i, j, z;
-	new_raw_len = 0;
+	has_echo = 0;
 	if (!ft_strnstr(final_input, "echo", ft_strlen(final_input)))
 		return (0);
+	trimmed = trim_spaces(final_input);
+	if (!trimmed)
+		return (0);
+	if ((trimmed[0] == '"' || trimmed[0] == '\'') && ft_strnstr(trimmed + 1,
+			"echo", ft_strlen(trimmed) - 1) == trimmed + 1)
+	{
+		cmd = malloc(ft_strlen(trimmed) - 1);
+		if (!cmd)
+		{
+			free(trimmed);
+			return (0);
+		}
+		ft_strlcpy(cmd, trimmed + 1, ft_strlen(trimmed) - 1);
+		raw_args = split_arguments(cmd);
+		free(cmd);
+		free(trimmed);
+		if (!raw_args || !raw_args[0])
+		{
+			if (raw_args)
+				free_array(raw_args);
+			return (0);
+		}
+		*args_ptr = raw_args;
+		return (1);
+	}
+	free(trimmed);
+	new_raw_len = 0;
 	raw_args = split_arguments(final_input);
 	if (!raw_args)
 		return (1);
+	if (ft_strncmp(raw_args[0], "echo", 5) == 0 && raw_args[0][4] == '\0')
+		has_echo = 1;
+
+	if (!has_echo)
+	{
+		free_array(raw_args);
+		return (0);
+	}
 	z = 0;
 	while (raw_args[z])
 	{
@@ -169,6 +210,7 @@ int	input_with_pipe(char *final_input, t_shell *shell)
 	return (1);
 }
 
+
 void	handle_input(char *input, t_shell *shell)
 {
 	char	**args;
@@ -181,15 +223,18 @@ void	handle_input(char *input, t_shell *shell)
 	free(input);
 	if (!final_input || count_quotes(final_input))
 		return ;
+	char *tilde_expanded = expand_tilde_unquoted(final_input);
+	free(final_input);
+	final_input = tilde_expanded;
+
 	final_input = check_for_expansion(final_input, shell);
 	if (!final_input || input_with_pipe(final_input, shell))
 	{
 		free(final_input);
 		return ;
 	}
-	// printf("final_input: %s\n", final_input);
-	if (ft_strnstr(final_input, "echo", ft_strlen(final_input))
-		&& input_with_echo(final_input, &args, shell))
+	else if (ft_strnstr(final_input, "echo", ft_strlen(final_input))
+		&& input_with_echo(final_input, &args, shell) && !is_quoted(final_input))
 	{
 		free(final_input);
 		if (!args)
@@ -221,6 +266,16 @@ void	handle_input(char *input, t_shell *shell)
 		cleaned_arg = handle_quotes(args[i]);
 		args[i] = cleaned_arg;
 		i++;
+	}
+	if (args[0] && args[0][0] == '/')
+	{
+		if (access(args[0], F_OK) != 0)
+		{
+			ft_puterr("minishell: ", args[0], ": No such file or directory\n", "");
+			free_array(args);
+			shell->exit_status = 127;
+			return ;
+		}
 	}
 	if (execute_builtin(args, shell))
 	{

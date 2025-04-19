@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 14:34:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/19 10:53:02 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,43 @@ void	expand_process_input(char **input, char **ptr, t_shell *shell,
 {
 	char	*var_value;
 	int		in_double_quote;
-	pid_t	shell_pid;
+	char	quote;
 
-	shell_pid = getpid();
 	in_double_quote = 0;
 	while (**input)
 	{
 		if (**input == '\'' || **input == '\"')
 			expand_handle_quotes(input, ptr, in_single_quote, &in_double_quote);
+		else if (**input == '$' && (*(*input + 1) == '\'' ||
+			*(*input + 1) == '\"') && (*(*input + 2)))
+		{
+			(*input)++;
+			quote = *(*input)++;
+			*(*ptr)++ = quote;
+			while (**input && **input != quote)
+			{
+				if (**input == '$' && !(*in_single_quote))
+				{
+					var_value = expand_dollar_sign(input, shell);
+					if (var_value)
+					{
+						ft_strlcpy(*ptr, var_value, ft_strlen(var_value) + 1);
+						*ptr += ft_strlen(var_value);
+						free(var_value);
+					}
+				}
+				else
+					*(*ptr)++ = *(*input)++;
+			}
+			if (**input == quote)
+			{
+				*(*ptr)++ = quote;
+				(*input)++;
+			}
+		}
 		else if (**input == '$' && !(*in_single_quote))
 		{
-			var_value = expand_dollar_sign(input, shell, shell_pid);
+			var_value = expand_dollar_sign(input, shell);
 			if (var_value)
 			{
 				ft_strlcpy(*ptr, var_value, ft_strlen(var_value) + 1);
@@ -102,5 +128,3 @@ char	*check_for_expansion(char *final_input, t_shell *shell)
 	}
 	return (final_input);
 }
-
-

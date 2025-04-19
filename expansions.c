@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:42:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 14:30:15 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/19 10:52:38 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char	*expand_env_variable(char **input, t_shell *shell)
 	return (ft_strdup(""));
 }
 
-char	*expand_dollar_sign(char **input, t_shell *shell, pid_t shell_pid)
+char	*expand_dollar_sign(char **input, t_shell *shell)
 {
 	char	*var_value;
 	char	*quoted_value;
@@ -63,11 +63,11 @@ char	*expand_dollar_sign(char **input, t_shell *shell, pid_t shell_pid)
 		(*input)++;
 		var_value = ft_itoa(shell->exit_status);
 	}
-	else if (**input == '$')
+	/*else if (**input == '$')
 	{
 		(*input)++;
 		var_value = ft_itoa(shell_pid);
-	}
+	}*/
 	else if (**input == '!')
 	{
 		(*input)++;

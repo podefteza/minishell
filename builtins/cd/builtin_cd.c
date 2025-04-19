@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:00:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 17:30:29 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/19 09:24:07 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ int	builtin_cd(char **args, t_shell *shell)
 	}
 	if (args[1][0] == '~')
 	{
-		expanded_path = expand_tilde(args[1]);
+		expanded_path = expand_tilde_unquoted(args[1]);
 		if (!expanded_path)
 		{
 			shell->exit_status = 1;

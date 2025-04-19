@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:28:26 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/10 09:27:45 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/19 09:29:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,22 @@ int	count_quotes(char *input)
 	}
 	return (0);
 }
+
+int	is_quoted(char *str)
+{
+	int	len;
+
+	if (!str)
+		return (0);
+	len = ft_strlen(str);
+	if (len < 2)
+		return (0);
+	if ((str[0] == '\'' && str[len - 1] == '\'')
+		|| (str[0] == '"' && str[len - 1] == '"'))
+		return (1);
+	return (0);
+}
+
 
 char	*handle_quotes(char *input)
 {
