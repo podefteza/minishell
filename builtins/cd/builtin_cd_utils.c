@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 16:18:48 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/19 09:23:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/21 15:03:39 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ char	*expand_tilde_unquoted(char *input)
 	if (!home)
 		return (ft_strdup(input));
 
-	result = malloc(ft_strlen(input) + (ft_strlen(home) * 2));
+	result = malloc(ft_strlen(input) + ft_strlen(home) + 1);
 	if (!result)
 		return (NULL);
 
@@ -45,7 +45,13 @@ char	*expand_tilde_unquoted(char *input)
 			in_single = !in_single;
 		else if (input[i] == '"' && !in_single)
 			in_double = !in_double;
-		if (input[i] == '~' && !in_single && !in_double && (i == 0 || input[i - 1] == ' '))
+		if (
+			input[i] == '~' &&
+			!in_single &&
+			!in_double &&
+			(i == 0 || input[i - 1] == ' ') &&
+			(input[i + 1] == '\0' || input[i + 1] == '/' || input[i + 1] == ' ')
+		)
 		{
 			int k = 0;
 			while (home[k])

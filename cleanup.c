@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 15:44:13 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 11:04:42 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/21 08:53:30 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,16 @@ void	free_shell_resources(t_shell *shell)
 		}
 		free(shell->envp);
 		shell->envp = NULL;
+	}
+	i = 0;
+	if (shell->export_list)
+	{
+		while (shell->export_list[i] != NULL)
+		{
+			free(shell->export_list[i]);
+			i++;
+		}
+		free(shell->export_list);
+		shell->export_list = NULL;
 	}
 }

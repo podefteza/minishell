@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/19 10:52:37 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/21 14:11:22 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@
 #define UNQ ": syntax error: unclosed quotes"
 
 // GLOBAL VARIABLE
-extern volatile sig_atomic_t	g_signal_status;
+//extern volatile sig_atomic_t	g_signal_status;
+extern int g_signal_status;
 
 struct s_shell;
 
@@ -202,10 +203,8 @@ int								create_pipe_if_needed(char *next_command,
 void							close_fds(int original_stdin,
 									int original_stdout, int pipe_fds[2],
 									char **args);
-int								setup_child_io(int input_fd, int pipe_fds[2]);
 int								error_return(char *message, int ret_value);
-void							child_process_work(char **args, int input_fd,
-									int pipe_fds[2], t_shell *shell);
+
 void							parent_process_work(int *input_fd,
 									int pipe_fds[2], int original_stdin,
 									int original_stdout);
@@ -244,3 +243,6 @@ void							setup_shell(t_shell *shell, char **envp);
 int								count_words(char *input);
 char							*get_next_token(char **input_ptr);
 char							**split_arguments(char *input);
+
+// validate_syntax.c
+int	validate_syntax(char *input, t_shell *shell);

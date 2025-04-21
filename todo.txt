@@ -260,41 +260,37 @@ Surprise! (or not...)
 
 Other tests (waltergcc on GitHub):
 
-ls | cat << > | wc
-❌? when executing a pipe, if the character next to it is a redirection signal to it, give "syntax error near unexpected token `token'"
-or???? when two pipes are followed = error
-
 " " | " " | " "
-❌ mixes the shell name and tries to open something that does not have permissions, instead of executing command "*empty*" (NULL?)
+❌ leaks
 
-all syntax errors should set exit_status to 2 (?)
+***********************
 
 env | env
 ❌ leaks!!
 
+***********************
+
 here_doc with pipe such as "cat << EOF | wc -l"
 ❌ freezes...
+
+***********************
 
 < Makefile grep NAME | wc -l > out
 ❌ freezes...
 
-echo with ~ when the tilde is at the start or end of the echoed string and not followed by /, should stay intact instead of expanding. if the string is "alone", should expand
-	carlos-j@podefteza:~/minishell$ echo ~
-	/home/carlos-j
-	carlos-j@podefteza:~/minishell$ echo ~test
-	~test
-	carlos-j@podefteza:~/minishell$ echo test~
-	test~
-	carlos-j@podefteza:~/minishell$ echo ~/test
-	/home/carlos-j/test
-
-	✔️[minishell] carlos-j@podefteza:~/minishell$ echo ~
-	/home/carlos-j
-	❌[minishell] carlos-j@podefteza:~/minishell$ echo ~test
-	/home/carlos-jtest
-	❌[minishell] carlos-j@podefteza:~/minishell$ echo test~
-	test~
-	✔️[minishell] carlos-j@podefteza:~/minishell$ echo ~/test
-	/home/carlos-j/test
+***********************
 
 check how " >ls || ls " should be handle (2 pipes??)
+
+***********************
+
+check the usage of "continue"
+
+***********************
+
+❌[minishell] carlos-j@podefteza:~/minishell$ export UNO=1 DOS-2 TRES=3 || env | grep TRES
+minishell: syntax error near unexpected token `|'
+
+✔️carlos-j@podefteza:~/minishell/minishell_tester$ export UNO=1 DOS-2 TRES=3 || env | grep TRES
+-bash: export: `DOS-2': not a valid identifier
+TRES=3

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/19 11:02:21 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/21 13:55:42 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,8 +225,13 @@ void	handle_input(char *input, t_shell *shell)
 		return ;
 	char *tilde_expanded = expand_tilde_unquoted(final_input);
 	free(final_input);
-	final_input = tilde_expanded;
 
+	final_input = tilde_expanded;
+	if (validate_syntax(final_input, shell))
+	{
+		free(final_input);
+		return ;
+	}
 	final_input = check_for_expansion(final_input, shell);
 	if (!final_input || input_with_pipe(final_input, shell))
 	{
@@ -250,6 +255,7 @@ void	handle_input(char *input, t_shell *shell)
 			return ;
 		}
 	}
+
 	else
 	{
 		args = split_arguments(final_input);

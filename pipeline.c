@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:32:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 21:53:50 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/21 14:57:56 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ char	**copy_args(char **args)
 	return (copy);
 }
 
+
 int	safe_execute_command(char **args, t_shell *shell)
 {
 	char	*cmd_path;
@@ -71,33 +72,26 @@ int	safe_execute_command(char **args, t_shell *shell)
 	if (cmd_path)
 	{
 		execve(cmd_path, args, shell->envp);
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		perror(args[0]);
+		ft_puterr("minishell: ", args[0], CNF, "\n");
+		shell->exit_status = 127;
 		free(cmd_path);
-		free_shell_resources(shell); // FREE SHELL RESOURCES
-		exit(126);
+		//free_shell_resources(shell); // FREE SHELL RESOURCES
+		//exit(126);
 	}
 	else if (ft_strchr(args[0], '/'))
 	{
 		if (execve(args[0], args, shell->envp) == -1)
 		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			perror(args[0]);
-			free_shell_resources(shell); // FREE SHELL RESOURCES
-			exit(127);
+			ft_puterr("minishell: ", args[0], CNF, "\n");
+			shell->exit_status = 127;
+			//free_shell_resources(shell); // FREE SHELL RESOURCES
+			//exit(127);
 		}
-	}
-	else
-	{
-		ft_puterr("minishell: ", args[0], CNF, "\n");
-		//ft_putstr_fd("minishell: ", STDERR_FILENO);
-		//ft_putstr_fd(args[0], STDERR_FILENO);
-		//ft_putstr_fd(": command not found\n", STDERR_FILENO);
-		free_shell_resources(shell); // FREE SHELL RESOURCES
-		exit(127);
 	}
 	return (0);
 }
+
+
 
 int	setup_io_backups(int *original_stdin, int *original_stdout)
 {
@@ -189,7 +183,7 @@ void	child_process_work(char **args, int input_fd, int pipe_fds[2],
 	}
 	safe_execute_command(args_copy, shell);
 	free_shell_resources(shell);
-	exit(1);
+	exit(shell->exit_status);
 }
 
 void	parent_process_work(int *input_fd, int pipe_fds[2], int original_stdin,
@@ -207,6 +201,17 @@ void	parent_process_work(int *input_fd, int pipe_fds[2], int original_stdin,
 	close(original_stdout);
 }
 
+int	is_empty(const char *str)
+{
+	while (*str)
+	{
+		if (*str != ' ' && *str != '\t')
+			return (0);
+		str++;
+	}
+	return (1);
+}
+
 int	process_command(char **commands, int i, int *input_fd, t_shell *shell)
 {
 	int		pipe_fds[2] = {-1, -1};
@@ -217,7 +222,17 @@ int	process_command(char **commands, int i, int *input_fd, t_shell *shell)
 
 	original_stdin = -1;
 	original_stdout = -1;
-	args = split_arguments(commands[i]);
+	if (is_empty(commands[i]))
+	{
+		args = malloc(sizeof(char *) * 2);
+		if (!args)
+			return (error_return("minishell: memory allocation error\n", -1));
+		args[0] = ft_strdup(commands[i]);
+		args[1] = NULL;
+	}
+	else
+		args = split_arguments(commands[i]);
+
 	if (!args)
 		return (error_return("minishell: memory allocation error\n", -1));
 	if (setup_io_backups(&original_stdin, &original_stdout) == -1

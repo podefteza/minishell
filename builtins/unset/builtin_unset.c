@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 11:22:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/04 16:13:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/21 10:53:20 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,10 @@ void	remove_env_var(t_shell *shell, char *var_name)
 
 void	process_unset_arg(char *arg, t_shell *shell)
 {
+	/*if (!is_valid_identifier(arg))
+		print_unset_error(arg, shell);*/
 	if (!is_valid_identifier(arg))
-		print_unset_error(arg, shell);
+		shell->exit_status = 0;
 	else
 		remove_env_var(shell, arg);
 }

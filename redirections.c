@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/16 11:30:47 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/21 13:55:46 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,7 @@ int	handle_redirections(char **args, t_shell *shell)
 {
 	int	i;
 	int	j;
+
 
 	i = 0;
 	j = 0;

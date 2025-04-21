@@ -17,6 +17,7 @@ SRCS = minishell.c \
 		redirections.c \
 		tokenize.c \
 		error.c \
+		validate_syntax.c \
 		./builtins/builtin_setup.c \
 		./builtins/cd/builtin_cd.c \
 		./builtins/cd/builtin_cd_utils.c \

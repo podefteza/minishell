@@ -6,14 +6,15 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:13:07 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 16:38:16 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/21 09:09:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // ✅ Only one global variable to indicate a received signal is allowed
-volatile sig_atomic_t	g_signal_status = 0;
+//volatile sig_atomic_t	g_signal_status = 0;
+int	g_signal_status = 0;
 
 t_shell	*get_shell_context(t_shell *new_shell)
 {
