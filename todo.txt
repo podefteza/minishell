@@ -1,13 +1,3 @@
-📙 TODO, as stated by the subject:
->> remove "repetitive" code. some tasks are duplicated in separated functions, like trimming spaces and other special characters.
->> check ./tester syntax + ./tester os_specific
->> when we modify shell->envp during execution (export, unset), do we update it?
->> before pushing to vogsphere, delete unnecessary files
->> check if the makefile relinks!!!
->> is_redirection_token // is_redirection_operator do the same...
-
-
->> minishell_tester: 145/146 on 01/04/2025 12:11
 
 ✔️•Display a prompt when waiting for a new command.
 
@@ -274,3 +264,27 @@ check the usage of "continue"
 
 ***********************
 
+LEAKS:
+
+❌ ctrl-c after "cat"
+	+ leaks on exit
+
+❌ cat << EOF | wc -l
+	IF WE CTRL-C, WE CANCEL THE CAT AND THE PROMPT LINE GETS MIXED UP (maybe it is not freeing the input??)
+	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
+
+❌ > file
+create a file (not implemented yet)
+
+os_specific
+❌ export | sort | grep -v SHLVL | grep -v "declare -x _" | grep -v "PS.="
+grep with spaces inside double quotes, should preserve the quotes of the commands
+
+
+📙 TODO, as stated by the subject:
+>> remove "repetitive" code. some tasks are duplicated in separated functions, like trimming spaces and other special characters.
+>> check ./tester syntax + ./tester os_specific
+>> when we modify shell->envp during execution (export, unset), do we update it?
+>> before pushing to vogsphere, delete unnecessary files
+>> check if the makefile relinks!!!
+>> is_redirection_token // is_redirection_operator do the same...
