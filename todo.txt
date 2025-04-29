@@ -270,27 +270,7 @@ env | env
 
 ***********************
 
-here_doc with pipe such as "cat << EOF | wc -l"
-❌ freezes...
-
-***********************
-
-< Makefile grep NAME | wc -l > out
-❌ freezes...
-
-***********************
-
-check how " >ls || ls " should be handle (2 pipes??)
-
-***********************
-
 check the usage of "continue"
 
 ***********************
 
-❌[minishell] carlos-j@podefteza:~/minishell$ export UNO=1 DOS-2 TRES=3 || env | grep TRES
-minishell: syntax error near unexpected token `|'
-
-✔️carlos-j@podefteza:~/minishell/minishell_tester$ export UNO=1 DOS-2 TRES=3 || env | grep TRES
--bash: export: `DOS-2': not a valid identifier
-TRES=3

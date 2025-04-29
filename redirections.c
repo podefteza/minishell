@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/21 13:55:46 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/29 10:55:57 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,12 @@ int	handle_heredoc(char *delimiter)
 {
 	int		fd[2];
 	char	*line;
+
+	// if we execute heredoc with a pipe, maybe we should wait for the end of heredoc to then pipe the result...
+	// without a pipe, heredoc works correctly
+	// with pipe, we can't see the input we're writing to heredoc, but we can do EOF and see the result after the pipe
+	// readline seems to be "reading" but not writing to the terminal in real time
+	// might have to do with the way handle_redirections is called in child_process_work in pipeline.c
 
 	if (pipe(fd) == -1)
 		return (perror("pipe"), -1);

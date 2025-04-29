@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/21 14:11:22 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/28 11:29:31 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+#include <termios.h>
+
 // check if all libraries are needed
 
 #define HOSTNAME_MAX 256
@@ -53,8 +55,8 @@
 #define SNT ": syntax error near unexpected token"
 #define UNQ ": syntax error: unclosed quotes"
 
+
 // GLOBAL VARIABLE
-//extern volatile sig_atomic_t	g_signal_status;
 extern int g_signal_status;
 
 struct s_shell;
@@ -246,3 +248,6 @@ char							**split_arguments(char *input);
 
 // validate_syntax.c
 int	validate_syntax(char *input, t_shell *shell);
+
+// minishell.c
+void	setup_signals(void);
