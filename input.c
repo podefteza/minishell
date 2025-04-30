@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/29 09:26:35 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:16:07 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,7 +255,6 @@ void	handle_input(char *input, t_shell *shell)
 			return ;
 		}
 	}
-
 	else
 	{
 		args = split_arguments(final_input);

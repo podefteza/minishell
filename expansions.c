@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:42:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/19 10:52:38 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:13:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ char	*expand_env_variable(char **input, t_shell *shell)
 char	*expand_dollar_sign(char **input, t_shell *shell)
 {
 	char	*var_value;
-	char	*quoted_value;
+	//char	*quoted_value;
 
 	(*input)++;
 	if (**input == '\0' || **input == ' ' || **input == '\"' || **input == '\'')
@@ -63,11 +63,6 @@ char	*expand_dollar_sign(char **input, t_shell *shell)
 		(*input)++;
 		var_value = ft_itoa(shell->exit_status);
 	}
-	/*else if (**input == '$')
-	{
-		(*input)++;
-		var_value = ft_itoa(shell_pid);
-	}*/
 	else if (**input == '!')
 	{
 		(*input)++;
@@ -80,13 +75,12 @@ char	*expand_dollar_sign(char **input, t_shell *shell)
 	}
 	else
 		var_value = expand_env_variable(input, shell);
-
 	if (!var_value)
 		return (ft_strdup("\"\""));
-
-	quoted_value = ft_strjoin("\"", var_value);
+	// there was a specific case where we needed to add quotes...
+	/*quoted_value = ft_strjoin("\"", var_value);
 	free(var_value);
 	var_value = ft_strjoin(quoted_value, "\"");
-	free(quoted_value);
+	free(quoted_value);*/
 	return (var_value);
 }

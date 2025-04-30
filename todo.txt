@@ -256,6 +256,8 @@ Other tests (waltergcc on GitHub):
 ***********************
 
 env | env
+env | sort
+env | grep USER
 ❌ leaks!!
 
 ***********************
@@ -273,12 +275,11 @@ LEAKS:
 	IF WE CTRL-C, WE CANCEL THE CAT AND THE PROMPT LINE GETS MIXED UP (maybe it is not freeing the input??)
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
 
-❌ > file
-create a file (not implemented yet)
-
 os_specific
 ❌ export | sort | grep -v SHLVL | grep -v "declare -x _" | grep -v "PS.="
 grep with spaces inside double quotes, should preserve the quotes of the commands
+
+=====================
 
 
 📙 TODO, as stated by the subject:
