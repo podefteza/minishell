@@ -6,13 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 14:10:50 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 21:27:29 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 16:22:50 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
-
-// env should only show variables with value. export AAA, since AAA does not have a value, should not be listed in env...
 
 char	*create_env_entry(const char *key, const char *value)
 {
@@ -101,7 +99,7 @@ int	builtin_env(char **args, t_shell *shell)
 	{
 		if (args[i - 1] && !ft_strncmp(args[i - 1], "env", 4))
 			execute_command(args, shell);
-				return(0);
+		return (0);
 		i++;
 	}
 	if (!shell || !shell->envp)

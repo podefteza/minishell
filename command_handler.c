@@ -6,153 +6,84 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/21 13:52:54 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 17:45:42 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	command_not_found(char **args, t_shell *shell)
+static int	io_backup(int *stdin_backup, int *stdout_backup)
 {
-	if (shell->exit_status != 42126 && shell->exit_status != 42127)
-	{
-		ft_puterr("minishell: ", args[0], CNF, "\n");
-		shell->exit_status = 127;
-	}
+	*stdin_backup = dup(STDIN_FILENO);
+	*stdout_backup = dup(STDOUT_FILENO);
+	if (*stdin_backup == -1 || *stdout_backup == -1)
+		return (-1);
+	return (0);
 }
 
-char	*find_command(char *cmd, t_shell *shell)
+static void	restore_io(int stdin_backup, int stdout_backup)
 {
-	char	*full_path;
-	char	*path;
+	dup2(stdin_backup, STDIN_FILENO);
+	dup2(stdout_backup, STDOUT_FILENO);
+	close(stdin_backup);
+	close(stdout_backup);
+}
 
-	full_path = cmd_is_path(cmd, shell);
-	if (shell->exit_status == 126 || shell->exit_status == 127)
-		return (NULL);
-	if (full_path)
-		return (full_path);
-	path = get_path_from_env(shell);
-	if (!path)
+static int	handle_background(char **args, int arg_count)
+{
+	if (arg_count > 0 && ft_strncmp(args[arg_count - 1], "&", 2) == 0)
 	{
-		command_not_found(&cmd, shell);
-		return (NULL);
+		free(args[arg_count - 1]);
+		args[arg_count - 1] = NULL;
+		return (1);
 	}
-	full_path = search_in_path(path, cmd);
+	return (0);
+}
+
+static char	*validate_and_find_command(char **args, t_shell *shell)
+{
+	char		*full_path;
+	struct stat	st;
+
+	if (!args[0] || args[0][0] == '\0')
+		return (NULL);
+	full_path = find_command(args[0], shell);
 	if (!full_path)
+		return (NULL);
+	if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode))
 	{
-		command_not_found(&cmd, shell);
+		is_directory(full_path, shell);
+		free(full_path);
 		return (NULL);
 	}
 	return (full_path);
 }
 
-void	is_directory(char *full_path, t_shell *shell)
-{
-	ft_puterr("minishell: ", full_path, IAD, "\n");
-	shell->exit_status = 126;
-}
-
-void	execute_process(char *full_path, char **args, int is_background,
-		t_shell *shell)
-{
-	pid_t	pid;
-	int		status;
-
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("fork");
-		return ;
-	}
-	if (pid == 0)
-	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		execve(full_path, args, shell->envp);
-		perror("execve");
-		shell->exit_status = 1;
-		free_shell_resources(shell);
-		exit(1);
-	}
-	else
-	{
-		if (is_background)
-		{
-			shell->last_bg_pid = pid;
-			printf("[%d] %s started in background\n", pid, args[0]);
-		}
-		else
-		{
-			waitpid(pid, &status, 0);
-			if (WIFEXITED(status))
-				shell->exit_status = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-			{
-				if (WTERMSIG(status) == SIGQUIT)
-					write(STDERR_FILENO, "Quit (core dumped)\n", 20);
-				shell->exit_status = 128 + WTERMSIG(status);
-			}
-		}
-	}
-}
-
 void	execute_command(char **args, t_shell *shell)
 {
-	char		*full_path;
-	struct stat	st;
-	int			arg_count;
-	int			is_background;
-	int			original_stdin;
-	int			original_stdout;
+	char	*full_path;
+	int		stdin_backup;
+	int		stdout_backup;
+	int		arg_count;
+	int		is_background;
 
-	if (!args || !args[0])
+	if (!args || !args[0] || io_backup(&stdin_backup, &stdout_backup) == -1)
 		return ;
-	original_stdin = dup(STDIN_FILENO);
-	original_stdout = dup(STDOUT_FILENO);
 	if (handle_redirections(args, shell) == -1)
 	{
-		dup2(original_stdin, STDIN_FILENO);
-		dup2(original_stdout, STDOUT_FILENO);
-		close(original_stdin);
-		close(original_stdout);
+		restore_io(stdin_backup, stdout_backup);
 		return ;
 	}
 	arg_count = 0;
 	while (args[arg_count])
 		arg_count++;
-	is_background = 0;
-	if (arg_count > 0 && ft_strncmp(args[arg_count - 1], "&", 2) == 0)
+	is_background = handle_background(args, arg_count);
+	full_path = validate_and_find_command(args, shell);
+	if (full_path)
 	{
-		is_background = 1;
-		free(args[arg_count - 1]);
-		args[arg_count - 1] = NULL;
+		execute_process(full_path, args, is_background, shell);
+		if (full_path != args[0])
+			free(full_path);
 	}
-	if (!args[0] || args[0][0] == '\0')
-		return;
-	full_path = find_command(args[0], shell);
-	if (!full_path)
-	{
-		dup2(original_stdin, STDIN_FILENO);
-		dup2(original_stdout, STDOUT_FILENO);
-		close(original_stdin);
-		close(original_stdout);
-		return ;
-	}
-	if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode))
-	{
-		is_directory(full_path, shell);
-		free(full_path);
-		dup2(original_stdin, STDIN_FILENO);
-		dup2(original_stdout, STDOUT_FILENO);
-		close(original_stdin);
-		close(original_stdout);
-		return ;
-	}
-	execute_process(full_path, args, is_background, shell);
-	if (full_path != args[0])
-		free(full_path);
-	dup2(original_stdin, STDIN_FILENO);
-	dup2(original_stdout, STDOUT_FILENO);
-	close(original_stdin);
-	close(original_stdout);
+	restore_io(stdin_backup, stdout_backup);
 }

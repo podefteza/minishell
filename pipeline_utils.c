@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:44:30 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/10 09:28:28 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 11:59:41 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,29 +65,37 @@ int	has_invalid_pipe_syntax(char *input)
 	return (has_trailing_pipe(input));
 }
 
-char	**split_pipe(char *input, t_shell *shell)
+char **split_pipe(char *input, t_shell *shell)
 {
-	char	**commands;
-	int		i;
-	char	*trimmed;
+    char **commands = NULL;
+    int i;
+    char *trimmed;
 
-	if (has_trailing_pipe(input) || has_invalid_pipe_syntax(input)
-		|| input[0] == '|')
-	{
-		ft_puterr("minishell", SNT, " `|'", "\n");
-		shell->exit_status = 2;
-		return (NULL);
-	}
-	commands = ft_split(input, '|');
-	if (!commands)
-		return (NULL);
-	i = 0;
-	while (commands[i])
-	{
-		trimmed = ft_strtrim(commands[i], " \t");
-		free(commands[i]);
-		commands[i] = trimmed;
-		i++;
-	}
-	return (commands);
+    if (has_trailing_pipe(input) || has_invalid_pipe_syntax(input) || input[0] == '|')
+    {
+        ft_puterr("minishell", SNT, " `|'", "\n");
+        shell->exit_status = 2;
+        return NULL;
+    }
+
+    commands = ft_split(input, '|');
+    if (!commands)
+        return NULL;
+
+    i = 0;
+    while (commands[i])
+    {
+        trimmed = ft_strtrim(commands[i], " \t");
+        if (!trimmed) // Handle strtrim failure
+        {
+            while (i-- > 0)
+                free(commands[i]);
+            free(commands);
+            return NULL;
+        }
+        free(commands[i]);
+        commands[i] = trimmed;
+        i++;
+    }
+    return commands;
 }

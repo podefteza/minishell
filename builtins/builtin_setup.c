@@ -6,12 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 17:04:37 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/04 17:04:43 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 15:29:58 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
 
 void	builtin_setup(t_builtin *builtins)
 {

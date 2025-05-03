@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:32:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/29 11:53:07 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 15:26:24 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,6 @@ int	safe_execute_command(char **args, t_shell *shell)
 		ft_puterr("minishell: ", args[0], CNF, "\n");
 		shell->exit_status = 127;
 		free(cmd_path);
-		// free_shell_resources(shell); // FREE SHELL RESOURCES
-		// exit(126);
 	}
 	else if (ft_strchr(args[0], '/'))
 	{
@@ -83,8 +81,6 @@ int	safe_execute_command(char **args, t_shell *shell)
 		{
 			ft_puterr("minishell: ", args[0], CNF, "\n");
 			shell->exit_status = 127;
-			// free_shell_resources(shell); // FREE SHELL RESOURCES
-			// exit(127);
 		}
 	}
 	return (0);
@@ -170,49 +166,47 @@ int	has_heredoc(char **args)
 	return (0);
 }
 
-void	child_process_work(char **args, int input_fd, int pipe_fds[2],
-		t_shell *shell)
+void child_process_work(char **args, int input_fd, int pipe_fds[2], t_shell *shell)
 {
-	char	**args_copy;
-	int		redir_status;
-	int		heredoc_present;
+    char **args_copy;
+    int redir_status;
+    int heredoc_present;
 
-	signal(SIGPIPE, SIG_DFL);
-	heredoc_present = has_heredoc(args);
-	if (!heredoc_present)
-	{
-		if (setup_child_io(input_fd, pipe_fds) != 0)
-			exit(1);
-	}
-	redir_status = handle_redirections(args, shell);
-	if (redir_status != 0 || !args[0])
-	{
-		free_shell_resources(shell);
-		if (redir_status != 0)
-			exit(shell->exit_status);
-		else
-			exit(0);
-	}
-	if (heredoc_present)
-	{
-		if (setup_child_io(input_fd, pipe_fds) != 0)
-			exit(1);
-	}
-	args_copy = copy_args(args);
-	if (!args_copy)
-	{
-		ft_putstr_fd("minishell: memory allocation error\n", STDERR_FILENO);
-		free_shell_resources(shell);
-		exit(1);
-	}
-	safe_execute_command(args_copy, shell);
-	free_shell_resources(shell);
-	exit(shell->exit_status);
+    signal(SIGPIPE, SIG_DFL);
+    heredoc_present = has_heredoc(args);
+    if (!heredoc_present)
+        if (setup_child_io(input_fd, pipe_fds) != 0)
+            exit(1);
+    redir_status = handle_redirections(args, shell);
+    if (redir_status != 0 || !args[0])
+    {
+        free_shell_resources(shell);
+        if (redir_status != 0)
+            exit(shell->exit_status);
+        else
+            exit(0);
+    }
+    if (heredoc_present)
+        if (setup_child_io(input_fd, pipe_fds) != 0)
+            exit(1);
+    args_copy = copy_args(args);
+	free_array(args);
+    if (!args_copy)
+    {
+        ft_putstr_fd("minishell: memory allocation error\n", STDERR_FILENO);
+        free_shell_resources(shell);
+        exit(1);
+    }
+    safe_execute_command(args_copy, shell);
+    free_array(args_copy);
+    free_shell_resources(shell);
+    exit(shell->exit_status);
 }
 
 void	parent_process_work(int *input_fd, int pipe_fds[2], int original_stdin,
 		int original_stdout)
 {
+
 	if (pipe_fds[1] != -1)
 		close(pipe_fds[1]);
 	if (*input_fd != STDIN_FILENO)
@@ -248,6 +242,7 @@ int	process_command(char **commands, int i, int *input_fd, t_shell *shell)
 	original_stdout = -1;
 	if (is_empty(commands[i]))
 	{
+		// reaches this!
 		args = malloc(sizeof(char *) * 2);
 		if (!args)
 			return (error_return("minishell: memory allocation error\n", -1));
@@ -509,26 +504,29 @@ void	preprocess_redirections(char **commands)
 	}
 }
 
-void	execute_pipeline(char **commands, t_shell *shell)
+void execute_pipeline(char **commands, t_shell *shell)
 {
-	int		input_fd;
-	pid_t	*pids;
-	int		pid_count;
+    int input_fd = STDIN_FILENO;
+    pid_t *pids = malloc(sizeof(pid_t) * (count_commands(commands) + 1));
 
-	input_fd = STDIN_FILENO;
-	pids = malloc(sizeof(pid_t) * (count_commands(commands) + 1));
-	if (!pids)
-		return ;
-	clean_command_args(commands);
-	preprocess_redirections(commands);
-	pid_count = process_commands_in_pipeline(commands, &input_fd, pids, shell);
-	if (pid_count == -1)
-	{
-		free(pids);
-		return ;
-	}
-	wait_for_commands_and_set_status(pids, pid_count, shell);
-	free(pids);
-	if (input_fd != STDIN_FILENO)
+    if (!pids)
+        return;
+
+    clean_command_args(commands);
+    preprocess_redirections(commands);
+
+    int pid_count = process_commands_in_pipeline(commands, &input_fd, pids, shell);
+
+    if (pid_count == -1)
+    {
+        if (input_fd != STDIN_FILENO)
+            close(input_fd);
+        free(pids);
+        return;
+    }
+
+    wait_for_commands_and_set_status(pids, pid_count, shell);
+    free(pids);
+    if (input_fd != STDIN_FILENO)
 		close(input_fd);
 }

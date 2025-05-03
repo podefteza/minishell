@@ -5,6 +5,7 @@ NAME = minishell
 
 SRCS = minishell.c \
 		command_handler.c \
+		command_handler_utils.c \
 		shell_setup.c \
 		expand_variables.c \
 		input.c \
@@ -21,14 +22,19 @@ SRCS = minishell.c \
 		./builtins/builtin_setup.c \
 		./builtins/cd/builtin_cd.c \
 		./builtins/cd/builtin_cd_utils.c \
+		./builtins/cd/builtin_oldpwd.c \
 		./builtins/echo/builtin_echo.c \
 		./builtins/echo/builtin_echo_utils.c \
 		./builtins/env/builtin_env.c \
 		./builtins/export/builtin_export.c \
+		./builtins/export/builtin_export_utils.c \
+		./builtins/export/builtin_export_utils2.c \
 		./builtins/exit/builtin_exit.c \
 		./builtins/exit/builtin_exit_utils.c \
 		./builtins/pwd/builtin_pwd.c \
-		./builtins/unset/builtin_unset.c
+		./builtins/unset/builtin_unset.c \
+		utils_dump.c \
+		process_execution.c
 
 OBJ_DIR = obj
 OBJS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))

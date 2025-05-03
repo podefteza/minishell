@@ -251,6 +251,7 @@ Surprise! (or not...)
 Other tests (waltergcc on GitHub):
 
 " " | " " | " "
+"" | "" | ""
 ❌ leaks
 
 ***********************
@@ -268,8 +269,7 @@ check the usage of "continue"
 
 LEAKS:
 
-❌ ctrl-c after "cat"
-	+ leaks on exit
+❌ "echo hello world"
 
 ❌ cat << EOF | wc -l
 	IF WE CTRL-C, WE CANCEL THE CAT AND THE PROMPT LINE GETS MIXED UP (maybe it is not freeing the input??)
@@ -289,3 +289,10 @@ grep with spaces inside double quotes, should preserve the quotes of the command
 >> before pushing to vogsphere, delete unnecessary files
 >> check if the makefile relinks!!!
 >> is_redirection_token // is_redirection_operator do the same...
+
+
+=====================
+
+io_backup
+restore_io
+^ in command_handler.c, we have similar functions somewhere... make them available to be used on other functions

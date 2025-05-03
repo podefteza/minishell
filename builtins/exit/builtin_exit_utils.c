@@ -6,17 +6,17 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 10:54:06 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/11 14:22:54 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 16:26:09 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-int	validate_and_get_exit_code(char *exit_code_str, char **args, int i, t_shell *shell)
+int	validate_and_get_exit_code(char *exit_code_str, char **args, int i,
+		t_shell *shell)
 {
 	long	exit_code;
 
-	//is validate_and_get_exit_code ever being called?
 	while (exit_code_str[i])
 	{
 		if (!ft_isdigit(exit_code_str[i]))
@@ -25,7 +25,6 @@ int	validate_and_get_exit_code(char *exit_code_str, char **args, int i, t_shell 
 			free(exit_code_str);
 			free_array(args);
 			free_shell_resources(shell);
-			// also free_shell_resources?
 			exit(2);
 		}
 		i++;
@@ -93,22 +92,21 @@ static int	is_overflow(const char *str)
 			sign = -1;
 		i++;
 	}
-	while (str[i])
+	while (str[i++])
 	{
 		if (value > cutoff / 10)
 			return (1);
-		if (value == cutoff / 10 && (unsigned long)(str[i] - '0') > (cutoff % 10
-				+ (sign < 0)))
+		if (value == cutoff / 10 && (unsigned long)(str[i - 1] - '0') > (cutoff
+				% 10 + (sign < 0)))
 			return (1);
-		value = value * 10 + (str[i] - '0');
-		i++;
+		value = value * 10 + (str[i - 1] - '0');
 	}
 	return (0);
 }
 
 int	handle_exit_in_second_arg(char **args, t_shell *shell)
 {
-	long exit_code;
+	long	exit_code;
 
 	if (!is_str_digit(args[1]) || is_overflow(args[1]))
 	{

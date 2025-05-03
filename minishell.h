@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/28 11:29:31 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 17:36:14 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,14 @@ typedef struct s_env
 	struct s_env				*next;
 }								t_env;
 
+
+// utils dump........
+int								is_redirection_token(char *token);
+char	*skip_whitespace(char *str);
+int								is_valid_identifier(const char *str);
+
+
+
 // ../builtins/builtin_setup.c
 void							builtin_setup(t_builtin *builtins);
 
@@ -95,17 +103,23 @@ void							builtin_setup(t_builtin *builtins);
 int								builtin_cd(char **args, t_shell *shell);
 
 // ../builtins/cd/builtin_cd_utils.c
-void							cd_error(t_shell *shell);
 char	*expand_tilde_unquoted(char *input);
 
+// ../builtins/cd/builtin_oldpwd.c
+void	change_to_previous_directory(t_shell *shell);
+
+
 // ../builtins/echo/builtin_echo.c
+char	**handle_echo(char *modified_input, t_shell *shell);
 int								builtin_echo(char **args, t_shell *shell);
 
 // ../builtins/echo/builtin_echo_utils.c
-int								is_redirection_token(char *token);
+
 char							*get_next_token_for_echo(char **str);
-char							**handle_echo(char *modified_input,
-									t_shell *shell);
+int	count_args_for_echo(char *message);
+void	process_echo_tokens(char **args, char *message, t_shell *shell);
+
+
 
 // ../builtins/env/builtin_env.c
 int								builtin_env(char **args, t_shell *shell);
@@ -124,7 +138,17 @@ int								handle_exit_in_second_arg(char **args,
 
 // ../builtins/export/builtin_export.c
 int								builtin_export(char **args, t_shell *shell);
-int								is_valid_identifier(const char *str);
+
+// ../builtins/export/builtin_export_utils.c
+void	print_export_error(char *arg, t_shell *shell);
+void	sort_env(char **envp);
+
+// ../builtins/export/builtin_export_utils2.c
+char	**add_or_update_export_list(char **export_list, const char *key,
+	const char *value);
+
+
+
 
 // ../builtins/export/builtin_pwd.c
 int								builtin_pwd(char **args, t_shell *shell);
@@ -137,12 +161,17 @@ void							free_array(char **array);
 void							free_shell_resources(t_shell *shell);
 
 // ../command_handler.c
+void							execute_command(char **args, t_shell *shell);
+
+// ../command_handler_utils.c
 void							command_not_found(char **args, t_shell *shell);
 char							*find_command(char *cmd, t_shell *shell);
 void							is_directory(char *full_path, t_shell *shell);
-void							execute_process(char *full_path, char **args,
-									int is_background, t_shell *shell);
-void							execute_command(char **args, t_shell *shell);
+
+
+// ../process_execution.c
+void	execute_process(char *full_path, char **args, int is_background,
+	t_shell *shell);
 
 // ../error.c
 void							ft_puterr(char *msg1, char *msg2, char *msg3,

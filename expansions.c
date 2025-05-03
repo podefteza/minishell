@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:42:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/30 12:13:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 17:28:09 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,8 @@ char	*expand_dollar_sign(char **input, t_shell *shell)
 		var_value = expand_env_variable(input, shell);
 	if (!var_value)
 		return (ft_strdup("\"\""));
-	// there was a specific case where we needed to add quotes...
+	// there was a specific case where we needed to add quotes... can't remember where
+
 	/*quoted_value = ft_strjoin("\"", var_value);
 	free(var_value);
 	var_value = ft_strjoin(quoted_value, "\"");

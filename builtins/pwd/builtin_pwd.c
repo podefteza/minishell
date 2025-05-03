@@ -6,16 +6,15 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/14 15:18:30 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 17:18:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-int	builtin_pwd(char **args, t_shell *shell)
+int	validate_pwd_args(char **args, t_shell *shell)
 {
-	char	cwd[PATH_MAX];
-	int		i;
+	int	i;
 
 	i = 0;
 	while (args && args[i])
@@ -25,15 +24,23 @@ int	builtin_pwd(char **args, t_shell *shell)
 			if (args[i][0] == '-' && !is_redirection_operator(args[i])
 				&& ft_strncmp(args[i], "|", 2) != 0)
 			{
-				ft_putstr_fd("minishell: pwd should be executed with no options\n",
-					2);
+				ft_putstr_fd("minishell: pwd: no options supported\n", 2);
 				shell->exit_status = 1;
 				return (1);
 			}
 		}
 		i++;
 	}
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
+	return (0);
+}
+
+int	builtin_pwd(char **args, t_shell *shell)
+{
+	char	cwd[PATH_MAX];
+
+	if (validate_pwd_args(args, shell))
+		return (1);
+	if (getcwd(cwd, sizeof(cwd)))
 	{
 		printf("%s\n", cwd);
 		shell->exit_status = 0;

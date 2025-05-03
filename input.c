@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/30 12:16:07 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/03 15:26:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,6 @@ int	input_with_pipe(char *final_input, t_shell *shell)
 	return (1);
 }
 
-
 void	handle_input(char *input, t_shell *shell)
 {
 	char	**args;
@@ -223,10 +222,11 @@ void	handle_input(char *input, t_shell *shell)
 	free(input);
 	if (!final_input || count_quotes(final_input))
 		return ;
-	char *tilde_expanded = expand_tilde_unquoted(final_input);
+	char *tmp = expand_tilde_unquoted(final_input);
 	free(final_input);
-
-	final_input = tilde_expanded;
+	if (!tmp)
+		return ;
+	final_input = tmp;
 	if (validate_syntax(final_input, shell))
 	{
 		free(final_input);
@@ -236,6 +236,7 @@ void	handle_input(char *input, t_shell *shell)
 	if (!final_input || input_with_pipe(final_input, shell))
 	{
 		free(final_input);
+		// our program ends here...
 		return ;
 	}
 	else if (ft_strnstr(final_input, "echo", ft_strlen(final_input))
