@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 09:39:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/21 10:50:11 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/05 15:07:45 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int	validate_syntax(char *input, t_shell *shell)
 			if (input[i] == '\0' || input[i] == '|' || input[i] == '<'
 				|| input[i] == '>')
 			{
-				syntax_error(&input[i] ? &input[i] : "newline");
+				syntax_error(&input[i] ? &input[i] : "newline");  // cant use ternaries!!
 				shell->exit_status = 2;
 				return (1);
 			}
@@ -88,7 +88,7 @@ int	validate_syntax(char *input, t_shell *shell)
 			i = skip_spaces(input, i);
 			if (input[i] == '\0' || input[i] == '|')
 			{
-				syntax_error(input[i] ? &input[i] : "newline");
+				syntax_error(input[i] ? &input[i] : "newline"); // cant use ternaries!!
 				shell->exit_status = 2;
 				return (1);
 			}

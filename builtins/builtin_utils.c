@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_setup.c                                    :+:      :+:    :+:   */
+/*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 17:04:37 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 15:29:58 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/05 12:10:40 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,28 @@ void	builtin_setup(t_builtin *builtins)
 	builtins[6].func = builtin_exit;
 	builtins[7].cmd = NULL;
 	builtins[7].func = NULL;
+}
+
+int	execute_builtin(char **args, t_shell *shell)
+{
+	int	i;
+
+	i = 0;
+	if (!args || !args[0] || !shell)
+		return (0);
+	while (shell->builtins[i].cmd != NULL)
+	{
+		if (shell->builtins[i].cmd && ft_strncmp(args[0],
+				shell->builtins[i].cmd, ft_strlen(shell->builtins[i].cmd)
+				+ 1) == 0)
+		{
+			if (shell->builtins[i].func)
+			{
+				shell->exit_status = shell->builtins[i].func(args, shell);
+				return (1);
+			}
+		}
+		i++;
+	}
+	return (0);
 }

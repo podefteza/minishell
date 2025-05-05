@@ -6,32 +6,53 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/30 12:13:16 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/05 11:53:09 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*get_shell_name(void)
+void	append_var_value(char **ptr, char *var_value)
 {
-	char	*shell_name;
-
-	shell_name = getenv("_");
-	if (shell_name)
-		return (ft_strdup(shell_name));
-	else
-		return (ft_strdup("shell name is not set"));
+	if (var_value)
+	{
+		ft_strlcpy(*ptr, var_value, ft_strlen(var_value) + 1);
+		*ptr += ft_strlen(var_value);
+		free(var_value);
+	}
 }
 
-void	expand_handle_quotes(char **input, char **ptr, int *in_single,
-		int *in_double)
+void	handle_dollar_inside_quotes(char **input, char **ptr, t_shell *shell)
 {
-	if (**input == '\'' && !(*in_double))
-		*in_single = !(*in_single);
-	else if (**input == '\"' && !(*in_single))
-		*in_double = !(*in_double);
-	*(*ptr)++ = **input;
+	char	*var_value;
+
+	var_value = expand_dollar_sign(input, shell);
+	if (var_value)
+		append_var_value(ptr, var_value);
+	else if (**input)
+		*(*ptr)++ = *(*input)++;
+}
+
+void	expand_dollar_quoted_block(char **input, char **ptr, t_shell *shell,
+		int *in_single_quote)
+{
+	char	quote;
+
 	(*input)++;
+	quote = *(*input)++;
+	*(*ptr)++ = quote;
+	while (**input && **input != quote)
+	{
+		if (**input == '$' && !(*in_single_quote))
+			handle_dollar_inside_quotes(input, ptr, shell);
+		else
+			*(*ptr)++ = *(*input)++;
+	}
+	if (**input == quote)
+	{
+		*(*ptr)++ = quote;
+		(*input)++;
+	}
 }
 
 void	expand_process_input(char **input, char **ptr, t_shell *shell,
@@ -39,49 +60,19 @@ void	expand_process_input(char **input, char **ptr, t_shell *shell,
 {
 	char	*var_value;
 	int		in_double_quote;
-	char	quote;
 
 	in_double_quote = 0;
 	while (**input)
 	{
 		if (**input == '\'' || **input == '\"')
 			expand_handle_quotes(input, ptr, in_single_quote, &in_double_quote);
-		else if (**input == '$' && (*(*input + 1) == '\'' ||
-			*(*input + 1) == '\"') && (*(*input + 2)))
-		{
-			(*input)++;
-			quote = *(*input)++;
-			*(*ptr)++ = quote;
-			while (**input && **input != quote)
-			{
-				if (**input == '$' && !(*in_single_quote))
-				{
-					var_value = expand_dollar_sign(input, shell);
-					if (var_value)
-					{
-						ft_strlcpy(*ptr, var_value, ft_strlen(var_value) + 1);
-						*ptr += ft_strlen(var_value);
-						free(var_value);
-					}
-				}
-				else
-					*(*ptr)++ = *(*input)++;
-			}
-			if (**input == quote)
-			{
-				*(*ptr)++ = quote;
-				(*input)++;
-			}
-		}
+		else if (**input == '$' && (*(*input + 1) == '\''
+				|| *(*input + 1) == '\"') && (*(*input + 2)))
+			expand_dollar_quoted_block(input, ptr, shell, in_single_quote);
 		else if (**input == '$' && !(*in_single_quote))
 		{
 			var_value = expand_dollar_sign(input, shell);
-			if (var_value)
-			{
-				ft_strlcpy(*ptr, var_value, ft_strlen(var_value) + 1);
-				*ptr += ft_strlen(var_value);
-				free(var_value);
-			}
+			append_var_value(ptr, var_value);
 		}
 		else
 			*(*ptr)++ = *(*input)++;
@@ -102,29 +93,4 @@ char	*expand_variables(char *input, t_shell *shell)
 	expand_process_input(&input, &ptr, shell, &in_single_quote);
 	*ptr = '\0';
 	return (result);
-}
-
-char	*input_with_expansion(char *final_input, t_shell *shell)
-{
-	char	*trimmed;
-
-	final_input = expand_variables(final_input, shell);
-	if (!final_input)
-		return (ft_strdup(""));
-	trimmed = ft_strtrim(final_input, " ");
-	free(final_input);
-	return (trimmed);
-}
-
-char	*check_for_expansion(char *final_input, t_shell *shell)
-{
-	char	*expanded;
-
-	if (ft_strchr(final_input, '$'))
-	{
-		expanded = input_with_expansion(final_input, shell);
-		free(final_input);
-		return (expanded);
-	}
-	return (final_input);
 }

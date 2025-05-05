@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 17:29:00 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 17:35:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/05 11:42:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,6 @@
 
 void	command_not_found(char **args, t_shell *shell)
 {
-	// why was that necessary??
-	/*if (shell->exit_status != 42126 && shell->exit_status != 42127)
-	{
-		ft_puterr("minishell: ", args[0], CNF, "\n");
-		shell->exit_status = 127;
-	}*/
 	ft_puterr("minishell: ", args[0], CNF, "\n");
 	shell->exit_status = 127;
 }

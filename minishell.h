@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 17:36:14 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/05 14:58:57 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,9 @@ int								is_valid_identifier(const char *str);
 
 
 
-// ../builtins/builtin_setup.c
+// ../builtins/builtin_utils.c
 void							builtin_setup(t_builtin *builtins);
+int	execute_builtin(char **args, t_shell *shell);
 
 // ../builtins/cd/builtin_cd.c
 int								builtin_cd(char **args, t_shell *shell);
@@ -194,11 +195,6 @@ char							*expand_env_variable(char **input,
 char							*expand_dollar_sign(char **input, t_shell *shell);
 
 // ../input.c
-int								is_echo_command(char *cmd);
-int								execute_builtin(char **args, t_shell *shell);
-char							*trim_spaces(const char *input);
-char							*trim_quotes(const char *input);
-void							handle_signal_status(t_shell *shell);
 char							*input_with_expansion(char *final_input,
 									t_shell *shell);
 int								input_with_echo(char *final_input,
@@ -207,6 +203,18 @@ int								input_with_pipe(char *final_input,
 									t_shell *shell);
 void							handle_input(char *input, t_shell *shell);
 
+// ../input_utils.c
+char							*trim_spaces(const char *input);
+void							handle_signal_status(t_shell *shell);
+int	is_empty_quoted_string(const char *str);
+char	**handle_echo_or_export(char *input, t_shell *shell);
+
+
+// ../input_parsing.c
+char	*process_initial_input(char *input);
+char	*process_input_for_execution(char *input, t_shell *shell);
+char	**parse_command_arguments(char *input, t_shell *shell);
+void	clean_arguments(char **args);
 
 // path_handler.c
 char							*shorten_path(const char *cwd,
@@ -280,3 +288,17 @@ int	validate_syntax(char *input, t_shell *shell);
 
 // minishell.c
 void	setup_signals(void);
+
+// signals.c
+t_shell	*get_shell_context(t_shell *new_shell);
+void	setup_signals(void);
+void	handle_signal(int sig, siginfo_t *info, void *context);
+
+// shell_loop.c
+void	run_shell_loop(t_shell *shell);
+
+// redirections_utils.c
+int	is_redirection_operator(char *str);
+int	is_invalid_redirection(char *token);
+int	open_redirection_file(char *op, char *filename);
+void	print_redirection_syntax_error(t_shell *shell, char *token);

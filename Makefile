@@ -8,7 +8,11 @@ SRCS = minishell.c \
 		command_handler_utils.c \
 		shell_setup.c \
 		expand_variables.c \
+		expand_variables_utils.c \
 		input.c \
+		input_with_echo.c \
+		input_utils.c \
+		input_parsing.c \
 		path_handler.c \
 		cleanup.c \
 		expansions.c \
@@ -16,10 +20,11 @@ SRCS = minishell.c \
 		pipeline_utils.c \
 		quotes.c \
 		redirections.c \
+		redirections_utils.c \
 		tokenize.c \
 		error.c \
 		validate_syntax.c \
-		./builtins/builtin_setup.c \
+		./builtins/builtin_utils.c \
 		./builtins/cd/builtin_cd.c \
 		./builtins/cd/builtin_cd_utils.c \
 		./builtins/cd/builtin_oldpwd.c \
@@ -34,7 +39,9 @@ SRCS = minishell.c \
 		./builtins/pwd/builtin_pwd.c \
 		./builtins/unset/builtin_unset.c \
 		utils_dump.c \
-		process_execution.c
+		process_execution.c \
+		shell_loop.c \
+		signals.c
 
 OBJ_DIR = obj
 OBJS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))

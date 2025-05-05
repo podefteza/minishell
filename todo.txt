@@ -290,6 +290,9 @@ grep with spaces inside double quotes, should preserve the quotes of the command
 >> check if the makefile relinks!!!
 >> is_redirection_token // is_redirection_operator do the same...
 
+>> check if we have for loops anywhere...
+
+>> check if all functions are being used...
 
 =====================
 

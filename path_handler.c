@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:13:36 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/04/19 11:10:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/05 14:34:49 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,7 @@ char	*shorten_path(const char *cwd, const char *home)
 		shortened_path[0] = '~';
 		i = 1;
 		while (cwd[home_len])
-		{
-			shortened_path[i] = cwd[home_len];
-			i++;
-			home_len++;
-		}
-		shortened_path[i] = '\0';
+			shortened_path[i++] = cwd[home_len++];
 	}
 	else
 	{
@@ -39,8 +34,8 @@ char	*shorten_path(const char *cwd, const char *home)
 			shortened_path[i] = cwd[i];
 			i++;
 		}
-		shortened_path[i] = '\0';
 	}
+	shortened_path[i] = '\0';
 	return (shortened_path);
 }
 
@@ -81,7 +76,6 @@ char	*build_path(char *dir, char *cmd)
 	free(full_path);
 	return (NULL);
 }
-
 
 char	*get_path_from_env(t_shell *shell)
 {
