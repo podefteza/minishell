@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 17:29:00 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/05 11:42:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/06 15:12:52 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,12 @@ void	is_directory(char *full_path, t_shell *shell)
 {
 	ft_puterr("minishell: ", full_path, IAD, "\n");
 	shell->exit_status = 126;
+}
+
+void	restore_io(int stdin_backup, int stdout_backup)
+{
+	dup2(stdin_backup, STDIN_FILENO);
+	dup2(stdout_backup, STDOUT_FILENO);
+	close(stdin_backup);
+	close(stdout_backup);
 }

@@ -6,105 +6,100 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:28:26 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 11:23:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/06 16:36:35 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	count_quotes(char *input)
+static int	number_of_quotes(char *input, char quote_type)
 {
-	int	in_single_quote;
-	int	in_double_quote;
+	int	i;
+	int	count;
 
-	in_single_quote = 0;
-	in_double_quote = 0;
-	while (*input)
+	count = 0;
+	i = 0;
+	while (input[i])
 	{
-		if (*input == '\'' && !in_double_quote)
-			in_single_quote = !in_single_quote;
-		else if (*input == '\"' && !in_single_quote)
-			in_double_quote = !in_double_quote;
-		input++;
+		if (input[i] == quote_type)
+			count++;
+		i++;
 	}
-	if (in_single_quote || in_double_quote)
-	{
-		ft_puterr("minishell", UNQ, "\n", "");
-		return (1);
-	}
-	return (0);
+	return (count);
 }
 
-int	is_quoted(char *str)
+static void	handle_single_quote(char c, int *flags, int *j, char *result)
 {
-	int	len;
+	int	in_squote;
+	int	squote_count;
 
-	if (!str)
-		return (0);
-	len = ft_strlen(str);
-	if (len < 2)
-		return (0);
-	if ((str[0] == '\'' && str[len - 1] == '\'')
-		|| (str[0] == '"' && str[len - 1] == '"'))
-		return (1);
-	return (0);
+	in_squote = flags[IN_SQUOTE];
+	squote_count = flags[SQUOTE_COUNT];
+	if (c == '\'' && !flags[IN_DQUOTE])
+	{
+		in_squote = !in_squote;
+		if (squote_count % 2 != 0)
+			result[(*j)++] = c;
+	}
+	flags[IN_SQUOTE] = in_squote;
 }
 
-
-char *handle_quotes(char *input)
+static void	handle_double_quote(char c, int *flags, int *j, char *result)
 {
-    char *result;
-    int i, j;
-    int in_squote, in_dquote;
-    int squote_count, dquote_count;
+	int	in_dquote;
+	int	dquote_count;
 
-    if (!input)
-        return (NULL);
+	in_dquote = flags[IN_DQUOTE];
+	dquote_count = flags[DQUOTE_COUNT];
+	if (c == '"' && !flags[IN_SQUOTE])
+	{
+		in_dquote = !in_dquote;
+		if (dquote_count % 2 != 0)
+			result[(*j)++] = c;
+	}
+	flags[IN_DQUOTE] = in_dquote;
+}
 
-    squote_count = 0;
-    dquote_count = 0;
-    i = 0;
-    while (input[i])
-    {
-        if (input[i] == '\'')
-            squote_count++;
-        else if (input[i] == '"')
-            dquote_count++;
-        i++;
-    }
+static char	*process_quotes(char *input, char *result, int squote_count,
+		int dquote_count)
+{
+	int	i;
+	int	j;
+	int	flags[4];
 
-    result = malloc(ft_strlen(input) + 1);
-    if (!result)
-    {
-        free(input); // Free input if we can't allocate result
-        return (NULL);
-    }
+	i = 0;
+	j = 0;
+	flags[IN_SQUOTE] = FALSE;
+	flags[SQUOTE_COUNT] = squote_count;
+	flags[IN_DQUOTE] = FALSE;
+	flags[DQUOTE_COUNT] = dquote_count;
+	while (input[i])
+	{
+		handle_single_quote(input[i], flags, &j, result);
+		handle_double_quote(input[i], flags, &j, result);
+		if ((input[i] != '\'' || flags[IN_DQUOTE]) && (input[i] != '"'
+				|| flags[IN_SQUOTE]))
+			result[j++] = input[i];
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
+}
 
-    // Rest of the function remains the same
-    i = 0;
-    j = 0;
-    in_squote = 0;
-    in_dquote = 0;
-    while (input[i])
-    {
-        if (input[i] == '\'' && !in_dquote)
-        {
-            in_squote = !in_squote;
-            if (squote_count % 2 != 0)
-                result[j++] = input[i];
-        }
-        else if (input[i] == '"' && !in_squote)
-        {
-            in_dquote = !in_dquote;
-            if (dquote_count % 2 != 0)
-                result[j++] = input[i];
-        }
-        else
-            result[j++] = input[i];
-        i++;
-    }
+char	*handle_quotes(char *input)
+{
+	char	*result;
+	int		squote_count;
+	int		dquote_count;
 
-    result[j] = '\0';
-    free(input);
-    return (result);
+	if (!input)
+		return (NULL);
+	squote_count = number_of_quotes(input, '\'');
+	dquote_count = number_of_quotes(input, '"');
+	result = malloc(ft_strlen(input) + 1);
+	if (!result)
+		return (NULL);
+	result = process_quotes(input, result, squote_count, dquote_count);
+	free(input);
+	return (result);
 }

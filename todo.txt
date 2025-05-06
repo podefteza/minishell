@@ -296,6 +296,10 @@ grep with spaces inside double quotes, should preserve the quotes of the command
 
 =====================
 
+check for static functions and remove them from header file
+
+=====================
+
 io_backup
 restore_io
 ^ in command_handler.c, we have similar functions somewhere... make them available to be used on other functions

@@ -7,6 +7,7 @@ SRCS = minishell.c \
 		command_handler.c \
 		command_handler_utils.c \
 		shell_setup.c \
+		shell_setup_utils.c \
 		expand_variables.c \
 		expand_variables_utils.c \
 		input.c \
@@ -17,13 +18,23 @@ SRCS = minishell.c \
 		cleanup.c \
 		expansions.c \
 		pipeline.c \
-		pipeline_utils.c \
+		execute_child_process.c \
+		execute_parent_process.c \
+		pipe_utils.c \
+		pipe_split.c \
+		pipe_processing.c \
+		pipe_processing_utils.c \
+		pipe_redirection.c \
+		pipe_redirection_utils.c \
 		quotes.c \
+		quotes_utils.c \
 		redirections.c \
 		redirections_utils.c \
 		tokenize.c \
+		tokenize_utils.c \
 		error.c \
 		validate_syntax.c \
+		validate_syntax_utils.c \
 		./builtins/builtin_utils.c \
 		./builtins/cd/builtin_cd.c \
 		./builtins/cd/builtin_cd_utils.c \

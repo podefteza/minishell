@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 17:45:42 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/06 15:12:32 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,6 @@ static int	io_backup(int *stdin_backup, int *stdout_backup)
 	if (*stdin_backup == -1 || *stdout_backup == -1)
 		return (-1);
 	return (0);
-}
-
-static void	restore_io(int stdin_backup, int stdout_backup)
-{
-	dup2(stdin_backup, STDIN_FILENO);
-	dup2(stdout_backup, STDOUT_FILENO);
-	close(stdin_backup);
-	close(stdout_backup);
 }
 
 static int	handle_background(char **args, int arg_count)

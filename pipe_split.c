@@ -1,38 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipeline_utils.c                                   :+:      :+:    :+:   */
+/*   pipe_split.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/19 15:44:30 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/05 14:37:29 by carlos-j         ###   ########.fr       */
+/*   Created: 2025/05/06 13:58:40 by carlos-j          #+#    #+#             */
+/*   Updated: 2025/05/06 14:00:40 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	is_pipe_outside_quotes(char *input)
-{
-	int	in_single_quotes;
-	int	in_double_quotes;
-
-	in_single_quotes = 0;
-	in_double_quotes = 0;
-	while (*input)
-	{
-		if (*input == '\'' && !in_double_quotes)
-			in_single_quotes = !in_single_quotes;
-		else if (*input == '"' && !in_single_quotes)
-			in_double_quotes = !in_double_quotes;
-		else if (*input == '|' && !in_single_quotes && !in_double_quotes)
-			return (1);
-		input++;
-	}
-	return (0);
-}
-
-int	has_trailing_pipe(char *input)
+static int	has_trailing_pipe(char *input)
 {
 	char	*temp;
 
@@ -47,7 +27,7 @@ int	has_trailing_pipe(char *input)
 	return (0);
 }
 
-int	has_invalid_pipe_syntax(char *input)
+static int	has_invalid_pipe_syntax(char *input)
 {
 	char	*trimmed;
 

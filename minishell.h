@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/05 14:58:57 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/06 17:14:28 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,11 @@
 
 #define TRUE 1
 #define FALSE 0
+
+#define IN_SQUOTE    0
+#define SQUOTE_COUNT 1
+#define IN_DQUOTE    2
+#define DQUOTE_COUNT 3
 
 #define CNF ": command not found"
 #define IAD ": Is a directory"
@@ -93,6 +98,7 @@ typedef struct s_env
 int								is_redirection_token(char *token);
 char	*skip_whitespace(char *str);
 int								is_valid_identifier(const char *str);
+int	ft_isspace(int c);
 
 
 
@@ -168,11 +174,14 @@ void							execute_command(char **args, t_shell *shell);
 void							command_not_found(char **args, t_shell *shell);
 char							*find_command(char *cmd, t_shell *shell);
 void							is_directory(char *full_path, t_shell *shell);
+void	restore_io(int stdin_backup, int stdout_backup);
 
 
 // ../process_execution.c
 void	execute_process(char *full_path, char **args, int is_background,
 	t_shell *shell);
+
+
 
 // ../error.c
 void							ft_puterr(char *msg1, char *msg2, char *msg3,
@@ -224,44 +233,63 @@ char							*build_path(char *dir, char *cmd);
 char							*get_path_from_env(t_shell *shell);
 char							*search_in_path(char *path, char *cmd);
 
-// pipeline_utils.c
+// pipe_utils.c
 int								is_pipe_outside_quotes(char *input);
-int								has_trailing_pipe(char *input);
-int								has_invalid_pipe_syntax(char *input);
+
+int	count_commands(char **commands);
+void	clean_command_args(char **commands);
+
+
+// pipe_split.c
 char							**split_pipe(char *input, t_shell *shell);
 
 // pipeline.c
 int								count_commands(char **commands);
-char							**copy_args(char **args);
-int								safe_execute_command(char **args,
-									t_shell *shell);
-int								setup_io_backups(int *original_stdin,
-									int *original_stdout);
-int								create_pipe_if_needed(char *next_command,
-									int pipe_fds[2]);
-void							close_fds(int original_stdin,
-									int original_stdout, int pipe_fds[2],
-									char **args);
-int								error_return(char *message, int ret_value);
 
-void							parent_process_work(int *input_fd,
-									int pipe_fds[2], int original_stdin,
-									int original_stdout);
-int								process_command(char **commands, int i,
-									int *input_fd, t_shell *shell);
+
+// pipe_redirection.c
+void	check_for_redirections(char **commands);
+
+// pipe_redirection_utils.c
+void	move_redirection(char **commands, int i, const char *cmd_start);
+
+// pipe_processing_utils.c
+int	setup_io_backups(int *original_stdin, int *original_stdout);
+int	create_pipe_if_needed(char *next_command, int pipe_fds[2]);
+void	close_fds(int pipe_fds[2], char **args);
+int	error_return(char *message, int ret_value);
+int	is_empty(const char *str);
+
+
+
+
 void							clean_command_args(char **commands);
-int								process_commands_in_pipeline(char **commands,
-									int *input_fd, pid_t *pids, t_shell *shell);
+
 void							wait_for_commands_and_set_status(pid_t *pids,
 									int pid_count, t_shell *shell);
 void							execute_pipeline(char **commands,
 									t_shell *shell);
 
-// quotes.c
+// execute_child_process.c
+void							execute_child_process(char **args,
+									int input_fd, int pipe_fds[2],
+									t_shell *shell);
+
+
+// execute_parent_process.c
+void	execute_parent_process(int *input_fd, int pipe_fds[2]);
+
+// pipe_processing.c
+int								process_command(char **commands, int i,	int *input_fd, t_shell *shell);
+int	process_commands_in_pipeline(char **commands, int *input_fd, pid_t *pids, 	t_shell *shell);
+
+
+// quotes_utils.c
 int								count_quotes(char *input);
-char							*handle_quotes(char *input);
 int	is_quoted(char *str);
 
+// quotes.c
+char							*handle_quotes(char *input);
 
 // redirections.c
 int								handle_heredoc(char *delimiter);
@@ -274,17 +302,25 @@ int								handle_redirections(char **args,
 // shell_setup.c
 void							build_prompt(char *prompt, t_shell *shell,
 									const char *display_path);
+void							setup_shell(t_shell *shell, char **envp);
+
+// shell_setup_utils.c
 void							get_host_name(char *hostname);
 void							user_hostname(t_shell *shell);
-void							setup_shell(t_shell *shell, char **envp);
 
 // tokenize.c
 int								count_words(char *input);
-char							*get_next_token(char **input_ptr);
+
 char							**split_arguments(char *input);
+
+// tokenize_utils.c
+char							*get_next_token(char **input_ptr);
 
 // validate_syntax.c
 int	validate_syntax(char *input, t_shell *shell);
+
+// validate_syntax_utils.c
+void	print_syntax_error(char *token);
 
 // minishell.c
 void	setup_signals(void);
