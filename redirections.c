@@ -77,6 +77,7 @@ int	process_valid_redirection(char **args, int i, t_shell *shell)
 		print_redirection_syntax_error(shell, args[i + 1]);
 		return (-1);
 	}
+	apply_redirection = 0;
 	if ((i > 0)
 		|| (args[i + 2] != NULL && !is_redirection_operator(args[i + 2])))
 		apply_redirection = 1;
