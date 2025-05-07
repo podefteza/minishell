@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/05 15:06:17 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/07 14:19:30 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,9 @@ int	process_valid_redirection(char **args, int i, t_shell *shell)
 		print_redirection_syntax_error(shell, args[i + 1]);
 		return (-1);
 	}
-	apply_redirection = (i > 0);
+	if ((i > 0)
+		|| (args[i + 2] != NULL && !is_redirection_operator(args[i + 2])))
+		apply_redirection = 1;
 	if (redirect_command(apply_redirection, args[i], args[i + 1], shell) == -1)
 		return (-1);
 	return (0);

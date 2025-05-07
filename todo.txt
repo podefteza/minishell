@@ -279,6 +279,9 @@ os_specific
 ❌ export | sort | grep -v SHLVL | grep -v "declare -x _" | grep -v "PS.="
 grep with spaces inside double quotes, should preserve the quotes of the commands
 
+❌ > newfile
+leaks!!
+
 =====================
 
 

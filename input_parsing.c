@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:04:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/05 14:08:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:52:06 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,11 @@ char	**parse_command_arguments(char *input, t_shell *shell)
 {
 	char	**args;
 
-	args = handle_echo_or_export(input, shell);
+	// check if we need to keep this part
+	/*args = handle_echo_or_export(input, shell);
 	if (args)
-		return (args);
+		return (args);*/
+	(void)shell;
 	args = split_arguments(input);
 	free(input);
 	if (!args || !args[0])
