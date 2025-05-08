@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:04:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/07 13:52:06 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/08 13:12:10 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,41 @@ char	*process_initial_input(char *input)
 	return (tmp);
 }
 
+char	*interpret_escapes(const char *input)
+{
+	char	*result;
+	int		i;
+	int		j;
+	int		in_single;
+	int		in_double;
+
+	result = malloc(ft_strlen(input) + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	j = 0;
+	in_single = 0;
+	in_double = 0;
+	while (input[i])
+	{
+		if (input[i] == '\'' && !in_double)
+			in_single = !in_single;
+		else if (input[i] == '"' && !in_single)
+			in_double = !in_double;
+		else if (input[i] == '\\' && input[i + 1] && !in_single)
+		{
+			if (input[i + 1] == '\\' || input[i + 1] == '"'
+				|| input[i + 1] == '\'' || input[i + 1] == '$')
+				result[j++] = input[i++];
+			else
+				i++;
+		}
+		result[j++] = input[i++];
+	}
+	result[j] = '\0';
+	return (result);
+}
+
 char	*process_input_for_execution(char *input, t_shell *shell)
 {
 	if (validate_syntax(input, shell))
@@ -33,6 +68,9 @@ char	*process_input_for_execution(char *input, t_shell *shell)
 		free(input);
 		return (NULL);
 	}
+	input = interpret_escapes(input);
+	if (!input)
+		return (NULL);
 	input = check_for_expansion(input, shell);
 	if (!input || input_with_pipe(input, shell))
 	{
@@ -72,10 +110,9 @@ char	**parse_command_arguments(char *input, t_shell *shell)
 {
 	char	**args;
 
-	// check if we need to keep this part
-	/*args = handle_echo_or_export(input, shell);
+	args = handle_echo_or_export(input, shell);
 	if (args)
-		return (args);*/
+		return (args);
 	(void)shell;
 	args = split_arguments(input);
 	free(input);

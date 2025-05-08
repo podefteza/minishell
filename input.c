@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/07 13:54:08 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/08 13:08:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,23 +55,43 @@ void	execute_final_command(char **args, t_shell *shell)
 		free_array(args);
 }
 
-void	handle_input(char *input, t_shell *shell)
-{
-	char	**args;
-	char	*final_input;
 
-	handle_signal_status(shell);
-	final_input = process_initial_input(input);
-	if (!final_input)
-		return ;
-	final_input = process_input_for_execution(final_input, shell);
-	if (!final_input)
-		return ;
-	args = parse_command_arguments(final_input, shell);
-	if (!args)
-		return ;
-	clean_arguments(args);
-	if (!validate_executable(args, shell))
-		return ;
-	execute_final_command(args, shell);
+
+void handle_input(char *input, t_shell *shell)
+{
+    char    **args;
+    char    *final_input;
+
+    handle_signal_status(shell);
+    final_input = process_initial_input(input);
+    if (!final_input)
+        return;
+   // printf("final_input: %s\n", final_input);
+    final_input = process_input_for_execution(final_input, shell);
+    if (!final_input)
+        return;
+    //printf("final_input: %s\n", final_input);
+    args = parse_command_arguments(final_input, shell);
+    if (!args)
+        return;
+
+    // Print args before cleaning if needed
+    /*for (int i = 0; args[i]; i++)
+    {
+        printf("args[%d]: %s\n", i, args[i]);
+    }*/
+
+    // Use the updated clean_arguments that handles both passes
+    clean_arguments(args);
+
+    // Print args after cleaning if needed
+    /*printf("After cleaning:\n");
+    for (int i = 0; args[i]; i++)
+    {
+        printf("args[%d]: %s\n", i, args[i]);
+    }*/
+
+    if (!validate_executable(args, shell))
+        return;
+    execute_final_command(args, shell);
 }

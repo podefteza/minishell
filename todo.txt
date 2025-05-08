@@ -282,6 +282,22 @@ grep with spaces inside double quotes, should preserve the quotes of the command
 ❌ > newfile
 leaks!!
 
+
+❌ entering a directory with spaces in the name, or executing a file with speces, example:
+[minishell] carlos-j@podefteza:~/minishell$ cd directory\ with\ spaces/
+	minishell: cd: too many arguments
+carlos-j@podefteza:~/minishell$ cd directory\ with\ spaces/
+	carlos-j@podefteza:~/minishell/directory with spaces$
+
+=====================
+
+minishell vs bash differences detected:
+
+❌
+
+
+
+
 =====================
 
 
