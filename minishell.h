@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 16:28:30 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 21:27:52 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ void				free_array(char **array);
 void				free_shell_resources(t_shell *shell);
 
 // ../command_handler.c
-void				execute_command(char **args, t_shell *shell);
+int				execute_command(char **args, t_shell *shell);
 
 // ../command_handler_utils.c
 void				command_not_found(char **args, t_shell *shell);
