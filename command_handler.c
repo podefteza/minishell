@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/07 13:58:49 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 22:51:52 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static char	*validate_and_find_command(char **args, t_shell *shell)
 	return (full_path);
 }
 
-void	execute_command(char **args, t_shell *shell)
+int	execute_command(char **args, t_shell *shell)
 {
 	char	*full_path;
 	int		stdin_backup;
@@ -60,11 +60,11 @@ void	execute_command(char **args, t_shell *shell)
 	int		is_background;
 
 	if (!args || !args[0] || io_backup(&stdin_backup, &stdout_backup) == -1)
-		return ;
+		return (0);
 	if (handle_redirections(args, shell) == -1)
 	{
 		restore_io(stdin_backup, stdout_backup);
-		return ;
+		return (0);
 	}
 	arg_count = 0;
 	while (args[arg_count])
@@ -78,4 +78,5 @@ void	execute_command(char **args, t_shell *shell)
 			free(full_path);
 	}
 	restore_io(stdin_backup, stdout_backup);
+	return (1);
 }

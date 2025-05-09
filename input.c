@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 18:02:57 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 22:50:05 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,15 @@ int	input_with_pipe(char *final_input, t_shell *shell)
 
 	if (!ft_strchr(final_input, '|') || !is_pipe_outside_quotes(final_input))
 		return (0);
-	//printf("debug1\n");
 	commands = split_pipe(final_input, shell);
 	if (!commands)
-		return (1); // maybe return somehting else to trigger that we have to still free final_input
+	{
+		free(final_input); // remove this if we get errors
+		return (1);
+	}
 	free(final_input);
-	final_input = NULL;
 	execute_pipeline(commands, shell);
-	//printf("debug2\n");
-	free_array(commands);
+	free_array(commands); // Free the commands array
 	return (1);
 }
 

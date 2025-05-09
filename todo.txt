@@ -250,23 +250,6 @@ Surprise! (or not...)
 
 Other tests (waltergcc on GitHub):
 
-" " | " " | " "
-"" | "" | ""
-❌ leaks
-
-***********************
-
-env | env
-env | sort
-env | grep USER
-❌ leaks!!
-
-***********************
-
-check the usage of "continue"
-
-***********************
-
 LEAKS:
 
 ❌ cat << EOF | wc -l
@@ -277,14 +260,10 @@ os_specific
 ❌ export | sort | grep -v SHLVL | grep -v "declare -x _" | grep -v "PS.="
 grep with spaces inside double quotes, should preserve the quotes of the commands
 
-❌ > newfile
-
-❌ ls | exit 4
-
-❌ env | grep USER
-
 ❌ errors with pipes, most of times when the file is not found... leaks after "No such file or directory" message
 
+
+❌ still reachable:
 env | sort | grep -v SHLVL | grep -v ^_
 
 export GHOST=123 | env | grep GHOST

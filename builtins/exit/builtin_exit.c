@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 16:26:47 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 22:49:59 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ int	builtin_exit(char **args, t_shell *shell)
 		exit_code = builtin_exit_with_code(args, shell);
 		if (exit_code == -1)
 		{
+			free_array(args);
 			shell->exit_status = 1;
 			return (1);
 		}

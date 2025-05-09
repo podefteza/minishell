@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:28:26 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 11:18:49 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 21:18:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,10 @@ char	*handle_quotes(char *input)
 	dquote_count = number_of_quotes(input, '"');
 	result = malloc(ft_strlen(input) + 1);
 	if (!result)
+	{
+		free(input);
 		return (NULL);
+	}
 	result = process_quotes(input, result, squote_count, dquote_count);
 	free(input);
 	return (result);

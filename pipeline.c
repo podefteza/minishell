@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:32:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 16:27:08 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 18:40:19 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ void	execute_pipeline(char **commands, t_shell *shell)
 	clean_command_args(commands);
 	check_for_redirections(commands);
 	pid_count = process_commands_in_pipeline(commands, &input_fd, pids, shell);
+
 	if (pid_count == -1)
 	{
 		if (input_fd != STDIN_FILENO)

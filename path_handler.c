@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:13:36 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/05 14:34:49 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 21:44:58 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*shorten_path(const char *cwd, const char *home)
 	else
 	{
 		i = 0;
-		while (cwd[i] && i < PATH_MAX - 1)
+		while (i < PATH_MAX - 1 && cwd[i])
 		{
 			shortened_path[i] = cwd[i];
 			i++;

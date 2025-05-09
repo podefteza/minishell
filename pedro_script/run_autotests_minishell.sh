@@ -1,6 +1,6 @@
 #!/bin/bash
 
-test_file="test_commands.txt"
+test_file="test_commands2.txt"
 
 while IFS= read -r command; do
     #echo -e "\n$command"

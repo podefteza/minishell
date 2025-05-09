@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/07 14:19:30 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 22:53:41 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,13 @@ int	handle_redirections(char **args, t_shell *shell)
 		else
 			args[j++] = args[i++];
 	}
-	args[j] = NULL;
+	if (j == 0)
+	{
+		args = NULL;
+		return (-1);
+	}
+	else
+		args[j] = NULL;
 	shell->exit_status = 0;
 	return (0);
 }
