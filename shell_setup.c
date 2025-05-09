@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/06 16:53:38 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:31:58 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	build_prompt(char *prompt, t_shell *shell, const char *display_path)
 	i += ft_strlcpy(prompt + i, shell->hostname, PROMPT_MAX - i);
 	i += ft_strlcpy(prompt + i, RESET ":", PROMPT_MAX - i);
 	i += ft_strlcpy(prompt + i, display_path, PROMPT_MAX - i);
-	i += ft_strlcpy(prompt + i, GREEN "$" RESET " ", PROMPT_MAX - i);
+	ft_strlcpy(prompt + i, GREEN "$" RESET " ", PROMPT_MAX - i);
 }
 
 void	cleanup_and_exit(t_shell *shell)

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 13:58:40 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/06 14:00:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:27:33 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,29 +45,6 @@ static int	has_invalid_pipe_syntax(char *input)
 	return (has_trailing_pipe(input));
 }
 
-static char	**process_commands_in_pipe(char **commands)
-{
-	int		i;
-	char	*trimmed;
-
-	i = 0;
-	while (commands[i])
-	{
-		trimmed = ft_strtrim(commands[i], " \t");
-		if (!trimmed)
-		{
-			while (i-- > 0)
-				free(commands[i]);
-			free(commands);
-			return (NULL);
-		}
-		free(commands[i]);
-		commands[i] = trimmed;
-		i++;
-	}
-	return (commands);
-}
-
 char	**split_pipe(char *input, t_shell *shell)
 {
 	char	**commands;
@@ -82,6 +59,5 @@ char	**split_pipe(char *input, t_shell *shell)
 	commands = ft_split(input, '|');
 	if (!commands)
 		return (NULL);
-	commands = process_commands_in_pipe(commands);
 	return (commands);
 }

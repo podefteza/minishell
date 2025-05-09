@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 11:49:52 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/08 13:09:20 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:46:53 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ char	*input_with_expansion(char *final_input, t_shell *shell)
 	return (trimmed);
 }
 
-char	*check_for_expansion(char *final_input, t_shell *shell)
+/*char	*check_for_expansion(char *final_input, t_shell *shell)
 {
 	char	*expanded;
 	int		i;
@@ -75,4 +75,29 @@ char	*check_for_expansion(char *final_input, t_shell *shell)
 		return (expanded);
 	}
 	return (final_input);
+}*/
+
+char	*check_for_expansion(char *final_input, t_shell *shell)
+{
+	char	*expanded;
+	int		i;
+	int		in_single;
+	int		needs_expansion;
+
+	i = -1;
+	in_single = 0;
+	needs_expansion = 0;
+	while (final_input[++i] && !needs_expansion)
+	{
+		if (final_input[i] == '\'')
+			in_single = !in_single;
+		else if (final_input[i] == '$' && !in_single
+			&& (i == 0 || final_input[i - 1] != '\\'))
+			needs_expansion = 1;
+	}
+	if (!needs_expansion)
+		return (final_input);
+	expanded = input_with_expansion(final_input, shell);
+	free(final_input);
+	return (expanded);
 }

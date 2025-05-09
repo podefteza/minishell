@@ -12,6 +12,7 @@ SRCS = minishell.c \
 		expand_variables_utils.c \
 		input.c \
 		input_with_echo.c \
+		input_with_echo_utils.c \
 		input_utils.c \
 		input_parsing.c \
 		path_handler.c \

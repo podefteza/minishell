@@ -6,11 +6,34 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 12:08:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/05 13:44:17 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:55:03 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+char	*process_initial_input(char *input)
+{
+	char	*final_input;
+	char	*tmp;
+
+	final_input = trim_spaces(input);
+	free(input);
+	if (!final_input || count_quotes(final_input))
+	{
+		if (final_input)
+			free(final_input);
+		return (NULL);
+	}
+	tmp = expand_tilde_unquoted(final_input);
+	if (!tmp)
+	{
+		free(final_input);
+		return (NULL);
+	}
+	free(final_input);
+	return (tmp);
+}
 
 char	*trim_spaces(const char *input)
 {

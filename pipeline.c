@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:32:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/06 14:29:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:27:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,17 @@ void	wait_for_commands_and_set_status(pid_t *pids, int pid_count,
 void	execute_pipeline(char **commands, t_shell *shell)
 {
 	int		input_fd;
-	pid_t	*pids;
+	pid_t	pids[MAX_PIPELINE_CMDS];
 	int		pid_count;
+	int		cmd_count;
 
 	input_fd = STDIN_FILENO;
-	pids = malloc(sizeof(pid_t) * (count_commands(commands) + 1));
-	if (!pids)
+	cmd_count = count_commands(commands);
+	if (cmd_count > MAX_PIPELINE_CMDS)
+	{
+		ft_putstr_fd("minishell: pipeline too long\n", STDERR_FILENO);
 		return ;
+	}
 	clean_command_args(commands);
 	check_for_redirections(commands);
 	pid_count = process_commands_in_pipeline(commands, &input_fd, pids, shell);
@@ -50,11 +54,9 @@ void	execute_pipeline(char **commands, t_shell *shell)
 	{
 		if (input_fd != STDIN_FILENO)
 			close(input_fd);
-		free(pids);
 		return ;
 	}
 	wait_for_commands_and_set_status(pids, pid_count, shell);
-	free(pids);
 	if (input_fd != STDIN_FILENO)
 		close(input_fd);
 }

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/08 13:08:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 18:02:57 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,14 @@ int	input_with_pipe(char *final_input, t_shell *shell)
 
 	if (!ft_strchr(final_input, '|') || !is_pipe_outside_quotes(final_input))
 		return (0);
+	//printf("debug1\n");
 	commands = split_pipe(final_input, shell);
 	if (!commands)
-		return (1);
+		return (1); // maybe return somehting else to trigger that we have to still free final_input
+	free(final_input);
+	final_input = NULL;
 	execute_pipeline(commands, shell);
+	//printf("debug2\n");
 	free_array(commands);
 	return (1);
 }
@@ -42,56 +46,72 @@ int	validate_executable(char **args, t_shell *shell)
 	return (1);
 }
 
-void	execute_final_command(char **args, t_shell *shell)
+void	execute_final_command(char **args, t_shell *shell, char *final_input)
 {
+	// if the command has a pipe, never reaches this!!!! we need to free final_input somewhere else
+	if ((args && args[0] && ft_strncmp(args[0], "exit", 5) == 0))
+	{
+		free(final_input);
+		builtin_exit(args, shell);
+		return ;
+	}
 	if (execute_builtin(args, shell))
 	{
-		if (args)
-			free_array(args);
+		free_array(args);
+		free(final_input);
 		return ;
 	}
 	execute_command(args, shell);
-	if (args)
-		free_array(args);
+	free_array(args);
+	free(final_input);
 }
 
-
-
-void handle_input(char *input, t_shell *shell)
+void	handle_echo_args(char **args)
 {
-    char    **args;
-    char    *final_input;
+	int		i;
+	int		len;
+	int		is_quoted;
+	char	*cleaned;
 
-    handle_signal_status(shell);
-    final_input = process_initial_input(input);
-    if (!final_input)
-        return;
-   // printf("final_input: %s\n", final_input);
-    final_input = process_input_for_execution(final_input, shell);
-    if (!final_input)
-        return;
-    //printf("final_input: %s\n", final_input);
-    args = parse_command_arguments(final_input, shell);
-    if (!args)
-        return;
+	i = 1;
+	while (args[i])
+	{
+		len = ft_strlen(args[i]);
+		is_quoted = (len >= 2 && ((args[i][0] == '"' && args[i][len - 1] == '"')
+					|| (args[i][0] == '\'' && args[i][len - 1] == '\'')));
+		if (i != 1 && is_quoted)
+		{
+			cleaned = handle_quotes(ft_strdup(args[i]));
+			if (cleaned)
+			{
+				free(args[i]);
+				args[i] = cleaned;
+			}
+		}
+		i++;
+	}
+}
 
-    // Print args before cleaning if needed
-    /*for (int i = 0; args[i]; i++)
-    {
-        printf("args[%d]: %s\n", i, args[i]);
-    }*/
+void	handle_input(char *input, t_shell *shell)
+{
+	char	**args;
+	char	*final_input;
 
-    // Use the updated clean_arguments that handles both passes
-    clean_arguments(args);
-
-    // Print args after cleaning if needed
-    /*printf("After cleaning:\n");
-    for (int i = 0; args[i]; i++)
-    {
-        printf("args[%d]: %s\n", i, args[i]);
-    }*/
-
-    if (!validate_executable(args, shell))
-        return;
-    execute_final_command(args, shell);
+	handle_signal_status(shell);
+	final_input = process_initial_input(input);
+	if (!final_input)
+		return ;
+	final_input = process_input_for_execution(final_input, shell);
+	if (!final_input)
+		return ;
+	args = parse_command_arguments(final_input, shell);
+	if (!args)
+		return ;
+	if (args[0] && ft_strncmp(args[0], "echo", ft_strlen("echo")) == 0)
+		handle_echo_args(args);
+	else
+		clean_arguments(args);
+	if (!validate_executable(args, shell))
+		return ;
+	execute_final_command(args, shell, final_input);
 }

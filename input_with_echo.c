@@ -6,67 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 13:36:54 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/08 11:12:31 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:26:25 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-char	**duplicate_non_empty_args(char **raw_args, int *out_count)
-{
-	int		i;
-	int		j;
-	char	**temp_args;
-
-	*out_count = 0;
-	i = 0;
-	while (raw_args[i])
-	{
-		if (!is_empty_quoted_string(raw_args[i]))
-			(*out_count)++;
-		i++;
-	}
-	temp_args = malloc(sizeof(char *) * (*out_count + 1));
-	if (!temp_args)
-		return (NULL);
-	i = 0;
-	j = 0;
-	while (raw_args[i])
-	{
-		if (!is_empty_quoted_string(raw_args[i]))
-			temp_args[j++] = ft_strdup(raw_args[i]);
-		i++;
-	}
-	temp_args[j] = NULL;
-	return (temp_args);
-}
-
-int	merge_echo_and_args(char ***args_ptr, char **raw_args, char **echo_args)
-{
-	char	**final_args;
-	int		raw_len;
-	int		echo_len;
-	int		i;
-
-	raw_len = 0;
-	while (raw_args[raw_len])
-		raw_len++;
-	echo_len = 0;
-	while (echo_args[echo_len])
-		echo_len++;
-	final_args = malloc(sizeof(char *) * (echo_len + raw_len));
-	if (!final_args)
-		return (1);
-	i = -1;
-	while (++i < echo_len)
-		final_args[i] = ft_strdup(echo_args[i]);
-	i--;
-	while (++i < echo_len + raw_len - 1)
-		final_args[i] = ft_strdup(raw_args[i - echo_len + 1]);
-	final_args[i] = NULL;
-	*args_ptr = final_args;
-	return (0);
-}
 
 int	handle_wrapped_echo(char *trimmed, char ***args_ptr)
 {

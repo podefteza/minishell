@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/06 21:40:19 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 11:36:41 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,28 +42,23 @@ static int	fill_args_array(char **args, char *input, int total_tokens)
 	char	*input_ptr;
 	char	*token;
 
-	input_ptr = input;
 	i = 0;
+	input_ptr = input;
 	while (i < total_tokens)
 	{
 		token = get_next_token(&input_ptr);
 		if (!token)
-		{
-			while (i-- > 0)
-				free(args[i]);
-			return (0);
-		}
+			break ;
 		args[i] = ft_strdup(token);
 		free(token);
 		if (!args[i])
-		{
-			while (i-- > 0)
-				free(args[i]);
-			return (0);
-		}
+			break ;
 		i++;
 	}
-	return (1);
+	if (i != total_tokens)
+		while (i-- > 0)
+			free(args[i]);
+	return (i == total_tokens);
 }
 
 char	**split_arguments(char *input)

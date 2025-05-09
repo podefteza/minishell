@@ -269,8 +269,6 @@ check the usage of "continue"
 
 LEAKS:
 
-❌ "echo hello world"
-
 ❌ cat << EOF | wc -l
 	IF WE CTRL-C, WE CANCEL THE CAT AND THE PROMPT LINE GETS MIXED UP (maybe it is not freeing the input??)
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
@@ -280,21 +278,59 @@ os_specific
 grep with spaces inside double quotes, should preserve the quotes of the commands
 
 ❌ > newfile
-leaks!!
+
+❌ ls | exit 4
+
+❌ env | grep USER
+
+❌ errors with pipes, most of times when the file is not found... leaks after "No such file or directory" message
+
+env | sort | grep -v SHLVL | grep -v ^_
+
+export GHOST=123 | env | grep GHOST
+
+echo <\"./test_files/infile_big\" | cat <\"./test_files/infile\"
+
+echo <\"./test_files/infile_big\" | cat \"./test_files/infile\"
+
+echo <\"./test_files/infile_big\" | echo <\"./test_files/infile\"
+
+echo hi | cat <\"./test_files/infile\"
+
+echo hi | cat \"./test_files/infile\"
+
+cat <\"./test_files/infile\" | echo hi
+
+cat <\"./test_files/infile\" | grep hello
+
+cat <\"./test_files/infile_big\" | echo hi
+
+cat <missing | cat
+
+cat <missing | echo oi
+
+cat <missing | cat <\"./test_files/infile\"
+
+echo <123 <456 hi | echo 42
 
 
-❌ entering a directory with spaces in the name, or executing a file with speces, example:
-[minishell] carlos-j@podefteza:~/minishell$ cd directory\ with\ spaces/
-	minishell: cd: too many arguments
-carlos-j@podefteza:~/minishell$ cd directory\ with\ spaces/
-	carlos-j@podefteza:~/minishell/directory with spaces$
+❌ echo hi |  "|"
+minishell: ": command not found
+
+
 
 =====================
 
 minishell vs bash differences detected:
 
-❌
 
+
+
+❌❌❌❌❌ clang-tidy: Detects infinite loops and inefficient conditions.
+clang-tidy --checks='-altera-unroll-loops,loop-*' *.c
+
+❌❌❌❌❌ cppcheck: Finds unreachable code.
+cppcheck --enable=all file.c
 
 
 
