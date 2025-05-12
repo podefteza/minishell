@@ -260,8 +260,6 @@ os_specific
 ❌ export | sort | grep -v SHLVL | grep -v "declare -x _" | grep -v "PS.="
 grep with spaces inside double quotes, should preserve the quotes of the commands
 
-❌ errors with pipes, most of times when the file is not found... leaks after "No such file or directory" message
-
 
 ❌ still reachable:
 env | sort | grep -v SHLVL | grep -v ^_
@@ -296,7 +294,214 @@ echo <123 <456 hi | echo 42
 ❌ echo hi |  "|"
 minishell: ": command not found
 
+=====================
 
+❌❌❌❌❌
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ wc -l < /etc/passwd > file1 > file2 > file3 > file4
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ exit
+==6913== 30 bytes in 6 blocks are definitely lost in loss record 11 of 64
+==6913==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==6913==    by 0x10DB6D: handle_quotes (quotes.c:99)
+==6913==    by 0x10B7D4: clean_arguments (input_parsing.c:94)
+==6913==    by 0x10AB9D: handle_input (input.c:119)
+==6913==    by 0x112C39: process_input_line (shell_loop.c:42)
+==6913==    by 0x112D2A: run_shell_loop (shell_loop.c:63)
+==6913==    by 0x1095BA: main (minishell.c:31)
+==6913==
+
+❌❌❌❌❌
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ $EMPTYVAR
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ exit
+==19173== 1 bytes in 1 blocks are definitely lost in loss record 1 of 64
+==19173==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19173==    by 0x113329: ft_strdup (in /home/carlos-j/minishell/minishell)
+==19173==    by 0x113911: ft_substr (in /home/carlos-j/minishell/minishell)
+==19173==    by 0x1138B7: ft_strtrim (in /home/carlos-j/minishell/minishell)
+==19173==    by 0x10A630: input_with_expansion (expand_variables_utils.c:44)
+==19173==    by 0x10A70F: check_for_expansion (expand_variables_utils.c:100)
+==19173==    by 0x10B583: process_input_for_execution (input_parsing.c:22)
+==19173==    by 0x10AB02: handle_input (input.c:106)
+==19173==    by 0x11297B: process_input_line (shell_loop.c:42)
+==19173==    by 0x112A6C: run_shell_loop (shell_loop.c:63)
+==19173==    by 0x1095BA: main (minishell.c:31)
+==19173==
+
+
+❌❌❌❌❌
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ < .
+==23637== Invalid free() / delete / delete[] / realloc()
+==23637==    at 0x484B27F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23637==    by 0x10BCE0: free_array (cleanup.c:24)
+==23637==    by 0x109870: execute_command (command_handler.c:70)
+==23637==    by 0x10A923: execute_final_command (input.c:65)
+==23637==    by 0x10ABD9: handle_input (input.c:126)
+==23637==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23637==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23637==    by 0x1095BA: main (minishell.c:31)
+==23637==  Address 0x4b58a00 is 0 bytes inside a block of size 2 free'd
+==23637==    at 0x484B27F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23637==    by 0x10E64A: finalize_redirection (redirections_processing.c:38)
+==23637==    by 0x10E746: redirect_command (redirections_processing.c:69)
+==23637==    by 0x10E8C3: process_valid_redirection (redirections_processing.c:92)
+==23637==    by 0x10DECD: handle_if_redirection (redirections.c:61)
+==23637==    by 0x10E097: handle_redirections (redirections.c:107)
+==23637==    by 0x10984C: execute_command (command_handler.c:64)
+==23637==    by 0x10A923: execute_final_command (input.c:65)
+==23637==    by 0x10ABD9: handle_input (input.c:126)
+==23637==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23637==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23637==    by 0x1095BA: main (minishell.c:31)
+==23637==  Block was alloc'd at
+==23637==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23637==    by 0x10DB6D: handle_quotes (quotes.c:99)
+==23637==    by 0x10B7D4: clean_arguments (input_parsing.c:94)
+==23637==    by 0x10AB9D: handle_input (input.c:119)
+==23637==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23637==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23637==    by 0x1095BA: main (minishell.c:31)
+==23637==
+
+❌❌❌❌❌
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ << EOF
+> ==23814== Invalid free() / delete / delete[] / realloc()
+==23814==    at 0x484B27F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23814==    by 0x10BCE0: free_array (cleanup.c:24)
+==23814==    by 0x109870: execute_command (command_handler.c:70)
+==23814==    by 0x10A923: execute_final_command (input.c:65)
+==23814==    by 0x10ABD9: handle_input (input.c:126)
+==23814==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23814==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23814==    by 0x1095BA: main (minishell.c:31)
+==23814==  Address 0x4b58a00 is 0 bytes inside a block of size 3 free'd
+==23814==    at 0x484B27F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23814==    by 0x10E64A: finalize_redirection (redirections_processing.c:38)
+==23814==    by 0x10E746: redirect_command (redirections_processing.c:69)
+==23814==    by 0x10E8C3: process_valid_redirection (redirections_processing.c:92)
+==23814==    by 0x10DECD: handle_if_redirection (redirections.c:61)
+==23814==    by 0x10E097: handle_redirections (redirections.c:107)
+==23814==    by 0x10984C: execute_command (command_handler.c:64)
+==23814==    by 0x10A923: execute_final_command (input.c:65)
+==23814==    by 0x10ABD9: handle_input (input.c:126)
+==23814==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23814==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23814==    by 0x1095BA: main (minishell.c:31)
+==23814==  Block was alloc'd at
+==23814==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23814==    by 0x10DB6D: handle_quotes (quotes.c:99)
+==23814==    by 0x10B7D4: clean_arguments (input_parsing.c:94)
+==23814==    by 0x10AB9D: handle_input (input.c:119)
+==23814==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23814==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23814==    by 0x1095BA: main (minishell.c:31)
+==23814==
+
+❌❌❌❌❌
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ > file
+==23820== Invalid free() / delete / delete[] / realloc()
+==23820==    at 0x484B27F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23820==    by 0x10BCE0: free_array (cleanup.c:24)
+==23820==    by 0x109870: execute_command (command_handler.c:70)
+==23820==    by 0x10A923: execute_final_command (input.c:65)
+==23820==    by 0x10ABD9: handle_input (input.c:126)
+==23820==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23820==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23820==    by 0x1095BA: main (minishell.c:31)
+==23820==  Address 0x4b58a00 is 0 bytes inside a block of size 2 free'd
+==23820==    at 0x484B27F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23820==    by 0x10E64A: finalize_redirection (redirections_processing.c:38)
+==23820==    by 0x10E746: redirect_command (redirections_processing.c:69)
+==23820==    by 0x10E8C3: process_valid_redirection (redirections_processing.c:92)
+==23820==    by 0x10DECD: handle_if_redirection (redirections.c:61)
+==23820==    by 0x10E097: handle_redirections (redirections.c:107)
+==23820==    by 0x10984C: execute_command (command_handler.c:64)
+==23820==    by 0x10A923: execute_final_command (input.c:65)
+==23820==    by 0x10ABD9: handle_input (input.c:126)
+==23820==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23820==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23820==    by 0x1095BA: main (minishell.c:31)
+==23820==  Block was alloc'd at
+==23820==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23820==    by 0x10DB6D: handle_quotes (quotes.c:99)
+==23820==    by 0x10B7D4: clean_arguments (input_parsing.c:94)
+==23820==    by 0x10AB9D: handle_input (input.c:119)
+==23820==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23820==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23820==    by 0x1095BA: main (minishell.c:31)
+==23820==
+
+❌❌❌❌❌
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ >> file
+==23829== Invalid free() / delete / delete[] / realloc()
+==23829==    at 0x484B27F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23829==    by 0x10BCE0: free_array (cleanup.c:24)
+==23829==    by 0x109870: execute_command (command_handler.c:70)
+==23829==    by 0x10A923: execute_final_command (input.c:65)
+==23829==    by 0x10ABD9: handle_input (input.c:126)
+==23829==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23829==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23829==    by 0x1095BA: main (minishell.c:31)
+==23829==  Address 0x4b58a00 is 0 bytes inside a block of size 3 free'd
+==23829==    at 0x484B27F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23829==    by 0x10E64A: finalize_redirection (redirections_processing.c:38)
+==23829==    by 0x10E746: redirect_command (redirections_processing.c:69)
+==23829==    by 0x10E8C3: process_valid_redirection (redirections_processing.c:92)
+==23829==    by 0x10DECD: handle_if_redirection (redirections.c:61)
+==23829==    by 0x10E097: handle_redirections (redirections.c:107)
+==23829==    by 0x10984C: execute_command (command_handler.c:64)
+==23829==    by 0x10A923: execute_final_command (input.c:65)
+==23829==    by 0x10ABD9: handle_input (input.c:126)
+==23829==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23829==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23829==    by 0x1095BA: main (minishell.c:31)
+==23829==  Block was alloc'd at
+==23829==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23829==    by 0x10DB6D: handle_quotes (quotes.c:99)
+==23829==    by 0x10B7D4: clean_arguments (input_parsing.c:94)
+==23829==    by 0x10AB9D: handle_input (input.c:119)
+==23829==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23829==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23829==    by 0x1095BA: main (minishell.c:31)
+==23829==
+
+❌❌❌❌❌
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ grep hi <./test_files/infile_big <./test_files/infile
+hi
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ exit
+==23169== 26 bytes in 2 blocks are definitely lost in loss record 10 of 64
+==23169==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23169==    by 0x10DB6D: handle_quotes (quotes.c:99)
+==23169==    by 0x10B7D4: clean_arguments (input_parsing.c:94)
+==23169==    by 0x10AB9D: handle_input (input.c:119)
+==23169==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23169==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23169==    by 0x1095BA: main (minishell.c:31)
+==23169==
+
+
+❌❌❌❌❌
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ cat <"./test_files/infile" >./test_files/invalid_permission
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ exit
+==23533== 24 bytes in 2 blocks are definitely lost in loss record 10 of 64
+==23533==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23533==    by 0x10DB6D: handle_quotes (quotes.c:99)
+==23533==    by 0x10B7D4: clean_arguments (input_parsing.c:94)
+==23533==    by 0x10AB9D: handle_input (input.c:119)
+==23533==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23533==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23533==    by 0x1095BA: main (minishell.c:31)
+==23533==
+Executing command: cat >./test_files/invalid_permission <"./test_files/infile"
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ cat >./test_files/invalid_permission <"./test_files/infile"
+[minishell] carlos-j@podefteza:~/minishell/pedro_script$ exit
+==23541== 34 bytes in 2 blocks are definitely lost in loss record 11 of 62
+==23541==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==23541==    by 0x10DB6D: handle_quotes (quotes.c:99)
+==23541==    by 0x10B7D4: clean_arguments (input_parsing.c:94)
+==23541==    by 0x10AB9D: handle_input (input.c:119)
+==23541==    by 0x112C09: process_input_line (shell_loop.c:42)
+==23541==    by 0x112CFA: run_shell_loop (shell_loop.c:63)
+==23541==    by 0x1095BA: main (minishell.c:31)
+==23541==
 
 =====================
 

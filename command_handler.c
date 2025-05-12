@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 22:51:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:13:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,22 +61,31 @@ int	execute_command(char **args, t_shell *shell)
 
 	if (!args || !args[0] || io_backup(&stdin_backup, &stdout_backup) == -1)
 		return (0);
-	if (handle_redirections(args, shell) == -1)
+	int handle_redirection_result = handle_redirections(args, shell);
+	printf("result of handle_redirections: %d\n", handle_redirection_result);
+	if (handle_redirection_result == -1)
 	{
+		//fprintf(stderr, "Error in handle_redirections, will return 0\n");
+
 		restore_io(stdin_backup, stdout_backup);
-		return (0);
+		free_array(args);
+		return (-1);
 	}
+	//fprintf(stderr, "handle_redirections OK\n");
 	arg_count = 0;
 	while (args[arg_count])
 		arg_count++;
 	is_background = handle_background(args, arg_count);
 	full_path = validate_and_find_command(args, shell);
+	fprintf(stderr, "checking...\n");
 	if (full_path)
 	{
+		printf(("will execute process\n"));
 		execute_process(full_path, args, is_background, shell);
 		if (full_path != args[0])
 			free(full_path);
 	}
 	restore_io(stdin_backup, stdout_backup);
+	fprintf(stderr, "end of execute:command OK\n");
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 21:27:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:20:30 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,6 +277,11 @@ char				*get_unexpected_redir_token(char *token);
 int					is_redirection_operator(char *str);
 int					is_invalid_redirection(char *token);
 int					handle_redirections(char **args, t_shell *shell);
+
+// redirections_processing.c
+int	process_valid_redirection(char **args, int i, t_shell *shell,
+		int total_redirections);
+int	handle_invalid_redirection_token(char **args, int i, t_shell *shell);
 
 // shell_setup.c
 void				build_prompt(char *prompt, t_shell *shell,

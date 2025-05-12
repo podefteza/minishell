@@ -6,16 +6,19 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 21:52:36 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 16:16:35 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
+
 static int	save_stdio(int *out, int *in)
 {
 	*out = dup(STDOUT_FILENO);
 	*in = dup(STDIN_FILENO);
+	//close(STDOUT_FILENO); // added this line
+	//close(STDIN_FILENO); // added this line
 	if (*out == -1 || *in == -1)
 	{
 		perror("dup");
@@ -95,6 +98,7 @@ int	builtin_echo(char **args, t_shell *shell)
 		return (1);
 	if (handle_redirections(args, shell) == -1)
 	{
+		// Restore and close all file descriptors
 		dup2(original_stdout, STDOUT_FILENO);
 		dup2(original_stdin, STDIN_FILENO);
 		close(original_stdout);
@@ -105,10 +109,14 @@ int	builtin_echo(char **args, t_shell *shell)
 	print_echo_arguments(args, i);
 	if (newline)
 		printf("\n");
+
+
+	// Restore and close all file descriptors
 	dup2(original_stdout, STDOUT_FILENO);
 	dup2(original_stdin, STDIN_FILENO);
 	close(original_stdout);
 	close(original_stdin);
+
 	shell->exit_status = 0;
 	return (0);
 }

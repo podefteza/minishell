@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 22:50:05 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:26:34 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,9 @@ int	validate_executable(char **args, t_shell *shell)
 	return (1);
 }
 
+// grep hi <./test_files/infile
+
+
 void	execute_final_command(char **args, t_shell *shell, char *final_input)
 {
 	// if the command has a pipe, never reaches this!!!! we need to free final_input somewhere else
@@ -61,8 +64,23 @@ void	execute_final_command(char **args, t_shell *shell, char *final_input)
 		free(final_input);
 		return ;
 	}
-	execute_command(args, shell);
-	free_array(args);
+	//fprintf(stderr, "will execute_command\n");
+	int execute_command_result = execute_command(args, shell);
+	printf("result of execute_command: %d\n", execute_command_result);
+	if (execute_command_result == 1)
+	{
+		printf("will free array of args\n");
+				// print args
+		for (int i = 0; args[i]; i++)
+		{
+			printf("args[%d]: %s\n", i, args[i]);
+		}
+		printf("args[2]: %s\n", args[2]);
+		free_array(args); // these args we'll free are the ones allocated by split_arguments (tokenize.c:74)
+	}
+	fprintf(stderr, "execute_command OK, will free args in execute_final_command\n");
+	// print the args to check if they are freed
+
 	free(final_input);
 }
 
@@ -92,6 +110,8 @@ void	handle_echo_args(char **args)
 	}
 }
 
+
+
 void	handle_input(char *input, t_shell *shell)
 {
 	char	**args;
@@ -112,6 +132,10 @@ void	handle_input(char *input, t_shell *shell)
 	else
 		clean_arguments(args);
 	if (!validate_executable(args, shell))
+	{
+		//free_array(args);  // ??????????????????????????????
+		free(final_input);
 		return ;
+	}
 	execute_final_command(args, shell, final_input);
 }

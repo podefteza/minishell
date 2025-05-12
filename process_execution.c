@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 17:34:50 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/07 13:58:46 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 16:55:29 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,14 @@
 
 static void	handle_child_process(char *full_path, char **args, t_shell *shell)
 {
+	printf("child??\n");
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	execve(full_path, args, shell->envp);
 	perror("execve");
 	shell->exit_status = 1;
 	free_shell_resources(shell);
+	free_array(args); // added this...
 	exit(1);
 }
 
@@ -27,6 +29,8 @@ static void	handle_parent_process(pid_t pid, int is_background, char **args,
 		t_shell *shell)
 {
 	int	status;
+
+	printf("parent??\n");
 
 	if (is_background)
 	{
@@ -45,6 +49,7 @@ static void	handle_parent_process(pid_t pid, int is_background, char **args,
 			shell->exit_status = 128 + WTERMSIG(status);
 		}
 	}
+	//free_array(args); // added this...
 }
 
 void	execute_process(char *full_path, char **args, int is_background,

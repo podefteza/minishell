@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:04:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 22:39:50 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:22:34 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ char	**parse_command_arguments(char *input, t_shell *shell)
 		free_array(args);
 		return (NULL);
 	}
+
 	return (args);
 }
 
@@ -91,7 +92,8 @@ void	clean_arguments(char **args)
 	while (args[i])
 	{
 		cleaned_arg = handle_quotes(args[i]);
-		args[i] = cleaned_arg;
+		args[i] = cleaned_arg; // take ownership of the new pointer
 		i++;
 	}
 }
+

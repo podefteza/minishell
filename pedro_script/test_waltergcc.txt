@@ -1,0 +1,135 @@
+/bin/ls
+date
+ifconfig
+who
+
+
+
+touch 1 2 3
+/bin/ls -l
+rm 1 2 3
+cat Makefile
+cat -e Makefile
+wc -l Makefile
+echo
+echo This is a test
+echo -n Hello World
+exit
+exit 1
+exit 42
+exit -42
+exit 42 10
+exit 42scholl
+echo $?
+/bin/ls
+echo $?
+ls notexist
+echo $?
+/bin/notexist
+echo $?
+expr $? + $?
+echo $?
+"/bin/ls"
+""ls""
+""ls -l""
+"""ls -l"""
+"echo Hello World"
+echo "Hello World"
+echo "with       spaces"
+echo "test with %specials *chars"
+echo "cat lol.c cat > Iol.c"
+echo "
+'/bin/ls'
+''ls''
+''ls -l''
+'''ls -l'''
+'echo Hello World'
+echo 'Hello World'
+echo 'with       spaces'
+echo '$USER'
+echo '
+echo '$HOME > home.txt'
+echo '$?'
+env
+env PATH
+export
+export NEW_VAR=42
+export NEW_VAR="A little change"
+export NEW_VAR=
+export NEW_VAR=$USER
+export NEW_VAR="with unclosed quotes
+export -p NEW_VAR
+export NEW_VAR="   -l  |"
+unset NEW_VAR
+unset -n NEW_VAR
+cd
+cd .
+cd . ls
+cd ..
+cd /usr/bin
+cd
+cd notexist
+pwd
+pwd -L
+./minishell
+../../../../../../bin/ls
+echo $PATH
+unset PATH
+ls
+export PATH=/bin:/usr/bin
+ls -l > test
+cat Makefile >> test
+wc -l < test
+wc -c < test > test_out
+cat << EOF
+cat << EOF | wc -l
+cat Makefile | grep NAME | wc -l
+cat notexist | wc -l
+< Makefile grep NAME | wc -l > out
+dsfdfdfd
+wc -l < /etc/passwd > file1 > file2 > file3 > file4
+cat | cat | ls
+echo $USER
+echo $notexist
+echo "$HOME"
+echo ~
+echo ~test
+echo test~
+echo ~/test
+$EMPTYVAR
+echo -n -n -n -n -n Hello World
+echo -nnnnnnnnn Hello World
+echo $HOME.test
+echo $HOME/test
+;
+*
+>
+<
+< .
+>>
+<<
+|
+d|
+ls | wc |
+ls | wc >
+ls | wc <
+ls | wc <<
+ls | wc >>
+ls | cat << > | wc
+export =
+export =test
+export TEST.=test
+export 1TEST=test
+export TEST=ABCD
+export $TEST=1234
+export $ABCD=more
+export a_test b_test
+unset a_test
+export b_test=1234
+unset b_test
+export TEST1="withdouble" TEST2 TEST3=wihoutquotes TEST4="with spaces and expand $USER" TEST5="ok, but it has more" TEST6= TEST7='with single $PATH' = TEST8 9TEST9 TEST10="" TEST11=too=many=equals TEST.12="    " TEST13='withsingle' TEST14/
+unset TEST1 TEST2 TEST3 TEST4 TEST5 TEST6 TEST7 TEST8 9TEST9 TEST10 TEST11 TEST.12 TEST13 TEST14/
+cd -
+<< EOF
+> file
+>> file

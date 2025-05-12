@@ -1,6 +1,6 @@
 #!/bin/bash
 
-test_file="test_commands.txt"
+test_file="test_waltergcc.txt"
 
 while IFS= read -r command; do
     echo "Executing command: $command"

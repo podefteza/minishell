@@ -31,6 +31,7 @@ SRCS = minishell.c \
 		quotes_utils.c \
 		redirections.c \
 		redirections_utils.c \
+		redirections_processing.c \
 		tokenize.c \
 		tokenize_utils.c \
 		error.c \

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 14:09:19 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 19:09:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/11 11:50:02 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,19 +54,25 @@ static int	safe_execute_command(char **args, t_shell *shell)
 	if (!args || !args[0])
 		return (shell->exit_status = 0, 1);
 	if (execute_builtin(args, shell))
+	{
+		free_array(args); // added this...
+		free_shell_resources(shell); // added this...
 		exit(shell->exit_status);
+	}
 	cmd_path = find_command(args[0], shell);
 	if (cmd_path)
 	{
 		execve(cmd_path, args, shell->envp);
 		free(cmd_path);
 		shell->exit_status = 127;
+		//free_array(args); // added this...
 		ft_puterr("minishell: ", args[0], CNF, "\n");
 	}
 	else if (ft_strchr(args[0], '/'))
 	{
 		if (execve(args[0], args, shell->envp) == -1)
 		{
+			//free_array(args); // added this...
 			shell->exit_status = 127;
 			ft_puterr("minishell: ", args[0], CNF, "\n");
 		}
@@ -82,21 +88,28 @@ void	execute_child_process(char **args, int input_fd, int pipe_fds[2],
 
 	signal(SIGPIPE, SIG_DFL);
 	heredoc_present = has_heredoc(args);
-	if (!heredoc_present)
-		if (setup_child_io(input_fd, pipe_fds) != 0)
-			exit(1);
+	if (!heredoc_present && (setup_child_io(input_fd, pipe_fds) != 0))
+	{
+		free_array(args); // added this...
+		free_shell_resources(shell); // added this...
+		exit(1);
+	}
 	redir_status = handle_redirections(args, shell);
 	if (redir_status != 0 || !args[0])
 	{
 		free_shell_resources(shell);
+		free_array(args); // added this...
 		if (redir_status != 0)
 			exit(shell->exit_status);
 		else
 			exit(0);
 	}
-	if (heredoc_present)
-		if (setup_child_io(input_fd, pipe_fds) != 0)
-			exit(1);
+	if (heredoc_present && (setup_child_io(input_fd, pipe_fds) != 0))
+	{
+		free_array(args); // added this...
+		free_shell_resources(shell); // added this...
+		exit(1);
+	}
 	safe_execute_command(args, shell);
 	free_array(args);
 	free_shell_resources(shell);

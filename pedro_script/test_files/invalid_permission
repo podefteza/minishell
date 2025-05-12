@@ -1,0 +1,10 @@
+readline_supression
+run_autotests.sh
+run_autotests_bash.sh
+run_waltergcc_tests.sh
+test_commands copy.txt
+test_commands.txt
+test_files
+test_waltergcc.txt
+hi
+bye

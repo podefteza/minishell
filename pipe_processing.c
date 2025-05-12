@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 14:22:40 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/06 15:14:57 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/11 12:05:57 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,9 @@ static int	setup_process_io(char *next_cmd, int *pipe_fds)
 	return (0);
 }
 
+// we need to change this to 4 args only....................... maybe change the shell struct to have the **commands array
 static pid_t	fork_and_execute(char **args, int *input_fd, int pipe_fds[2],
-		t_shell *shell)
+		t_shell *shell, char **commands)
 {
 	pid_t	pid;
 
@@ -54,7 +55,11 @@ static pid_t	fork_and_execute(char **args, int *input_fd, int pipe_fds[2],
 		return (-1);
 	}
 	if (pid == 0)
+	{
+		// maybe we can free stuff here...? like input and commands
+		free_array(commands); // added this...
 		execute_child_process(args, *input_fd, pipe_fds, shell);
+	}
 	else
 		execute_parent_process(input_fd, pipe_fds);
 	return (pid);
@@ -76,9 +81,11 @@ int	process_command(char **commands, int i, int *input_fd, t_shell *shell)
 		close_fds(pipe_fds, args);
 		return (-1);
 	}
-	pid = fork_and_execute(args, input_fd, pipe_fds, shell);
+	//free_array(commands); // added this...
+	pid = fork_and_execute(args, input_fd, pipe_fds, shell, commands);
 	if (pid == -1)
 		close_fds(pipe_fds, args);
+
 	free_array(args);
 	return (pid);
 }

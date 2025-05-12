@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:19:12 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 16:50:19 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/09 23:09:18 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ void	run_shell_loop(t_shell *shell)
 			break ;
 		}
 		process_input_line(input, shell);
+
 	}
 	free_shell_resources(shell);
 	clear_history();
