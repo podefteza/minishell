@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/13 07:57:16 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/13 09:47:25 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,23 +51,24 @@ int	validate_executable(char **args, t_shell *shell)
 // grep hi <./test_files/infile
 
 
-void	execute_final_command(char **args, t_shell *shell, char *final_input)
+void	execute_final_command(t_shell *shell)
 {
 	// if the command has a pipe, never reaches this!!!! we need to free final_input somewhere else
-	if ((args && args[0] && ft_strncmp(args[0], "exit", 5) == 0))
+	if ((shell->input.args && shell->input.args[0] && ft_strncmp(shell->input.args[0], "exit", 5) == 0))
 	{
-		free(final_input);
-		builtin_exit(args, shell);
+		free(shell->input.processed);
+		builtin_exit(shell->input.args, shell);
 		return ;
 	}
-	if (execute_builtin(args, shell))
+	if (execute_builtin(shell->input.args, shell))
 	{
-		free_array(args);
-		free(final_input);
+		//printf("shell->input.raw: %s\n", shell->input.raw);
+		free_array(shell->input.args);
+		free(shell->input.processed);
 		return ;
 	}
 	//fprintf(stderr, "will execute_command\n");
-	int execute_command_result = execute_command(args, shell);
+	int execute_command_result = execute_command(shell->input.args, shell);
 	//printf("result of execute_command: %d\n", execute_command_result);
 	if (execute_command_result == 1)
 	{
@@ -78,12 +79,13 @@ void	execute_final_command(char **args, t_shell *shell, char *final_input)
 			printf("args[%d]: %s\n", i, args[i]);
 		}*/
 		//printf("args[2]: %s\n", args[2]);
-		free_array(args); // these args we'll free are the ones allocated by split_arguments (tokenize.c:74)
+		free_array(shell->input.args); // these args we'll free are the ones allocated by split_arguments (tokenize.c:74)
 	}
 	//fprintf(stderr, "execute_command OK, will free args in execute_final_command\n");
 	// print the args to check if they are freed
 
-	free(final_input);
+
+	free(shell->input.processed);
 }
 
 void	handle_echo_args(char **args) // check if this is being used, remove it!!!!!!!!!!!!!
@@ -114,30 +116,26 @@ void	handle_echo_args(char **args) // check if this is being used, remove it!!!!
 
 
 
-void	handle_input(char *input, t_shell *shell)
+void	handle_input(t_shell *shell)
 {
-	char	**args;
-	char	*final_input;
-
 	handle_signal_status(shell);
-	final_input = process_initial_input(input);
-	if (!final_input)
+	shell->input.processed = process_initial_input(shell->input.raw);
+	if (!shell->input.processed)
 		return ;
-	final_input = process_input_for_execution(final_input, shell);
-	if (!final_input)
+	shell->input.processed = process_input_for_execution(shell);
+	if (!shell->input.processed)
 		return ;
-	args = parse_command_arguments(final_input, shell);
-	if (!args)
+	parse_command_arguments(shell);
+	if (!shell->input.args)
 		return ;
-	//if (args[0] && ft_strncmp(args[0], "echo", ft_strlen("echo")) == 0)
-	//	handle_echo_args(args);
+	if (shell->input.args[0] && ft_strncmp(shell->input.args[0], "echo", ft_strlen("echo")) == 0)
+		handle_echo_args(shell->input.args);
 	else
-		clean_arguments(args);
-	if (!validate_executable(args, shell))
+		clean_arguments(shell);
+	if (!validate_executable(shell->input.args, shell))
 	{
-		//free_array(args);  // ??????????????????????????????
-		free(final_input);
+		free(shell->input.processed);
 		return ;
 	}
-	execute_final_command(args, shell, final_input);
+	execute_final_command(shell);
 }

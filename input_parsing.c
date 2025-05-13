@@ -6,102 +6,97 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:04:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 21:58:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/13 10:41:15 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*process_input_for_execution(char *input, t_shell *shell)
+char	*process_input_for_execution(t_shell *shell)
 {
-	if (validate_syntax(input, shell))
+	if (validate_syntax(shell))
 	{
-		free(input);
+		free(shell->input.processed);
 		return (NULL);
 	}
-	input = check_for_expansion(input, shell);
-	if (!input || input[0] == '\0')
+	shell->input.processed = check_for_expansion(shell->input.processed, shell);
+	if (!shell->input.processed || shell->input.processed[0] == '\0')
 	{
-		free(input);
+		free(shell->input.processed);
 		return (NULL);
 	}
-	if (input_with_pipe(input, shell))
+	if (input_with_pipe(shell->input.processed, shell))
 	{
 		//printf("reach here, has pipe\n");
 		//free(input);
 		return (NULL);
 	}
 	//printf("input: [%s]\n", input);
-	return (input);
+	return (shell->input.processed);
 }
 
-static char	**handle_export_case(char *input)
+static void handle_export_case(t_input *input)
 {
-	char	**args;
-
-	args = split_arguments(input);
-	if (!args || !args[0])
-	{
-		free_array(args);
-		return (NULL);
-	}
-	return (args);
+    input->args = split_arguments(input->processed);
+    if (!input->args || !input->args[0])
+    {
+        free_array(input->args);
+        input->args = NULL;
+    }
 }
 
-char	**handle_echo_or_export(char *input, t_shell *shell)
+static int handle_echo_case(t_shell *shell)
 {
-	char	**args;
-
-	args = NULL;
-	if (ft_strnstr(input, "echo", ft_strlen(input)) && input_with_echo(input,
-			&args, shell) && !is_quoted(input))
-	{
-		if (!args)
-		{
-			free_array(args);
-			return (NULL);
-		}
-		return (args);
-	}
-	if (args)
-		free_array(args);
-	if (ft_strnstr(input, "export", ft_strlen(input)))
-		return (handle_export_case(input));
-	return (NULL);
+	if (!input_with_echo(shell) || is_quoted(shell->input.processed))
+    {
+        if (shell->input.args)
+        {
+            free_array(shell->input.args);
+           	shell->input.args = NULL;
+        }
+        return (0);
+    }
+    return (1);
 }
 
-char	**parse_command_arguments(char *input, t_shell *shell)
+void parse_command_arguments(t_shell *shell)
 {
-	char	**args;
-
-	args = handle_echo_or_export(input, shell);
-	if (args)
-		return (args);
-	(void)shell;
-	args = split_arguments(input);
-	//free(input);
-	if (!args || !args[0])
-	{
-		free_array(args);
-		return (NULL);
-	}
-
-	return (args);
+    if (ft_strnstr(shell->input.processed, "echo", ft_strlen(shell->input.processed)))
+    {
+        if (!handle_echo_case(shell))
+            return;
+    }
+    else if (ft_strnstr(shell->input.processed, "export", ft_strlen(shell->input.processed)))
+    {
+        handle_export_case(&shell->input);
+    }
+    else
+    {
+		shell->input.args = split_arguments(shell->input.processed);
+        if (!shell->input.args || !shell->input.args[0])
+        {
+            free_array(shell->input.args);
+            shell->input.args = NULL;
+        }
+    }
 }
 
-void	clean_arguments(char **args)
+void clean_arguments(t_shell *shell)
 {
-	int		i;
-	char	*cleaned_arg;
+    int     i;
+    char    *cleaned_arg;
 
-	i = 0;
-	while (args[i])
-	{
-		cleaned_arg = handle_quotes(args[i]); // CHANGE TO TRUE?
-		free(args[i]);               // 🛠️ Free the original string
-		args[i] = cleaned_arg;       // 💾 Replace with cleaned string
-		i++;
-	}
+    if (!shell || !shell->input.args)
+        return;
+
+    i = 0;
+    while (shell->input.args[i])
+    {
+        cleaned_arg = handle_quotes(shell->input.args[i]);
+        free(shell->input.args[i]);          // Free the original string
+        shell->input.args[i] = cleaned_arg;  // Replace with cleaned string
+        i++;
+    }
 }
 
 

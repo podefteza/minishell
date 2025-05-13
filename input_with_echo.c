@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 13:36:54 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 21:53:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/13 11:18:16 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,53 +33,84 @@ int	handle_wrapped_echo(char *trimmed, char ***args_ptr)
 	return (1);
 }
 
-int	finalize_echo_args(char *input, char ***args_ptr, t_shell *shell)
+int	finalize_echo_args(t_shell *shell)
 {
 	char	**raw_args;
 	char	**temp_args;
 	char	**echo_args;
 	int		len;
 
-	raw_args = split_arguments(input);
+	raw_args = split_arguments(shell->input.processed);
 	if (!raw_args)
 		return (1);
 	if (ft_strncmp(raw_args[0], "echo", 5) != 0 || raw_args[0][4] != '\0')
-		return (free_array(raw_args), 0);
+	{
+		free_array(raw_args);
+		return (0);
+	}
 	temp_args = duplicate_non_empty_args(raw_args, &len);
 	free_array(raw_args);
 	if (!temp_args)
 		return (1);
+
 	echo_args = handle_echo(temp_args[0], shell);
-	if (!echo_args || merge_echo_and_args(args_ptr, temp_args, echo_args))
-		return (free_array(echo_args), free_array(temp_args), 1);
+
+	// print echo args
+	/*for (int i = 0; echo_args[i]; i++)
+	{
+		printf("echo_args[%d]: %s\n", i, echo_args[i]);
+	}*/
+
+
+	if (!echo_args || merge_echo_and_args(&shell->input.args, temp_args, echo_args))
+	{
+		free_array(echo_args);
+		free_array(temp_args);
+		return(1);
+	}
+
+	//printf("we're here...\n");
 	free_array(echo_args);
 	free_array(temp_args);
-	return (1);
+	return (1);  // Return 1 to indicate echo command was processed
 }
 
-int	input_with_echo(char *final_input, char ***args_ptr, t_shell *shell)
+int	input_with_echo(t_shell *shell)
 {
 	char	*trimmed;
+	int     result;
 
-	if ((final_input[0] == '\"' || final_input[0] == '\'')
-		&& final_input[1] == final_input[0])
-		final_input += 2;
-	if (!ft_strnstr(final_input, "echo", ft_strlen(final_input)))
+	if ((shell->input.processed[0] == '\"' || shell->input.processed[0] == '\'')
+		&& shell->input.processed[1] == shell->input.processed[0])
+		shell->input.processed += 2;
+	if (!ft_strnstr(shell->input.processed, "echo", ft_strlen(shell->input.processed)))
 		return (0);
-	trimmed = trim_spaces(final_input);
+	trimmed = trim_spaces(shell->input.processed);
 	if (!trimmed)
 		return (0);
 	if ((trimmed[0] == '"' || trimmed[0] == '\'') && ft_strnstr(trimmed + 1,
 			"echo", ft_strlen(trimmed) - 1) == trimmed + 1)
 	{
-		if (handle_wrapped_echo(trimmed, args_ptr))
-		{
-			free(trimmed);
-			return (1);
-		}
+		result = handle_wrapped_echo(trimmed, &shell->input.args);
 		free(trimmed);
-		return (0);
+		return (result);
 	}
 	free(trimmed);
-	return (finalize_echo_args(final_input, args_ptr, shell));
+	result = finalize_echo_args(shell);
+	if (result == 1 && shell->input.args == NULL)
+	{
+		free_array(shell->input.args);
+		shell->input.args = NULL;
+	}
+
+	// print final args
+	for (int i = 0; shell->input.args && shell->input.args[i]; i++)
+	{
+		//printf("final_args[%d]: %s\n", i, shell->input.args[i]);
+	}
+
+
+
+	// will return 1
+	return (result);
 }

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 19:36:08 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/13 09:51:15 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,13 @@ typedef struct s_builtin
 	int				(*func)(char **, struct s_shell *);
 }					t_builtin;
 
+typedef struct s_input
+{
+	char	*raw;        // Original input from readline
+	char	*processed;  // Processed input (after escapes, expansion, etc.)
+	char	**args;      // Parsed arguments
+}	t_input;
+
 typedef struct s_shell
 {
 	char			*user;
@@ -83,6 +90,7 @@ typedef struct s_shell
 	int				is_prompting;
 	pid_t			last_bg_pid;
 	t_builtin		builtins[8];
+	t_input		input;
 }					t_shell;
 
 typedef struct s_env
@@ -177,8 +185,8 @@ void				expand_handle_quotes(char **input, char **ptr,
 						int *in_single, int *in_double);
 void				expand_process_input(char **input, char **ptr,
 						t_shell *shell, int *in_single_quote);
-char				*expand_variables(char *input, t_shell *shell);
-char				*check_for_expansion(char *final_input, t_shell *shell);
+char	*expand_variables(char *input, t_shell *shell);
+char	*check_for_expansion(char *final_input, t_shell *shell);
 
 // ../expansions.c
 char				*expand_last_bg_pid(t_shell *shell);
@@ -189,11 +197,10 @@ char				*expand_dollar_sign(char **input, t_shell *shell);
 char				*input_with_expansion(char *final_input, t_shell *shell);
 
 int					input_with_pipe(char *final_input, t_shell *shell);
-void				handle_input(char *input, t_shell *shell);
+void				handle_input(t_shell *shell);
 
 // ../input_with_echo.c
-int					input_with_echo(char *final_input, char ***args_ptr,
-						t_shell *shell);
+int	input_with_echo(t_shell *shell);
 
 // ../input_with_echo_utils.c
 char				**duplicate_non_empty_args(char **raw_args, int *out_count);
@@ -208,9 +215,9 @@ char				**handle_echo_or_export(char *input, t_shell *shell);
 
 // ../input_parsing.c
 char				*process_initial_input(char *input);
-char				*process_input_for_execution(char *input, t_shell *shell);
-char				**parse_command_arguments(char *input, t_shell *shell);
-void				clean_arguments(char **args);
+char				*process_input_for_execution(t_shell *shell);
+void parse_command_arguments(t_shell *shell);
+void clean_arguments(t_shell *shell);
 
 // path_handler.c
 char				*shorten_path(const char *cwd, const char *home);
@@ -302,7 +309,7 @@ char				**split_arguments(char *input);
 char				*get_next_token(char **input_ptr);
 
 // validate_syntax.c
-int					validate_syntax(char *input, t_shell *shell);
+int					validate_syntax(t_shell *shell);
 
 // validate_syntax_utils.c
 void				print_syntax_error(char *token);

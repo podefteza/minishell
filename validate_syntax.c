@@ -6,46 +6,46 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 09:39:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 21:50:12 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/13 08:26:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	validate_redirection(char *input, int *i, t_shell *shell)
+static int	validate_redirection(int *i, t_shell *shell)
 {
 	char	c;
 
-	c = input[*i];
+	c = shell->input.processed[*i];
 	(*i)++;
-	if (input[*i] == c)
+	if (shell->input.processed[*i] == c)
 		(*i)++;
-	while (input[*i] && ft_isspace(input[*i]))
+	while (shell->input.processed[*i] && ft_isspace(shell->input.processed[*i]))
 		(*i)++;
-	if (input[*i] == '\0' || input[*i] == '|' || input[*i] == '<'
-		|| input[*i] == '>')
+	if (shell->input.processed[*i] == '\0' || shell->input.processed[*i] == '|' || shell->input.processed[*i] == '<'
+		|| shell->input.processed[*i] == '>')
 	{
-		if (input[*i] == '\0')
+		if (shell->input.processed[*i] == '\0')
 			print_syntax_error("newline");
 		else
-			print_syntax_error(&input[*i]);
+			print_syntax_error(&shell->input.processed[*i]);
 		shell->exit_status = 2;
 		return (1);
 	}
 	return (0);
 }
 
-static int	validate_pipe(char *input, int *i, t_shell *shell)
+static int	validate_pipe(int *i, t_shell *shell)
 {
 	(*i)++;
-	while (input[*i] && ft_isspace(input[*i]))
+	while (shell->input.processed[*i] && ft_isspace(shell->input.processed[*i]))
 		(*i)++;
-	if (input[*i] == '\0' || input[*i] == '|')
+	if (shell->input.processed[*i] == '\0' || shell->input.processed[*i] == '|')
 	{
-		if (input[*i] == '\0')
+		if (shell->input.processed[*i] == '\0')
 			print_syntax_error("newline");
 		else
-			print_syntax_error(&input[*i]);
+			print_syntax_error(&shell->input.processed[*i]);
 		shell->exit_status = 2;
 		return (1);
 	}
@@ -65,23 +65,23 @@ static int	skip_inside_quotes(char *input, int *i)
 	return (0);
 }
 
-static int	search_syntax_errors(char *input, int *i, t_shell *shell)
+static int	search_syntax_errors(int *i, t_shell *shell)
 {
-	while (input[*i])
+	while (shell->input.processed[*i])
 	{
-		if (input[*i] == '\'' || input[*i] == '\"')
+		if (shell->input.processed[*i] == '\'' || shell->input.processed[*i] == '\"')
 		{
-			if (skip_inside_quotes(input, i))
+			if (skip_inside_quotes(shell->input.processed, i))
 				return (1);
 		}
-		else if (input[*i] == '<' || input[*i] == '>')
+		else if (shell->input.processed[*i] == '<' || shell->input.processed[*i] == '>')
 		{
-			if (validate_redirection(input, i, shell))
+			if (validate_redirection(i, shell))
 				return (1);
 		}
-		else if (input[*i] == '|')
+		else if (shell->input.processed[*i] == '|')
 		{
-			if (validate_pipe(input, i, shell))
+			if (validate_pipe(i, shell))
 				return (1);
 		}
 		else
@@ -90,19 +90,19 @@ static int	search_syntax_errors(char *input, int *i, t_shell *shell)
 	return (0);
 }
 
-int	validate_syntax(char *input, t_shell *shell)
+int	validate_syntax(t_shell *shell)
 {
 	int	i;
 
 	i = 0;
-	while (input[i] && ft_isspace(input[i]))
+	while (shell->input.processed[i] && ft_isspace(shell->input.processed[i]))
 		i++;
-	if (input[i] == '|')
+	if (shell->input.processed[i] == '|')
 	{
-		print_syntax_error(&input[i]);
+		print_syntax_error(&shell->input.processed[i]);
 		return (shell->exit_status = 2);
 	}
-	if (search_syntax_errors(input, &i, shell))
+	if (search_syntax_errors(&i, shell))
 		return (1);
 	return (0);
 }

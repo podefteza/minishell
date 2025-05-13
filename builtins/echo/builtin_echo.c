@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/13 00:06:41 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/13 09:25:17 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,8 @@ int	builtin_echo(char **args, t_shell *shell)
 	int	original_stdout;
 	int	original_stdin;
 
+	//printf("inside builtin_echo\n");
+
 	// print args
 	/*for (i = 0; args[i]; i++)
 	{
@@ -167,5 +169,6 @@ int	builtin_echo(char **args, t_shell *shell)
 	close(original_stdin);
 
 	shell->exit_status = 0;
+
 	return (0);
 }
