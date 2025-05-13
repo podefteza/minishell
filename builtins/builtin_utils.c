@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 17:04:37 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 17:02:16 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:27:42 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ void	builtin_setup(t_builtin *builtins)
 int	execute_builtin(char **args, t_shell *shell)
 {
 	int	i;
+
+	//printf("execute_builtin: %s\n", args[0]);
 
 	i = 0;
 	if (!args || !args[0] || !shell)

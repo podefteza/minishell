@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 12:12:18 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 16:30:46 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:13:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,40 +31,26 @@ static int	do_dup(int fd, int is_output)
 
 static int	finalize_redirection(char **op, char **filename, int fd, int *count)
 {
-	// print operation and filename for debugging
-	//fprintf(stderr, "op = %s\n", *op);
-	//fprintf(stderr, "filename = %s\n", *filename);
-	//fprintf(stderr, "fd = %d\n", fd);
-
-
-	// Decrement the count
 	(*count)--;
-	//fprintf(stderr, "count = %d\n", *count);
-
-	// Only free op and filename when count reaches 0
-
-
-
-
-
+	/*printf("debug.................\n");
+	printf("op: %s\n", *op);
+	printf("filename: %s\n", *filename);*/
 	if (*count == 0 || *count == 1)
 	{
-		// Safely free op if it exists
-		if (*op)
+		if (!(is_redirection_operator(*op)))
 		{
-			//free(*op); // commenting this solves issues in [< .]  [<< EOF]  [> file] also we get minishell_tester OK
+			//printf("debug1\n");
+			free(*op); // commenting this solves issues in [< .]  [<< EOF]  [> file] also we get minishell_tester OK
 			*op = NULL;
 		}
-
-		// Safely free filename if it exists
 		if (*filename)
 		{
+			//printf("debug2\n");
 			//free(*filename); // commenting this solves issues in [< .]  [<< EOF]  [> file] also we get minishell_tester OK
 			*filename = NULL;
 		}
 	}
 	close(fd);
-
 	return (0);
 }
 
@@ -79,6 +65,7 @@ static int	redirect_command(int apply_redirection, char *op, char *filename,
 	fd = open_redirection_file(op, filename);
 	if (fd == -1)
 	{
+		//printf("debug........\n");
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(filename);
 		shell->exit_status = 1;

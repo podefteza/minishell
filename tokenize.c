@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 14:50:54 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:18:07 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,5 +80,10 @@ char	**split_arguments(char *input)
 		free(args);
 		return (NULL);
 	}
+	// print args
+	/*for (int i = 0; args[i]; i++)
+	{
+		printf("args[%d]: %s\n", i, args[i]);
+	}*/
 	return (args);
 }

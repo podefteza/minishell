@@ -5,7 +5,7 @@ BLUE="\001\033[1;34m\002"     # Bold Blue
 WHITE="\001\033[37m\002"      # Normal White
 RESET="\001\033[0m\002"       # Reset
 
-test_file="test_commands2.txt"
+test_file="test_commands.txt"
 short_pwd="${PWD#"$HOME"}"
 
 while IFS= read -r command; do

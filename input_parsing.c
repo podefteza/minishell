@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:04:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 17:22:34 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:58:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,18 @@ char	*process_input_for_execution(char *input, t_shell *shell)
 		return (NULL);
 	}
 	input = check_for_expansion(input, shell);
-	if (!input || input_with_pipe(input, shell))
+	if (!input || input[0] == '\0')
+	{
+		free(input);
+		return (NULL);
+	}
+	if (input_with_pipe(input, shell))
 	{
 		//printf("reach here, has pipe\n");
 		//free(input);
 		return (NULL);
 	}
+	//printf("input: [%s]\n", input);
 	return (input);
 }
 
@@ -91,9 +97,11 @@ void	clean_arguments(char **args)
 	i = 0;
 	while (args[i])
 	{
-		cleaned_arg = handle_quotes(args[i]);
-		args[i] = cleaned_arg; // take ownership of the new pointer
+		cleaned_arg = handle_quotes(args[i]); // CHANGE TO TRUE?
+		free(args[i]);               // 🛠️ Free the original string
+		args[i] = cleaned_arg;       // 💾 Replace with cleaned string
 		i++;
 	}
 }
+
 

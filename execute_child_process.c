@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 14:09:19 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/11 11:50:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 23:34:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ void	execute_child_process(char **args, int input_fd, int pipe_fds[2],
 	heredoc_present = has_heredoc(args);
 	if (!heredoc_present && (setup_child_io(input_fd, pipe_fds) != 0))
 	{
+		//printf("debug1\n");
 		free_array(args); // added this...
 		free_shell_resources(shell); // added this...
 		exit(1);
@@ -97,6 +98,7 @@ void	execute_child_process(char **args, int input_fd, int pipe_fds[2],
 	redir_status = handle_redirections(args, shell);
 	if (redir_status != 0 || !args[0])
 	{
+		//printf("debug2\n");
 		free_shell_resources(shell);
 		free_array(args); // added this...
 		if (redir_status != 0)
@@ -106,10 +108,12 @@ void	execute_child_process(char **args, int input_fd, int pipe_fds[2],
 	}
 	if (heredoc_present && (setup_child_io(input_fd, pipe_fds) != 0))
 	{
+		//printf("debug3\n");
 		free_array(args); // added this...
 		free_shell_resources(shell); // added this...
 		exit(1);
 	}
+	//printf("debug4\n");
 	safe_execute_command(args, shell);
 	free_array(args);
 	free_shell_resources(shell);

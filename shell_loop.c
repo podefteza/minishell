@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:19:12 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 23:09:18 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 19:23:49 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,13 @@ void	run_shell_loop(t_shell *shell)
 		shell->is_prompting = 0;
 		if (!input)
 		{
-			printf("exit\n");
+			builtin_exit(NULL, shell);
+			//printf("exit\n");
 			break ;
 		}
 		process_input_line(input, shell);
 
 	}
 	free_shell_resources(shell);
-	clear_history();
+	clear_history(); // also do this on builtin_exit ?
 }

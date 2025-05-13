@@ -6,25 +6,68 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 16:16:35 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/13 00:06:41 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
 
-static int	save_stdio(int *out, int *in)
+/*static int	save_stdio(int *out, int *in, char **args)
 {
+
 	*out = dup(STDOUT_FILENO);
 	*in = dup(STDIN_FILENO);
-	//close(STDOUT_FILENO); // added this line
-	//close(STDIN_FILENO); // added this line
+	//(void)args;
+	// WE NEED TO CLOSE THE FILE DESCRIPTORS ONLY IF THERE'S NO ARG NEXT TO ECHO
+
+
+	// print args
+	for (int i = 0; args[i]; i++)
+	{
+		fprintf(stderr, "args[%d]: %s\n", i, args[i]);
+	}
+	//printf("comp_ %d\n", ft_strncmp(args[0], "echo", 5 ));
+	if (ft_strncmp(args[0], "echo", 5) == 0)// && !args[1])
+	{
+		printf("we are here\n");
+		printf("\n");
+		close(STDOUT_FILENO); // added this line this solves unclosed fds on [echo <"./test_files/infile_big" | echo <"./test_files/infile"]
+		close(STDIN_FILENO); // added this line this solves unclosed fds on [echo <"./test_files/infile_big" | echo <"./test_files/infile"]
+		//return (0);
+	}
 	if (*out == -1 || *in == -1)
 	{
 		perror("dup");
 		return (-1);
 	}
 	return (0);
+}*/
+
+static int save_stdio(int *out, int *in, char **args)
+{
+    *out = dup(STDOUT_FILENO);
+    *in = dup(STDIN_FILENO);
+
+    // Debug print (remove in final version)
+    //fprintf(stderr, "Debug: first arg is '%s'\n", args[0]);
+
+    // Proper comparison
+    if (ft_strncmp(args[0], "echo", 5) == 0 && args[1] == NULL)
+    {
+        //fprintf(stderr, "Handling echo with no arguments case\n");
+        // Only close our duplicates if needed
+        close(*out);
+        close(*in);
+        *out = -1;
+        *in = -1;
+    }
+
+    if (*out == -1 || *in == -1) {
+        perror("dup");
+        return (-1);
+    }
+    return (0);
 }
 
 static int	skip_n_flags(char **args, int *newline)
@@ -94,8 +137,13 @@ int	builtin_echo(char **args, t_shell *shell)
 	int	original_stdout;
 	int	original_stdin;
 
-	if (save_stdio(&original_stdout, &original_stdin) == -1)
-		return (1);
+	// print args
+	/*for (i = 0; args[i]; i++)
+	{
+		printf("%s ", args[i]);
+	}*/
+	if (save_stdio(&original_stdout, &original_stdin, args) == -1)
+			return (1);
 	if (handle_redirections(args, shell) == -1)
 	{
 		// Restore and close all file descriptors
@@ -106,6 +154,7 @@ int	builtin_echo(char **args, t_shell *shell)
 		return (shell->exit_status);
 	}
 	i = skip_n_flags(args, &newline);
+	//printf("args: %s\n", args[i]);
 	print_echo_arguments(args, i);
 	if (newline)
 		printf("\n");

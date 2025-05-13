@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 14:20:30 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 19:36:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -270,6 +270,7 @@ int					is_quoted(char *str);
 
 // quotes.c
 char				*handle_quotes(char *input);
+char	*handle_quotes_for_pipe(char *input);
 
 // redirections.c
 int					handle_heredoc(char *delimiter);

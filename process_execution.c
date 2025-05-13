@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 17:34:50 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 16:55:29 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 20:58:27 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	handle_child_process(char *full_path, char **args, t_shell *shell)
 {
-	printf("child??\n");
+	//printf("child??\n");
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	execve(full_path, args, shell->envp);
@@ -30,7 +30,7 @@ static void	handle_parent_process(pid_t pid, int is_background, char **args,
 {
 	int	status;
 
-	printf("parent??\n");
+	//printf("parent??\n");
 
 	if (is_background)
 	{

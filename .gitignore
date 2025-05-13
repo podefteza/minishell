@@ -1,5 +1,6 @@
 # minishell executable
 minishell
+.vscode/
 
 # Prerequisites
 *.d

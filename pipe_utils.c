@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:44:30 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/06 15:24:09 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/12 19:35:35 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	clean_command_args(char **commands)
 	i = 0;
 	while (commands[i])
 	{
-		cleaned_arg = handle_quotes(commands[i]);
+		cleaned_arg = handle_quotes_for_pipe(commands[i]);
 		commands[i] = cleaned_arg;
 		i++;
 	}
