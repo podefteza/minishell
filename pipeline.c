@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:32:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 21:58:09 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/14 10:08:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	execute_pipeline(char **commands, t_shell *shell)
 		return ;
 	}
 	wait_for_commands_and_set_status(pids, pid_count, shell);
+
 	if (input_fd != STDIN_FILENO)
 		close(input_fd);
 }

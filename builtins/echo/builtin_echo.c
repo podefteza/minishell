@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/13 09:25:17 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/14 09:19:52 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 	return (0);
 }*/
 
-static int save_stdio(int *out, int *in, char **args)
+/**static int save_stdio(int *out, int *in, char **args)
 {
     *out = dup(STDOUT_FILENO);
     *in = dup(STDIN_FILENO);
@@ -65,6 +65,40 @@ static int save_stdio(int *out, int *in, char **args)
 
     if (*out == -1 || *in == -1) {
         perror("dup");
+        return (-1);
+    }
+    return (0);
+}*/
+
+static int save_stdio(int *out, int *in, char **args)
+{
+
+	/*fprintf(stderr, "save_stdio()");
+	fprintf(stderr, "Debug before dup: out = %d, in = %d\n", *out, *in);*/
+
+	*out = dup(STDOUT_FILENO);
+    *in = dup(STDIN_FILENO);
+
+	//fprintf(stderr, "Debug after dup: out = %d, in = %d\n", *out, *in);
+
+
+
+    // Debug print (remove in final version)
+    //fprintf(stderr, "Debug: first arg is '%s'\n", args[0]);
+
+    // Proper comparison
+    if (ft_strncmp(args[0], "echo", 5) == 0 && args[1] == NULL)
+    {
+        //fprintf(stderr, "Handling echo with no arguments case\n");
+        // Only close our duplicates if needed
+        close(*out);
+        close(*in);
+        *out = -1;
+        *in = -1;
+    }
+
+    if (*out == -1 || *in == -1) {
+        //perror("dup"); // is this necessary? echo with no args gives "error" dup: Success
         return (-1);
     }
     return (0);
@@ -93,6 +127,7 @@ static int	skip_n_flags(char **args, int *newline)
 
 static void	print_echo_arguments(char **args, int i)
 {
+	char *tmp;
 	while (args[i])
 	{
 		if (!is_quoted(args[i]) && is_redirection_token(args[i]))
@@ -103,11 +138,13 @@ static void	print_echo_arguments(char **args, int i)
 				i++;
 			continue ;
 		}
-		args[i] = handle_quotes(args[i]);
-		printf("%s", args[i]);
+		//args[i] = handle_quotes(args[i]);
+		tmp = handle_quotes(args[i]);
+		printf("%s", tmp);
 		if (args[i + 1])
 			printf(" ");
 		i++;
+		free(tmp);
 	}
 }
 

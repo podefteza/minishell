@@ -260,37 +260,6 @@ os_specific
 ❌ export | sort | grep -v SHLVL | grep -v "declare -x _" | grep -v "PS.="
 grep with spaces inside double quotes, should preserve the quotes of the commands
 
-
-❌ still reachable:
-env | sort | grep -v SHLVL | grep -v ^_
-
-export GHOST=123 | env | grep GHOST
-
-echo <\"./test_files/infile_big\" | cat <\"./test_files/infile\"
-
-echo <\"./test_files/infile_big\" | cat \"./test_files/infile\"
-
-echo <\"./test_files/infile_big\" | echo <\"./test_files/infile\"
-
-echo hi | cat <\"./test_files/infile\"
-
-echo hi | cat \"./test_files/infile\"
-
-cat <\"./test_files/infile\" | echo hi
-
-cat <\"./test_files/infile\" | grep hello
-
-cat <\"./test_files/infile_big\" | echo hi
-
-cat <missing | cat
-
-cat <missing | echo oi
-
-cat <missing | cat <\"./test_files/infile\"
-
-echo <123 <456 hi | echo 42
-
-
 ❌ echo hi |  "|"
 minishell: ": command not found
 
@@ -298,9 +267,9 @@ minishell: ": command not found
 
 
 ❌❌❌❌❌ OPEN FDS ON:
-✔️echo <"./test_files/infile_big" | cat <"./test_files/infile"
-✔️echo <"./test_files/infile_big" | echo <"./test_files/infile"
-echo hi | cat <"./test_files/infile"
+✔️+ LEAKS: echo <"./test_files/infile_big" | cat <"./test_files/infile"
+✔️+ LEAKS: echo <"./test_files/infile_big" | echo <"./test_files/infile"
+❌ + LEAKS: echo hi | cat <"./test_files/infile"
 
 
 

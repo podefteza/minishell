@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/13 09:47:25 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/14 09:24:53 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	input_with_pipe(char *final_input, t_shell *shell)
 	free(final_input);
 	execute_pipeline(commands, shell);
 	//printf("we'll get here\n");
-	free_array(commands); // Free the commands array
+	//free_array(commands); // i don't think this will be called, so we need to free commands on execute_pipeline
 	return (1);
 }
 
