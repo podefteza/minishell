@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 15:50:35 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:04:00 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,82 +36,79 @@ int	handle_heredoc(char *delimiter)
 	return (fd[0]);
 }
 
-static int	count_redirections(char **args)
+int	handle_redirections(char **args, t_shell *shell)
 {
-	int	count;
-	int	i;
+	int		i;
+	int		j;
+	int		input_fd;
+	int		output_fd;
+	char	*op;
+	char	*filename;
+	int		fd;
 
-	count = 0;
 	i = 0;
+	j = 0;
+	// int total_redirections = count_redirections(args);
+	input_fd = -1;
+	output_fd = -1;
 	while (args[i])
 	{
 		if (is_redirection_operator(args[i]))
-			count++;
-		i++;
-	}
-	return (count);
-}
-
-static int	handle_if_redirection(char **args, int *i, int *j, t_shell *shell,
-		int total)
-{
-	int redirection_result = 0;
-	if (is_redirection_operator(args[*i]))
-	{
-		redirection_result = process_valid_redirection(args, *i, shell, total);
-		if (redirection_result == -1)
 		{
-			//fprintf(stderr, "error\n");
-			return (-1);
+			op = args[i];
+			filename = args[i + 1];
+			if (!filename)
+			{
+				ft_puterr("minishell", SNT, " `newline'", "\n");
+				shell->exit_status = 2;
+				return (-1);
+			}
+			fd = open_redirection_file(op, filename);
+			if (fd == -1)
+			{
+				ft_putstr_fd("minishell: ", STDERR_FILENO);
+				perror(filename);
+				shell->exit_status = 1;
+				return (-1);
+			}
+			if (op[0] == '<')
+			{
+				if (input_fd != -1)
+					close(input_fd);
+				input_fd = fd;
+				if (dup2(fd, STDIN_FILENO) == -1)
+				{
+					perror("dup2");
+					close(fd);
+					return (-1);
+				}
+			}
+			else
+			{
+				if (output_fd != -1)
+					close(output_fd);
+				output_fd = fd;
+				if (dup2(fd, STDOUT_FILENO) == -1)
+				{
+					perror("dup2");
+					close(fd);
+					return (-1);
+				}
+			}
+			// Skip the redirection operator and filename
+			i += 2;
 		}
-		*i += 2;
-	}
-	else if (is_invalid_redirection(args[*i]))
-	{
-		if (handle_invalid_redirection_token(args, *i, shell) == -1)
+		else
 		{
-			//fprintf(stderr, "error2\n");
-			return (-1);
+			// Copy non-redirection tokens
+			args[j++] = args[i++];
 		}
-		args[(*j)++] = args[(*i)++];
-	}
-	else
-		args[(*j)++] = args[(*i)++];
-	return (0);
-}
-
-static int	finalize_redirection_args(char **args, int j, t_shell *shell)
-{
-	if (j == 0)
-	{
-		args = NULL;
-		return (-1);
 	}
 	args[j] = NULL;
-	shell->exit_status = 0;
+	// Close the file descriptors after dup2
+	if (input_fd != -1)
+		close(input_fd);
+	if (output_fd != -1)
+		close(output_fd);
 	return (0);
-}
-
-int	handle_redirections(char **args, t_shell *shell)
-{
-	int	i;
-	int	j;
-	int	total_redirections;
-
-	total_redirections = count_redirections(args);
-	i = 0;
-	j = 0;
-	int redirection_result = 0;
-	while (args[i])
-	{
-		redirection_result = handle_if_redirection(args, &i, &j, shell,
-				total_redirections);
-		if (redirection_result == -1)
-		{
-			//fprintf(stderr, "error3\n");
-			return (-1);
-
-		}
-	}
-	return (finalize_redirection_args(args, j, shell));
 }

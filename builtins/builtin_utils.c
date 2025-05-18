@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 17:04:37 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 21:27:42 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:03:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,28 +32,24 @@ void	builtin_setup(t_builtin *builtins)
 	builtins[7].func = NULL;
 }
 
-int	execute_builtin(char **args, t_shell *shell)
+int	execute_builtins(t_shell *shell, char **cmd)
 {
-	int	i;
-
-	//printf("execute_builtin: %s\n", args[0]);
-
-	i = 0;
-	if (!args || !args[0] || !shell)
+	if (!cmd || !cmd[0])
 		return (0);
-	while (shell->builtins[i].cmd != NULL)
+	for (int i = 0; shell->builtins[i].cmd; i++)
 	{
-		if (shell->builtins[i].cmd && ft_strncmp(args[0],
-				shell->builtins[i].cmd, ft_strlen(shell->builtins[i].cmd)
-				+ 1) == 0)
+		if (ft_strncmp(cmd[0], shell->builtins[i].cmd,
+				ft_strlen(shell->builtins[i].cmd) + 1) == 0)
 		{
-			if (shell->builtins[i].func)
+			// Handle redirections for builtins
+			if (handle_redirections(cmd, shell) == -1)
 			{
-				shell->exit_status = shell->builtins[i].func(args, shell);
-				return (1);
+				shell->exit_status = 1;
+				return (1); // Consider it "handled" even if redirection failed
 			}
+			shell->exit_status = shell->builtins[i].func(cmd, shell);
+			return (1);
 		}
-		i++;
 	}
 	return (0);
 }

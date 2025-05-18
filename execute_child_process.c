@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 14:09:19 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/14 10:49:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 11:18:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,11 @@ static int	safe_execute_command(char **args, t_shell *shell)
 {
 	char	*cmd_path;
 
+	//fprintf(stderr, "=========== safe_execute_command\n");
+
 	if (!args || !args[0])
 		return (shell->exit_status = 0, 1);
-	if (execute_builtin(args, shell))
+	if (execute_builtins(shell))
 	{
 		free_array(args); // added this...
 		free_shell_resources(shell); // added this...

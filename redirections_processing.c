@@ -6,81 +6,35 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 12:12:18 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/14 10:40:44 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 15:02:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	do_dup(int fd, int is_output)
+static int redirect_command(int apply_redirection, char *op, char *filename,
+                          t_shell *shell, int total_redirections)
 {
-	int	dup_result;
+    (void)total_redirections; // Unused variable
+	int fd = open_redirection_file(op, filename);
+    if (fd == -1) {
+        ft_putstr_fd("minishell: ", STDERR_FILENO);
+        perror(filename);
+        shell->exit_status = 1;
+        return -1;
+    }
 
-	if (is_output)
-		dup_result = dup2(fd, STDOUT_FILENO);
-	else
-		dup_result = dup2(fd, STDIN_FILENO);
-	if (dup_result == -1)
-	{
-		perror("dup2 failed");
-		close(fd);
-		return (-1);
-	}
-	return (0);
-}
+    if (apply_redirection) {
+        int target_fd = (op[0] == '>') ? STDOUT_FILENO : STDIN_FILENO;
+        if (dup2(fd, target_fd) == -1) {
+            perror("dup2 failed");
+            close(fd);
+            return -1;
+        }
+    }
 
-static int	finalize_redirection(char **op, char **filename, int fd, int *count)
-{
-	(*count)--;
-	/*printf("debug.................\n");
-	printf("op: %s\n", *op);
-	printf("filename: %s\n", *filename);*/
-	if (*count == 0 || *count == 1)
-	{
-		if (!(is_redirection_operator(*op)))
-		{
-			//printf("debug1\n");
-			free(*op); // commenting this solves issues in [< .]  [<< EOF]  [> file] also we get minishell_tester OK
-			*op = NULL;
-		}
-		if (*filename)
-		{
-			//printf("debug2\n");
-			//free(*filename); // commenting this solves issues in [< .]  [<< EOF]  [> file] also we get minishell_tester OK
-			*filename = NULL;
-		}
-	}
-	close(fd);
-	return (0);
-}
-
-static int	redirect_command(int apply_redirection, char *op, char *filename,
-		t_shell *shell, int total_redirections)
-{
-	int			fd;
-	int			is_output;
-	static int	redirection_count = 0;
-
-	is_output = (op[0] == '>');
-	fd = open_redirection_file(op, filename);
-	if (fd == -1)
-	{
-		//printf("debug........\n");
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		perror(filename);
-		shell->exit_status = 1;
-		return (-1);
-	}
-
-	// Initialize redirection_count if it's the first redirection
-	if (redirection_count == 0)
-		redirection_count = total_redirections;
-
-	if (apply_redirection && do_dup(fd, is_output) == -1)
-		return (-1);
-
-	// Pass op and filename as pointers so they can be modified
-	return (finalize_redirection(&op, &filename, fd, &redirection_count));
+    close(fd);  // Close the file descriptor after dup2
+    return 0;
 }
 
 int	process_valid_redirection(char **args, int i, t_shell *shell,

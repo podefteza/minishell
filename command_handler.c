@@ -6,31 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 18:39:41 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 16:40:30 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static int	io_backup(int *stdin_backup, int *stdout_backup)
-{
-	*stdin_backup = dup(STDIN_FILENO);
-	*stdout_backup = dup(STDOUT_FILENO);
-	if (*stdin_backup == -1 || *stdout_backup == -1)
-		return (-1);
-	return (0);
-}
-
-static int	handle_background(char **args, int arg_count)
-{
-	if (arg_count > 0 && ft_strncmp(args[arg_count - 1], "&", 2) == 0)
-	{
-		free(args[arg_count - 1]);
-		args[arg_count - 1] = NULL;
-		return (1);
-	}
-	return (0);
-}
 
 static char	*validate_and_find_command(char **args, t_shell *shell)
 {
@@ -41,51 +21,201 @@ static char	*validate_and_find_command(char **args, t_shell *shell)
 		return (NULL);
 	full_path = find_command(args[0], shell);
 	if (!full_path)
+	{
+		//shell->exit_status = 127;
 		return (NULL);
+	}
 	if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode))
 	{
-		is_directory(full_path, shell);
+		ft_puterr("minishell: ", full_path, IAD, "\n");
+		shell->exit_status = 126;
 		free(full_path);
 		return (NULL);
 	}
 	return (full_path);
 }
 
-int	execute_command(char **args, t_shell *shell)
+void	close_pipe_ends(int pipe_fd[2], int prev_read)
+{
+	if (pipe_fd[0] != -1)
+		close(pipe_fd[0]);
+	if (pipe_fd[1] != -1)
+		close(pipe_fd[1]);
+	if (prev_read != -1)
+		close(prev_read);
+}
+
+bool	needs_pipe(t_shell *shell, int idx)
+{
+	return (shell->input.commands[idx + 1] && shell->input.commands[idx + 1][0]
+		&& ft_strncmp(shell->input.commands[idx + 1][0], "|", 2) == 0);
+}
+
+void	handle_child_execution(char **args, t_shell *shell)
 {
 	char	*full_path;
+
+	//printf("inside handle_child_execution\n");
+	// Reset signals to default in child
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	// Find and validate command
+	full_path = validate_and_find_command(args, shell);
+	if (!full_path)
+		return;
+	execve(full_path, args, shell->envp);
+	perror("execve");
+	if (full_path != args[0])
+		free(full_path);
+	shell->exit_status = 126;
+	free_shell_resources(shell);
+	return ;
+}
+
+// Helper function to safely close file descriptors
+void	safe_close(int fd)
+{
+	if (fd != -1)
+	{
+		close(fd);
+	}
+}
+
+int	execute_command(t_shell *shell)
+{
 	int		stdin_backup;
 	int		stdout_backup;
-	int		arg_count;
-	int		is_background;
+	int		pipe_fd[2] = {-1, -1};
+	int		prev_pipe_read;
+	int		status;
+	pid_t	*child_pids;
+	int		num_commands;
+	int		cmd_idx;
+	int		pid_idx;
+	int		child_status;
+	char	**args;
+	pid_t	pid;
 
-	if (!args || !args[0] || io_backup(&stdin_backup, &stdout_backup) == -1)
+	stdin_backup = dup(STDIN_FILENO);
+	stdout_backup = dup(STDOUT_FILENO);
+	prev_pipe_read = -1;
+	status = 1;
+	child_pids = NULL;
+	num_commands = 0;
+	cmd_idx = 0;
+	pid_idx = 0;
+	if (!shell->input.commands || stdin_backup == -1 || stdout_backup == -1)
+	{
+		if (stdin_backup != -1)
+			close(stdin_backup);
+		if (stdout_backup != -1)
+			close(stdout_backup);
 		return (0);
-	int handle_redirection_result = handle_redirections(args, shell);
-	//printf("result of handle_redirections: %d\n", handle_redirection_result);
-	if (handle_redirection_result == -1)
+	}
+	// Count actual commands (excluding pipe tokens)
+	for (int i = 0; shell->input.commands[i]; i++)
 	{
-		//fprintf(stderr, "Error in handle_redirections, will return 0\n");
+		if (!(shell->input.commands[i][0]
+				&& ft_strncmp(shell->input.commands[i][0], "|", 2) == 0))
+		{
+			num_commands++;
+		}
+	}
+	child_pids = malloc(num_commands * sizeof(pid_t));
+	if (!child_pids)
+	{
+		close(stdin_backup);
+		close(stdout_backup);
+		return (0);
+	}
+	while (shell->input.commands[cmd_idx])
+	{
+		//printf("will execute command: %s\n", shell->input.commands[cmd_idx][0]);
+		args = shell->input.commands[cmd_idx];
+		// Skip pipe tokens
+		if (args[0] && ft_strncmp(args[0], "|", 2) == 0)
+		{
+			cmd_idx++;
+			continue ;
+		}
+		// Reset pipe file descriptors
+		pipe_fd[0] = -1;
+		pipe_fd[1] = -1;
+		// Create pipe if needed
+		if (shell->input.commands[cmd_idx + 1] != NULL)
+		{
+			if (pipe(pipe_fd) == -1)
+			{
+				perror("pipe");
+				status = -1;
+				break ;
+			}
+		}
+		pid = fork();
+		if (pid < 0)
+		{
+			perror("fork");
+			status = -1;
+			break ;
+		}
+		else if (pid == 0) {
+		// Child process
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 
-		restore_io(stdin_backup, stdout_backup);
-		free_array(args);
-		return (-1);
+		// Handle pipes
+		if (prev_pipe_read != -1) {
+			dup2(prev_pipe_read, STDIN_FILENO);
+			close(prev_pipe_read);
+		}
+		if (pipe_fd[1] != -1) {
+			dup2(pipe_fd[1], STDOUT_FILENO);
+			close(pipe_fd[1]);
+		}
+
+		// Handle redirections
+		if (handle_redirections(args, shell) == -1) {
+			exit(1);
+		}
+
+		// Close all remaining FDs
+		safe_close(pipe_fd[0]);
+		safe_close(prev_pipe_read);
+
+		// Execute command
+		handle_child_execution(args, shell);
 	}
-	//fprintf(stderr, "handle_redirections OK\n");
-	arg_count = 0;
-	while (args[arg_count])
-		arg_count++;
-	is_background = handle_background(args, arg_count);
-	full_path = validate_and_find_command(args, shell);
-	//fprintf(stderr, "checking...\n");
-	if (full_path)
+		else
+		{
+			//printf("parent process: %d\n", getpid());
+			// Parent process
+			child_pids[pid_idx++] = pid;
+			// Close unused pipe ends
+			safe_close(prev_pipe_read);
+			safe_close(pipe_fd[1]);
+			// Save read end for next command
+			prev_pipe_read = pipe_fd[0];
+		}
+		cmd_idx++;
+	}
+	// Cleanup
+	safe_close(prev_pipe_read);
+	safe_close(pipe_fd[0]);
+	safe_close(pipe_fd[1]);
+	// Wait for all child processes to complete
+	for (int i = 0; i < pid_idx; i++)
 	{
-		//printf(("will execute process\n"));
-		execute_process(full_path, args, is_background, shell);
-		if (full_path != args[0])
-			free(full_path);
+		waitpid(child_pids[i], &child_status, 0);
+		if (WIFEXITED(child_status))
+		{
+			shell->exit_status = WEXITSTATUS(child_status);
+		}
 	}
-	restore_io(stdin_backup, stdout_backup);
-	//fprintf(stderr, "end of execute:command OK\n");
-	return (1);
+	free(child_pids);
+	// Restore original file descriptors
+	dup2(stdin_backup, STDIN_FILENO);
+	dup2(stdout_backup, STDOUT_FILENO);
+	close(stdin_backup);
+	close(stdout_backup);
+	return (status);
 }

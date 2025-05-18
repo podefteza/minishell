@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 09:14:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 17:00:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 16:22:01 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	handle_export_assignment(char *arg, t_shell *shell)
 {
 	char	*copy;
 	char	*equal_sign;
+
 
 	copy = ft_strdup(arg);
 	if (!copy)
@@ -94,6 +95,12 @@ void	display_export_entry(char *entry)
 int	builtin_export(char **args, t_shell *shell)
 {
 	int	i;
+
+	// print args
+	/*for (int j = 0; args[j]; j++)
+	{
+		printf("args[%d]: %s\n", j, args[j]);
+	}*/
 
 	if (!args[1])
 	{

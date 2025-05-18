@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 19:37:06 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 16:50:33 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,46 @@ int	builtin_exit_with_code(char **args, t_shell *shell)
 	return (0);
 }
 
+char	*strip_inner_quotes(const char *str)
+{
+	char	*result;
+	int		i;
+	int		j;
+
+	result = malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] != '\'' && str[i] != '"')
+		{
+			result[j] = str[i];
+			j++;
+		}
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+
 int	builtin_exit(char **args, t_shell *shell)
 {
-	int	exit_code;
+	int		exit_code;
+	char	*cleaned;
 
-	//printf("inside builtin_exit\n");
 	if (!args || !args[0])
 		exit_code = 0;
 	else
 	{
+		if (args[1])
+		{
+			cleaned = strip_inner_quotes(args[1]);
+			free(args[1]);
+			args[1] = cleaned;
+		}
 		exit_code = builtin_exit_with_code(args, shell);
 		if (exit_code == -1)
 		{
@@ -42,5 +73,4 @@ int	builtin_exit(char **args, t_shell *shell)
 	free_array(args);
 	free_shell_resources(shell);
 	exit(exit_code);
-	//return (exit_code);
 }

@@ -6,84 +6,217 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/13 09:05:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 16:26:21 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	count_tokens(char *input)
+char	**list_to_array(t_list *lst)
 {
-	int		total_tokens;
-	char	*temp_ptr;
-	char	*token;
-	char	*temp_input;
-
-	total_tokens = 0;
-	temp_input = ft_strdup(input);
-	if (!temp_input)
-		return (-1);
-	temp_ptr = temp_input;
-	while (1)
-	{
-		token = get_next_token(&temp_ptr);
-		if (!token)
-			break ;
-		total_tokens++;
-		free(token);
-	}
-	free(temp_input);
-	return (total_tokens);
-}
-
-static int	fill_args_array(char **args, char *input, int total_tokens)
-{
+	int		len;
+	char	**arr;
 	int		i;
-	char	*input_ptr;
-	char	*token;
 
+	len = ft_lstsize(lst);
+	arr = malloc((len + 1) * sizeof(char *));
+	if (!arr)
+		return (NULL);
 	i = 0;
-	input_ptr = input;
-	while (i < total_tokens)
+	while (lst)
 	{
-		token = get_next_token(&input_ptr);
-		if (!token)
-			break ;
-		args[i] = ft_strdup(token);
-		free(token);
-		if (!args[i])
-			break ;
-		i++;
+		arr[i++] = lst->content;
+		lst = lst->next;
 	}
-	if (i != total_tokens)
-		while (i-- > 0)
-			free(args[i]);
-	return (i == total_tokens);
+	arr[i] = NULL;
+	return (arr);
 }
 
-char	**split_arguments(char *input)
+void	free_2d_array(char **array)
 {
-	char	**args;
-	int		total_tokens;
+	if (!array)
+		return ;
+	for (int i = 0; array[i]; i++)
+		free(array[i]);
+	free(array);
+}
 
-	if (!input)
+char	*ft_strndup(const char *s, size_t n)
+{
+	char	*dup;
+	size_t	len;
+
+	len = ft_strlen(s);
+	if (n < len)
+		len = n;
+	dup = malloc(len + 1);
+	if (!dup)
 		return (NULL);
-	total_tokens = count_tokens(input);
-	if (total_tokens < 0)
-		return (NULL);
-	args = malloc(sizeof(char *) * (total_tokens + 1));
-	if (!args)
-		return (NULL);
-	args[total_tokens] = NULL;
-	if (!fill_args_array(args, input, total_tokens))
+	ft_memcpy(dup, s, len);
+	dup[len] = '\0';
+	return (dup);
+}
+
+void	init_tokenizer(t_tokenizer *t, const char *input)
+{
+	t->input = input;
+	t->pos = 0;
+	t->done = false;
+	t->in_quotes = false;
+	t->quote_char = 0;
+}
+
+char	*get_quoted_token(t_tokenizer *t)
+{
+	int	start;
+
+	start = t->pos;
+	while (t->input[t->pos] && t->input[t->pos] != t->quote_char)
+		t->pos++;
+	if (t->input[t->pos] != t->quote_char)
 	{
-		free(args);
 		return (NULL);
 	}
-	// print args
-	/*for (int i = 0; args[i]; i++)
+	return (ft_strndup(t->input + start, t->pos - start));
+}
+
+char	*get_redirection_token(t_tokenizer *t)
+{
+	char	redir;
+	char	*token;
+
+	redir = t->input[t->pos++];
+	if (t->input[t->pos] == redir)
 	{
-		printf("args[%d]: %s\n", i, args[i]);
-	}*/
-	return (args);
+		token = malloc(3);
+		token[0] = redir;
+		token[1] = redir;
+		token[2] = '\0';
+		t->pos++;
+		return (token);
+	}
+	token = malloc(2);
+	token[0] = redir;
+	token[1] = '\0';
+	return (token);
+}
+
+char	*get_normal_token(t_tokenizer *t)
+{
+	int	start;
+
+	start = t->pos;
+	while (t->input[t->pos] && !isspace(t->input[t->pos]))
+	{
+		if (!t->in_quotes && strchr("><|", t->input[t->pos]))
+			break ;
+		t->pos++;
+	}
+	return (ft_strndup(t->input + start, t->pos - start));
+}
+
+char	*get_next_token_tokenizer(t_tokenizer *t)
+{
+	int		start;
+	bool	escaped;
+
+	escaped = false;
+	while (isspace(t->input[t->pos]))
+		t->pos++;
+	if (t->input[t->pos] == '\0')
+	{
+		t->done = true;
+		return (NULL);
+	}
+
+	start = t->pos;
+	while (t->input[t->pos])
+	{
+		if (!t->in_quotes && (t->input[t->pos] == ' ' || t->input[t->pos] == '\t'))
+			break ;
+		if (!t->in_quotes && strchr("><|", t->input[t->pos]))
+			break ;
+		if (!escaped && (t->input[t->pos] == '\'' || t->input[t->pos] == '\"'))
+		{
+			if (!t->in_quotes)
+			{
+				t->in_quotes = true;
+				t->quote_char = t->input[t->pos];
+			}
+			else if (t->quote_char == t->input[t->pos])
+			{
+				t->in_quotes = false;
+			}
+		}
+		t->pos++;
+		if (!t->in_quotes && (isspace(t->input[t->pos]) || strchr("><|", t->input[t->pos])))
+			break ;
+	}
+
+	if (t->pos == start)
+	{
+		// Special token (like >, >>, |), parse it separately
+		return (get_redirection_token(t));
+	}
+	return (ft_strndup(t->input + start, t->pos - start));
+}
+
+
+char	**tokenize_command(const char *cmd)
+{
+	t_tokenizer	tokenizer;
+	t_list		*tokens;
+	char		*token;
+	char		**result;
+
+	init_tokenizer(&tokenizer, cmd);
+	tokens = NULL;
+	while (!tokenizer.done)
+	{
+		token = get_next_token_tokenizer(&tokenizer);
+		if (!token && !tokenizer.done)
+		{
+			ft_lstclear(&tokens, free);
+			return (NULL);
+		}
+		if (token)
+		{
+			ft_lstadd_back(&tokens, ft_lstnew(token));
+		}
+	}
+	result = list_to_array(tokens);
+	ft_lstclear(&tokens, NULL);
+	return (result);
+}
+
+void	split_commands(t_shell *shell)
+{
+	int	cmd_count;
+
+	cmd_count = 0;
+	while (shell->input.args[cmd_count])
+		cmd_count++;
+	shell->input.commands = malloc((cmd_count + 1) * sizeof(char **));
+	if (!shell->input.commands)
+		return ;
+	for (int i = 0; shell->input.args[i]; i++)
+	{
+		if (ft_strncmp(shell->input.args[i], "|", 2) == 0)
+		{
+			shell->input.commands[i] = malloc(2 * sizeof(char *));
+			shell->input.commands[i][0] = ft_strdup("|");
+			shell->input.commands[i][1] = NULL;
+			continue ;
+		}
+		shell->input.commands[i] = tokenize_command(shell->input.args[i]);
+		if (!shell->input.commands[i])
+		{
+			while (i-- > 0)
+				free_2d_array(shell->input.commands[i]);
+			free(shell->input.commands);
+			shell->input.commands = NULL;
+			return ;
+		}
+	}
+	shell->input.commands[cmd_count] = NULL;
 }

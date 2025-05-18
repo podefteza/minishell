@@ -6,29 +6,33 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/14 09:24:53 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 17:01:51 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	input_with_pipe(char *final_input, t_shell *shell)
+void	check_for_pipe(t_shell *shell)
 {
-	char	**commands;
-
-	if (!ft_strchr(final_input, '|') || !is_pipe_outside_quotes(final_input))
-		return (0);
-	commands = split_pipe(final_input, shell);
-	if (!commands)
+	if (!ft_strchr(shell->input.processed, '|')
+		|| !is_pipe_outside_quotes(shell->input.processed))
 	{
-		free(final_input); // remove this if we get errors
-		return (1);
+		shell->input.args = malloc(2 * sizeof(char *));
+		if (!shell->input.args)
+			return ;
+		shell->input.args[0] = shell->input.processed;
+		shell->input.args[1] = NULL;
+		return ;
 	}
-	free(final_input);
-	execute_pipeline(commands, shell);
-	//printf("we'll get here\n");
-	//free_array(commands); // i don't think this will be called, so we need to free commands on execute_pipeline
-	return (1);
+	shell->input.args = split_pipe(shell);
+	if (!shell->input.args)
+	{
+		shell->input.args = malloc(2 * sizeof(char *));
+		if (!shell->input.args)
+			return ;
+		shell->input.args[0] = shell->input.processed;
+		shell->input.args[1] = NULL;
+	}
 }
 
 int	validate_executable(char **args, t_shell *shell)
@@ -37,7 +41,6 @@ int	validate_executable(char **args, t_shell *shell)
 	{
 		if (access(args[0], F_OK) != 0)
 		{
-			//printf("minishell: %s: %s%s", args[0], NFD, "\n");
 			ft_puterr("minishell: ", args[0], ": No such file or directory\n",
 				"");
 			free_array(args);
@@ -48,47 +51,85 @@ int	validate_executable(char **args, t_shell *shell)
 	return (1);
 }
 
-// grep hi <./test_files/infile
+int	is_pipeline(t_shell *shell)
+{
+	if (!shell->input.commands)
+		return (0);
+	for (int i = 0; shell->input.commands[i]; i++)
+	{
+		if (shell->input.commands[i][0]
+			&& ft_strncmp(shell->input.commands[i][0], "|", 2) == 0)
+		{
+			return (1);
+		}
+	}
+	return (0);
+}
+
+char	*remove_surrounding_quotes(const char *str)
+{
+	size_t	len;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	if ((str[0] == '"' && str[len - 1] == '"') ||
+		(str[0] == '\'' && str[len - 1] == '\''))
+		return (ft_strndup(str + 1, len - 2));
+	return (ft_strdup(str));
+}
+
+void	remove_quotes_from_commands(t_input *input)
+{
+	int		i;
+	int		j;
+	char	*cleaned;
+
+	i = 0;
+	while (input->commands && input->commands[i])
+	{
+		j = 0;
+		while (input->commands[i][j])
+		{
+			cleaned = remove_surrounding_quotes(input->commands[i][j]);
+			free(input->commands[i][j]);
+			input->commands[i][j] = cleaned;
+			j++;
+		}
+		i++;
+	}
+}
+
 
 
 void	execute_final_command(t_shell *shell)
 {
-	// if the command has a pipe, never reaches this!!!! we need to free final_input somewhere else
-	if ((shell->input.args && shell->input.args[0] && ft_strncmp(shell->input.args[0], "exit", 5) == 0))
-	{
-		free(shell->input.processed);
-		builtin_exit(shell->input.args, shell);
-		return ;
-	}
-	if (execute_builtin(shell->input.args, shell))
-	{
-		//printf("shell->input.raw: %s\n", shell->input.raw);
-		free_array(shell->input.args);
-		free(shell->input.processed);
-		return ;
-	}
-	//fprintf(stderr, "will execute_command\n");
-	int execute_command_result = execute_command(shell->input.args, shell);
-	//printf("result of execute_command: %d\n", execute_command_result);
-	if (execute_command_result == 1)
-	{
-		//printf("will free array of args\n");
-				// print args
-		/*for (int i = 0; args[i]; i++)
-		{
-			printf("args[%d]: %s\n", i, args[i]);
-		}*/
-		//printf("args[2]: %s\n", args[2]);
-		free_array(shell->input.args); // these args we'll free are the ones allocated by split_arguments (tokenize.c:74)
-	}
-	//fprintf(stderr, "execute_command OK, will free args in execute_final_command\n");
-	// print the args to check if they are freed
+	int stdin_backup = dup(STDIN_FILENO);
+    int stdout_backup = dup(STDOUT_FILENO);
 
 
-	free(shell->input.processed);
+	if (!shell->input.commands)
+		return ;
+	//printf("Executing command: %s\n", shell->input.commands[0][0]);
+	if (shell->input.commands[0] && !is_pipeline(shell))
+	{
+		if (execute_builtins(shell, shell->input.commands[0])){
+			// Restore stdio if builtin was executed
+			dup2(stdin_backup, STDIN_FILENO);
+			dup2(stdout_backup, STDOUT_FILENO);
+			close(stdin_backup);
+			close(stdout_backup);
+			return;
+    	}
+	}
+	execute_command(shell);
+	 dup2(stdin_backup, STDIN_FILENO);
+    dup2(stdout_backup, STDOUT_FILENO);
+    close(stdin_backup);
+    close(stdout_backup);
 }
 
-void	handle_echo_args(char **args) // check if this is being used, remove it!!!!!!!!!!!!!
+void	handle_echo_args(char **args)
 {
 	int		i;
 	int		len;
@@ -114,28 +155,49 @@ void	handle_echo_args(char **args) // check if this is being used, remove it!!!!
 	}
 }
 
-
-
 void	handle_input(t_shell *shell)
 {
 	handle_signal_status(shell);
+	// Input processing
 	shell->input.processed = process_initial_input(shell->input.raw);
 	if (!shell->input.processed)
 		return ;
-	shell->input.processed = process_input_for_execution(shell);
-	if (!shell->input.processed)
-		return ;
-	parse_command_arguments(shell);
-	if (!shell->input.args)
-		return ;
-	if (shell->input.args[0] && ft_strncmp(shell->input.args[0], "echo", ft_strlen("echo")) == 0)
-		handle_echo_args(shell->input.args);
-	else
-		clean_arguments(shell);
-	if (!validate_executable(shell->input.args, shell))
+	shell->input.processed = check_for_expansion(shell);
+	if (!shell->input.processed || shell->input.processed[0] == '\0')
 	{
 		free(shell->input.processed);
 		return ;
 	}
+	if (validate_syntax(shell))
+	{
+		free(shell->input.processed);
+		return ;
+	}
+	// Command splitting
+	check_for_pipe(shell);
+	split_commands(shell);
+	//print commands to be executed
+	/*for (int i = 0; shell->input.commands[i]; i++)
+	{
+		printf("Command %d: ", i);
+		for (int j = 0; shell->input.commands[i][j]; j++)
+		{
+			printf("%s\n", shell->input.commands[i][j]);
+		}
+		printf("\n");
+	}*/
+	remove_quotes_from_commands(&shell->input);
+	/*for (int i = 0; shell->input.commands[i]; i++)
+	{
+		printf("Command after removed quotes %d: ", i);
+		for (int j = 0; shell->input.commands[i][j]; j++)
+		{
+			printf("%s\n", shell->input.commands[i][j]);
+		}
+		printf("\n");
+	}*/
+	// Execute all commands
 	execute_final_command(shell);
+	// Cleanup
+	// free_commands(shell);  // You'll need to implement this
 }

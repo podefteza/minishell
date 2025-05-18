@@ -6,26 +6,46 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 14:22:40 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/14 10:27:51 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 15:03:47 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char	**get_command_args(char *command)
+static char	**get_command_args(t_shell *shell, int i)
 {
 	char	**args;
 
-	if (is_empty(command))
+	// print args
+	/*for (int j = 0; command[j]; j++)
 	{
+		printf("command[%d]: %c", j, command[j]);
+	}*/
+
+	if (is_empty(shell->input.args[i]))
+	{
+		//fprintf(stderr, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!empty command\n");
 		args = malloc(sizeof(char *) * 2);
 		if (!args)
 			return (NULL);
-		args[0] = ft_strdup(command);
+		args[0] = ft_strdup(shell->input.args[i]);
 		args[1] = NULL;
 	}
-	else
-		args = split_arguments(command);
+	/*else
+		args = split_arguments(shell->input.args[i]);*/
+
+	// print args
+	for (int j = 0; args[j]; j++)
+	{
+		printf("args after get_command_args[%d]: %s\n", j, args[j]);
+	}
+	//free(command);
+
+
+	(void)shell;
+
+
+
 	return (args);
 }
 
@@ -78,7 +98,7 @@ static pid_t	fork_and_execute(char **args, int *input_fd, int pipe_fds[2],
 	return (pid);
 }
 
-int	process_command(char **commands, int i, int *input_fd, t_shell *shell)
+int	process_command(int i, int *input_fd, t_shell *shell)
 {
 	int		pipe_fds[2];
 	pid_t	pid;
@@ -87,38 +107,25 @@ int	process_command(char **commands, int i, int *input_fd, t_shell *shell)
 	pipe_fds[0] = -1;
 	pipe_fds[1] = -1;
 
-	// print commands
-	/*for (int j = 0; commands[j]; j++)
-	{
-		printf("commands before [%d]: %s\n", j, commands[j]);
-	}*/
 
-	args = get_command_args(commands[i]);
+	args = get_command_args(shell, i);
 	if (!args)
 		return (error_return("minishell: memory allocation error\n", -1));
-	// print args
-	/*for (int j = 0; args[j]; j++)
+	if (setup_process_io(shell->input.args[i + 1], pipe_fds) == -1)
 	{
-		printf("args after.........[%d]: %s\n", j, args[j]);
-	}*/
-	if (setup_process_io(commands[i + 1], pipe_fds) == -1)
-	{
-		//printf("its -1................\n");
+		//free_array(commands);
 		close_fds(pipe_fds, args);
 		return (-1);
 	}
-	//free_array(commands); // added this...
-	pid = fork_and_execute(args, input_fd, pipe_fds, shell, commands);
-	//free_array(commands); // added this...
+	pid = fork_and_execute(args, input_fd, pipe_fds, shell, shell->input.args);
 	if (pid == -1)
 		close_fds(pipe_fds, args);
-
-	//printf("will free array of args\n");
+	//free_array(commands);
 	free_array(args);
 	return (pid);
 }
 
-int	process_commands_in_pipeline(char **commands, int *input_fd, pid_t *pids,
+int	process_commands_in_pipeline(int *input_fd, pid_t *pids,
 		t_shell *shell)
 {
 	int		i;
@@ -127,9 +134,9 @@ int	process_commands_in_pipeline(char **commands, int *input_fd, pid_t *pids,
 
 	i = 0;
 	pid_count = 0;
-	while (commands[i] != NULL)
+	while (shell->input.args[i] != NULL)
 	{
-		pid = process_command(commands, i, input_fd, shell);
+		pid = process_command(i, input_fd, shell);
 		//printf("pid of the process: %d\n", pid);
 		if (pid == -1)
 		{

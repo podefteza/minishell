@@ -6,13 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 13:36:54 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/13 11:18:16 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 11:03:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	handle_wrapped_echo(char *trimmed, char ***args_ptr)
+/*int	handle_wrapped_echo(char *trimmed, char ***args_ptr)
 {
 	char	**raw_args;
 	char	*cmd;
@@ -35,7 +35,7 @@ int	handle_wrapped_echo(char *trimmed, char ***args_ptr)
 
 int	finalize_echo_args(t_shell *shell)
 {
-	char	**raw_args;
+	//char	**raw_args;
 	char	**temp_args;
 	char	**echo_args;
 	int		len;
@@ -56,10 +56,10 @@ int	finalize_echo_args(t_shell *shell)
 	echo_args = handle_echo(temp_args[0], shell);
 
 	// print echo args
-	/*for (int i = 0; echo_args[i]; i++)
+	for (int i = 0; echo_args[i]; i++)
 	{
 		printf("echo_args[%d]: %s\n", i, echo_args[i]);
-	}*/
+	}
 
 
 	if (!echo_args || merge_echo_and_args(&shell->input.args, temp_args, echo_args))
@@ -114,3 +114,4 @@ int	input_with_echo(t_shell *shell)
 	// will return 1
 	return (result);
 }
+*/

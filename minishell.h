@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/13 09:51:15 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/16 16:57:18 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #include <termios.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 // check if all libraries are needed
 
@@ -77,7 +78,16 @@ typedef struct s_input
 	char	*raw;        // Original input from readline
 	char	*processed;  // Processed input (after escapes, expansion, etc.)
 	char	**args;      // Parsed arguments
+	char	***commands;
 }	t_input;
+
+typedef struct s_tokenizer {
+    const char *input;
+    int pos;
+    bool done;
+    bool in_quotes;
+    char quote_char;
+} t_tokenizer;
 
 typedef struct s_shell
 {
@@ -109,7 +119,7 @@ int					ft_isspace(int c);
 
 // ../builtins/builtin_utils.c
 void				builtin_setup(t_builtin *builtins);
-int					execute_builtin(char **args, t_shell *shell);
+int execute_builtins(t_shell *shell, char **cmd);
 
 // ../builtins/cd/builtin_cd.c
 int					builtin_cd(char **args, t_shell *shell);
@@ -126,6 +136,10 @@ int					builtin_echo(char **args, t_shell *shell);
 
 // ../builtins/echo/builtin_echo_utils.c
 char				*get_next_token_for_echo(char **str);
+
+
+
+
 int					count_args_for_echo(char *message);
 void				process_echo_tokens(char **args, char *message,
 						t_shell *shell);
@@ -164,7 +178,7 @@ void				free_array(char **array);
 void				free_shell_resources(t_shell *shell);
 
 // ../command_handler.c
-int				execute_command(char **args, t_shell *shell);
+int	execute_command(t_shell *shell);
 
 // ../command_handler_utils.c
 void				command_not_found(char **args, t_shell *shell);
@@ -186,7 +200,7 @@ void				expand_handle_quotes(char **input, char **ptr,
 void				expand_process_input(char **input, char **ptr,
 						t_shell *shell, int *in_single_quote);
 char	*expand_variables(char *input, t_shell *shell);
-char	*check_for_expansion(char *final_input, t_shell *shell);
+char	*check_for_expansion(t_shell *shell);
 
 // ../expansions.c
 char				*expand_last_bg_pid(t_shell *shell);
@@ -196,8 +210,11 @@ char				*expand_dollar_sign(char **input, t_shell *shell);
 // ../input.c
 char				*input_with_expansion(char *final_input, t_shell *shell);
 
-int					input_with_pipe(char *final_input, t_shell *shell);
+void					check_for_pipe(t_shell *shell);
 void				handle_input(t_shell *shell);
+
+char	*remove_surrounding_quotes(const char *str);
+void	execute_final_command(t_shell *shell);
 
 // ../input_with_echo.c
 int	input_with_echo(t_shell *shell);
@@ -233,7 +250,7 @@ int					count_commands(char **commands);
 void				clean_command_args(char **commands);
 
 // pipe_split.c
-char				**split_pipe(char *input, t_shell *shell);
+char				**split_pipe(t_shell *shell);
 
 // pipeline.c
 int					count_commands(char **commands);
@@ -256,7 +273,7 @@ void				clean_command_args(char **commands);
 
 void				wait_for_commands_and_set_status(pid_t *pids, int pid_count,
 						t_shell *shell);
-void				execute_pipeline(char **commands, t_shell *shell);
+void				execute_pipeline(t_shell *shell);
 
 // execute_child_process.c
 void				execute_child_process(char **args, int input_fd,
@@ -266,10 +283,8 @@ void				execute_child_process(char **args, int input_fd,
 void				execute_parent_process(int *input_fd, int pipe_fds[2]);
 
 // pipe_processing.c
-int					process_command(char **commands, int i, int *input_fd,
-						t_shell *shell);
-int					process_commands_in_pipeline(char **commands, int *input_fd,
-						pid_t *pids, t_shell *shell);
+int					process_command(int i, int *input_fd, t_shell *shell);
+int					process_commands_in_pipeline(int *input_fd, pid_t *pids, t_shell *shell);
 
 // quotes_utils.c
 int					count_quotes(char *input);
@@ -301,9 +316,8 @@ void				get_host_name(char *hostname);
 void				user_hostname(t_shell *shell);
 
 // tokenize.c
-int					count_words(char *input);
-
-char				**split_arguments(char *input);
+void	split_commands(t_shell *shell);
+char	*ft_strndup(const char *s, size_t n);
 
 // tokenize_utils.c
 char				*get_next_token(char **input_ptr);
