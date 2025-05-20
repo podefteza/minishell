@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 09:16:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:45:43 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,4 +94,5 @@ void	setup_shell(t_shell *shell, char **envp)
 	shell->input.processed = NULL; //NEW
 	shell->input.args = NULL; //NEW
 	shell->input.commands = NULL; //NEW
+	shell->should_exit = 0;
 }

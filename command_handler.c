@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 16:40:30 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/20 14:16:51 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,7 @@ static char	*validate_and_find_command(char **args, t_shell *shell)
 		return (NULL);
 	full_path = find_command(args[0], shell);
 	if (!full_path)
-	{
-		//shell->exit_status = 127;
 		return (NULL);
-	}
 	if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode))
 	{
 		ft_puterr("minishell: ", full_path, IAD, "\n");
@@ -55,30 +52,49 @@ void	handle_child_execution(char **args, t_shell *shell)
 {
 	char	*full_path;
 
-	//printf("inside handle_child_execution\n");
-	// Reset signals to default in child
+	fprintf(stderr, "entering handle_child_execution....................\n");
+
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	// Find and validate command
+
 	full_path = validate_and_find_command(args, shell);
+	fprintf(stderr, "Trying to execve: %s\n", full_path);
 	if (!full_path)
-		return;
+	{
+		free_shell_resources(shell);
+		free(full_path);
+		free_array(args);
+		exit(shell->exit_status); // added this!!!!!!!!!!!!!!!!
+	}
+
+
 	execve(full_path, args, shell->envp);
 	perror("execve");
 	if (full_path != args[0])
 		free(full_path);
 	shell->exit_status = 126;
 	free_shell_resources(shell);
-	return ;
+	exit(shell->exit_status);
 }
+
 
 // Helper function to safely close file descriptors
 void	safe_close(int fd)
 {
 	if (fd != -1)
-	{
 		close(fd);
+}
+
+int	is_builtin(char *cmd, t_shell *shell)
+{
+	if (!cmd)
+		return (0);
+	for (int i = 0; shell->builtins[i].cmd; i++)
+	{
+		if (ft_strncmp(cmd, shell->builtins[i].cmd, ft_strlen(cmd)) == 0)
+			return (1);
 	}
+	return (0);
 }
 
 int	execute_command(t_shell *shell)
@@ -112,7 +128,6 @@ int	execute_command(t_shell *shell)
 			close(stdout_backup);
 		return (0);
 	}
-	// Count actual commands (excluding pipe tokens)
 	for (int i = 0; shell->input.commands[i]; i++)
 	{
 		if (!(shell->input.commands[i][0]
@@ -130,25 +145,28 @@ int	execute_command(t_shell *shell)
 	}
 	while (shell->input.commands[cmd_idx])
 	{
-		//printf("will execute command: %s\n", shell->input.commands[cmd_idx][0]);
 		args = shell->input.commands[cmd_idx];
-		// Skip pipe tokens
-		if (args[0] && ft_strncmp(args[0], "|", 2) == 0)
+		if (args && args[0] && ft_strncmp(args[0], "|", 2) == 0)
 		{
 			cmd_idx++;
 			continue ;
 		}
-		// Reset pipe file descriptors
 		pipe_fd[0] = -1;
 		pipe_fd[1] = -1;
-		// Create pipe if needed
-		if (shell->input.commands[cmd_idx + 1] != NULL)
+		int lookahead = cmd_idx + 1;
+		while (shell->input.commands[lookahead]
+			&& shell->input.commands[lookahead][0]
+			&& ft_strncmp(shell->input.commands[lookahead][0], "|", 2) == 0)
+		{
+			lookahead++;
+		}
+		if (shell->input.commands[lookahead] != NULL)
 		{
 			if (pipe(pipe_fd) == -1)
 			{
 				perror("pipe");
 				status = -1;
-				break ;
+				break;
 			}
 		}
 		pid = fork();
@@ -158,64 +176,63 @@ int	execute_command(t_shell *shell)
 			status = -1;
 			break ;
 		}
-		else if (pid == 0) {
-		// Child process
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
+		else if (pid == 0)
+		{
+			// Child process
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
+			if (prev_pipe_read != -1)
+			{
+				dup2(prev_pipe_read, STDIN_FILENO);
+				close(prev_pipe_read);
+			}
+			if (pipe_fd[1] != -1)
+			{
+				dup2(pipe_fd[1], STDOUT_FILENO);
+				close(pipe_fd[1]);
+			}
 
-		// Handle pipes
-		if (prev_pipe_read != -1) {
-			dup2(prev_pipe_read, STDIN_FILENO);
-			close(prev_pipe_read);
+			// Handle redirections
+			if (handle_redirections(args, shell) == -1)
+				exit(1);
+
+			if (is_builtin(args[0], shell))
+			{
+				execute_builtins(shell, args);
+				free_shell_resources(shell);
+				exit(shell->exit_status);  // This is correct
+			}
+
+			// Close remaining FDs before exec
+			safe_close(pipe_fd[0]);
+			safe_close(prev_pipe_read);
+			handle_child_execution(args, shell);
 		}
-		if (pipe_fd[1] != -1) {
-			dup2(pipe_fd[1], STDOUT_FILENO);
-			close(pipe_fd[1]);
-		}
-
-		// Handle redirections
-		if (handle_redirections(args, shell) == -1) {
-			exit(1);
-		}
-
-		// Close all remaining FDs
-		safe_close(pipe_fd[0]);
-		safe_close(prev_pipe_read);
-
-		// Execute command
-		handle_child_execution(args, shell);
-	}
 		else
 		{
-			//printf("parent process: %d\n", getpid());
-			// Parent process
 			child_pids[pid_idx++] = pid;
-			// Close unused pipe ends
 			safe_close(prev_pipe_read);
 			safe_close(pipe_fd[1]);
-			// Save read end for next command
 			prev_pipe_read = pipe_fd[0];
 		}
 		cmd_idx++;
 	}
-	// Cleanup
 	safe_close(prev_pipe_read);
 	safe_close(pipe_fd[0]);
 	safe_close(pipe_fd[1]);
-	// Wait for all child processes to complete
 	for (int i = 0; i < pid_idx; i++)
 	{
 		waitpid(child_pids[i], &child_status, 0);
-		if (WIFEXITED(child_status))
-		{
+		if (i == pid_idx - 1 && WIFEXITED(child_status))
 			shell->exit_status = WEXITSTATUS(child_status);
-		}
 	}
+
 	free(child_pids);
-	// Restore original file descriptors
 	dup2(stdin_backup, STDIN_FILENO);
 	dup2(stdout_backup, STDOUT_FILENO);
 	close(stdin_backup);
 	close(stdout_backup);
+	printf("will return status %d\n", status);
+	fprintf(stderr, "execute_command: final exit status = %d\n", shell->exit_status);
 	return (status);
 }

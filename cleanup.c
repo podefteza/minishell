@@ -6,31 +6,26 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 15:44:13 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/13 11:17:59 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/20 14:09:21 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Modified free_array with debug prints
-void free_array(char **array)
+void	free_array(char **array)
 {
-    int i;
+	int	i;
 
-    if (!array)
-        return;
-
-    //printf("DEBUG: free_array called on %p\n", (void *)array);
-    i = 0;
-    while (array[i])
-    {
-        //printf("DEBUG: freeing array[%d]: '%s' at %p\n", i, array[i], (void *)array[i]);
-        free(array[i]);
-        array[i] = NULL;
-        i++;
-    }
-   // printf("DEBUG: freeing array itself at %p\n", (void *)array);
-    free(array);
+	if (!array)
+		return ;
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		array[i] = NULL;
+		i++;
+	}
+	free(array);
 }
 
 void	free_shell_resources(t_shell *shell)

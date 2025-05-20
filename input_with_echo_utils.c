@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:17:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 11:30:20 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:16:46 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,10 @@ static void	copy_args(char **dst, char **src, int start)
 		dst[start + i] = ft_strdup(src[i]);
 		if (!dst[start + i])
 		{
-			// If strdup fails, free previously allocated strings and return
 			while (i-- > 0)
 				free(dst[start + i]);
 			return ;
 		}
-		//printf("dst[%d]: %s\n", start + i, dst[start + i]);
 		i++;
 	}
 }
@@ -108,27 +106,9 @@ int	merge_echo_and_args(char ***args_ptr, char **raw_args, char **echo_args)
 	copy_args(final_args, echo_args, 0);
 	args_to_copy = NULL;
 	if (raw_args)
-		args_to_copy = raw_args + 1;  // Skip the first argument (which is likely "echo")
-	//printf("-----------------------------\n");
-	/*if (args_to_copy && args_to_copy[0])
-		printf("to copy: %s\n", args_to_copy[0]);*/
+		args_to_copy = raw_args + 1;
 	if (raw_len > 0)
 		copy_args(final_args, args_to_copy, echo_len);
-
-	//free_array(args_to_copy);
-
-	//free(args_to_copy[0]);
 	*args_ptr = final_args;
-	//free(final_args);
-
-	// print copied args
-	/*for (int i = 0; final_args[i]; i++)
-	{
-		printf("final_args copied[%d]: %s\n", i, final_args[i]);
-	}*/
-
-
-
-
 	return (0);
 }

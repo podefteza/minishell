@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 11:49:52 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 08:06:55 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:16:16 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,37 +45,6 @@ char	*input_with_expansion(char *final_input, t_shell *shell)
 	free(final_input);
 	return (trimmed);
 }
-
-/*char	*check_for_expansion(char *final_input, t_shell *shell)
-{
-	char	*expanded;
-	int		i;
-	int		in_single;
-	int		needs_expansion;
-
-	needs_expansion = 0;
-	in_single = 0;
-	i = 0;
-	while (final_input[i])
-	{
-		if (final_input[i] == '\'')
-			in_single = !in_single;
-		else if (final_input[i] == '$' && !in_single
-			&& (i == 0 || final_input[i - 1] != '\\'))
-		{
-			needs_expansion = 1;
-			break ;
-		}
-		i++;
-	}
-	if (needs_expansion)
-	{
-		expanded = input_with_expansion(final_input, shell);
-		free(final_input);
-		return (expanded);
-	}
-	return (final_input);
-}*/
 
 char	*check_for_expansion(t_shell *shell)
 {

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 17:04:00 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/19 11:51:35 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ int	handle_redirections(char **args, t_shell *shell)
 
 	i = 0;
 	j = 0;
-	// int total_redirections = count_redirections(args);
 	input_fd = -1;
 	output_fd = -1;
 	while (args[i])
@@ -95,17 +94,14 @@ int	handle_redirections(char **args, t_shell *shell)
 					return (-1);
 				}
 			}
-			// Skip the redirection operator and filename
 			i += 2;
 		}
 		else
 		{
-			// Copy non-redirection tokens
 			args[j++] = args[i++];
 		}
 	}
 	args[j] = NULL;
-	// Close the file descriptors after dup2
 	if (input_fd != -1)
 		close(input_fd);
 	if (output_fd != -1)

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 14:22:40 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 15:03:47 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:17:22 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,8 @@ static char	**get_command_args(t_shell *shell, int i)
 {
 	char	**args;
 
-	// print args
-	/*for (int j = 0; command[j]; j++)
-	{
-		printf("command[%d]: %c", j, command[j]);
-	}*/
-
 	if (is_empty(shell->input.args[i]))
 	{
-		//fprintf(stderr, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!empty command\n");
 		args = malloc(sizeof(char *) * 2);
 		if (!args)
 			return (NULL);

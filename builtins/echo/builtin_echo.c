@@ -6,103 +6,24 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/14 09:19:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/19 12:15:31 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-
-/*static int	save_stdio(int *out, int *in, char **args)
+static int save_stdio(int *out, int *in)
 {
-
 	*out = dup(STDOUT_FILENO);
 	*in = dup(STDIN_FILENO);
-	//(void)args;
-	// WE NEED TO CLOSE THE FILE DESCRIPTORS ONLY IF THERE'S NO ARG NEXT TO ECHO
-
-
-	// print args
-	for (int i = 0; args[i]; i++)
-	{
-		fprintf(stderr, "args[%d]: %s\n", i, args[i]);
-	}
-	//printf("comp_ %d\n", ft_strncmp(args[0], "echo", 5 ));
-	if (ft_strncmp(args[0], "echo", 5) == 0)// && !args[1])
-	{
-		printf("we are here\n");
-		printf("\n");
-		close(STDOUT_FILENO); // added this line this solves unclosed fds on [echo <"./test_files/infile_big" | echo <"./test_files/infile"]
-		close(STDIN_FILENO); // added this line this solves unclosed fds on [echo <"./test_files/infile_big" | echo <"./test_files/infile"]
-		//return (0);
-	}
 	if (*out == -1 || *in == -1)
 	{
 		perror("dup");
 		return (-1);
 	}
 	return (0);
-}*/
-
-/**static int save_stdio(int *out, int *in, char **args)
-{
-    *out = dup(STDOUT_FILENO);
-    *in = dup(STDIN_FILENO);
-
-    // Debug print (remove in final version)
-    //fprintf(stderr, "Debug: first arg is '%s'\n", args[0]);
-
-    // Proper comparison
-    if (ft_strncmp(args[0], "echo", 5) == 0 && args[1] == NULL)
-    {
-        //fprintf(stderr, "Handling echo with no arguments case\n");
-        // Only close our duplicates if needed
-        close(*out);
-        close(*in);
-        *out = -1;
-        *in = -1;
-    }
-
-    if (*out == -1 || *in == -1) {
-        perror("dup");
-        return (-1);
-    }
-    return (0);
-}*/
-
-static int save_stdio(int *out, int *in, char **args)
-{
-
-	/*fprintf(stderr, "save_stdio()");
-	fprintf(stderr, "Debug before dup: out = %d, in = %d\n", *out, *in);*/
-
-	*out = dup(STDOUT_FILENO);
-    *in = dup(STDIN_FILENO);
-
-	//fprintf(stderr, "Debug after dup: out = %d, in = %d\n", *out, *in);
-
-
-
-    // Debug print (remove in final version)
-    //fprintf(stderr, "Debug: first arg is '%s'\n", args[0]);
-
-    // Proper comparison
-    if (ft_strncmp(args[0], "echo", 5) == 0 && args[1] == NULL)
-    {
-        //fprintf(stderr, "Handling echo with no arguments case\n");
-        // Only close our duplicates if needed
-        close(*out);
-        close(*in);
-        *out = -1;
-        *in = -1;
-    }
-
-    if (*out == -1 || *in == -1) {
-        //perror("dup"); // is this necessary? echo with no args gives "error" dup: Success
-        return (-1);
-    }
-    return (0);
 }
+
 
 static int	skip_n_flags(char **args, int *newline)
 {
@@ -138,7 +59,6 @@ static void	print_echo_arguments(char **args, int i)
 				i++;
 			continue ;
 		}
-		//args[i] = handle_quotes(args[i]);
 		tmp = handle_quotes(args[i]);
 		printf("%s", tmp);
 		if (args[i + 1])
@@ -174,18 +94,11 @@ int	builtin_echo(char **args, t_shell *shell)
 	int	original_stdout;
 	int	original_stdin;
 
-	//printf("inside builtin_echo\n");
 
-	// print args
-	/*for (i = 0; args[i]; i++)
-	{
-		printf("%s ", args[i]);
-	}*/
-	if (save_stdio(&original_stdout, &original_stdin, args) == -1)
-			return (1);
+	if (save_stdio(&original_stdout, &original_stdin) == -1)
+		return (1);
 	if (handle_redirections(args, shell) == -1)
 	{
-		// Restore and close all file descriptors
 		dup2(original_stdout, STDOUT_FILENO);
 		dup2(original_stdin, STDIN_FILENO);
 		close(original_stdout);
@@ -193,19 +106,21 @@ int	builtin_echo(char **args, t_shell *shell)
 		return (shell->exit_status);
 	}
 	i = skip_n_flags(args, &newline);
-	//printf("args: %s\n", args[i]);
-	print_echo_arguments(args, i);
-	if (newline)
-		printf("\n");
-
-
-	// Restore and close all file descriptors
+	if (args[i] == NULL)
+	{
+		if (newline)
+			printf("\n");
+	}
+	else
+	{
+		print_echo_arguments(args, i);
+		if (newline)
+			printf("\n");
+	}
 	dup2(original_stdout, STDOUT_FILENO);
 	dup2(original_stdin, STDIN_FILENO);
 	close(original_stdout);
 	close(original_stdin);
-
 	shell->exit_status = 0;
-
 	return (0);
 }

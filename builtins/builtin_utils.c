@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 17:04:37 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 17:03:36 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/20 11:40:10 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,10 @@ int	execute_builtins(t_shell *shell, char **cmd)
 		if (ft_strncmp(cmd[0], shell->builtins[i].cmd,
 				ft_strlen(shell->builtins[i].cmd) + 1) == 0)
 		{
-			// Handle redirections for builtins
 			if (handle_redirections(cmd, shell) == -1)
 			{
 				shell->exit_status = 1;
-				return (1); // Consider it "handled" even if redirection failed
+				return (1);
 			}
 			shell->exit_status = shell->builtins[i].func(cmd, shell);
 			return (1);

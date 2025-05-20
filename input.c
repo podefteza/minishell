@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 17:01:51 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/20 14:16:18 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,42 @@ char	*remove_surrounding_quotes(const char *str)
 	if (!str)
 		return (NULL);
 	len = ft_strlen(str);
-	if ((str[0] == '"' && str[len - 1] == '"') ||
-		(str[0] == '\'' && str[len - 1] == '\''))
+	if ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\'' && str[len
+			- 1] == '\''))
 		return (ft_strndup(str + 1, len - 2));
 	return (ft_strdup(str));
+}
+
+char	*remove_quotes_concat(const char *str)
+{
+	int		i;
+	int		j;
+	char	quote;
+	char	*result;
+
+	i = 0;
+	j = 0;
+	quote = 0;
+	result = malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
+	while (str[i])
+	{
+		if ((str[i] == '"' || str[i] == '\'') && !quote)
+		{
+			quote = str[i++];
+			continue ;
+		}
+		else if (str[i] == quote)
+		{
+			quote = 0;
+			i++;
+			continue ;
+		}
+		result[j++] = str[i++];
+	}
+	result[j] = '\0';
+	return (result);
 }
 
 void	remove_quotes_from_commands(t_input *input)
@@ -91,7 +123,7 @@ void	remove_quotes_from_commands(t_input *input)
 		j = 0;
 		while (input->commands[i][j])
 		{
-			cleaned = remove_surrounding_quotes(input->commands[i][j]);
+			cleaned = remove_quotes_concat(input->commands[i][j]);
 			free(input->commands[i][j]);
 			input->commands[i][j] = cleaned;
 			j++;
@@ -100,33 +132,42 @@ void	remove_quotes_from_commands(t_input *input)
 	}
 }
 
-
-
 void	execute_final_command(t_shell *shell)
 {
-	int stdin_backup = dup(STDIN_FILENO);
-    int stdout_backup = dup(STDOUT_FILENO);
+	int	stdin_backup;
+	int	stdout_backup;
 
+	stdin_backup = dup(STDIN_FILENO);
+	stdout_backup = dup(STDOUT_FILENO);
 
+	/*if ((shell->input.args && shell->input.args[0]
+			&& ft_strncmp(shell->input.args[0], "exit", 5) == 0))
+	{
+		builtin_exit(shell->input.args, shell);
+		return ;
+	}*/
 	if (!shell->input.commands)
 		return ;
-	//printf("Executing command: %s\n", shell->input.commands[0][0]);
+
 	if (shell->input.commands[0] && !is_pipeline(shell))
 	{
-		if (execute_builtins(shell, shell->input.commands[0])){
-			// Restore stdio if builtin was executed
+		if (execute_builtins(shell, shell->input.commands[0]))
+		{
 			dup2(stdin_backup, STDIN_FILENO);
 			dup2(stdout_backup, STDOUT_FILENO);
 			close(stdin_backup);
 			close(stdout_backup);
-			return;
-    	}
+			if (shell->should_exit == 1)
+				exit(shell->exit_status);
+			return ;
+		}
 	}
 	execute_command(shell);
-	 dup2(stdin_backup, STDIN_FILENO);
-    dup2(stdout_backup, STDOUT_FILENO);
-    close(stdin_backup);
-    close(stdout_backup);
+	printf("after execute_command\n");
+	dup2(stdin_backup, STDIN_FILENO);
+	dup2(stdout_backup, STDOUT_FILENO);
+	close(stdin_backup);
+	close(stdout_backup);
 }
 
 void	handle_echo_args(char **args)
@@ -155,10 +196,10 @@ void	handle_echo_args(char **args)
 	}
 }
 
+
 void	handle_input(t_shell *shell)
 {
 	handle_signal_status(shell);
-	// Input processing
 	shell->input.processed = process_initial_input(shell->input.raw);
 	if (!shell->input.processed)
 		return ;
@@ -173,31 +214,15 @@ void	handle_input(t_shell *shell)
 		free(shell->input.processed);
 		return ;
 	}
-	// Command splitting
 	check_for_pipe(shell);
 	split_commands(shell);
-	//print commands to be executed
-	/*for (int i = 0; shell->input.commands[i]; i++)
-	{
-		printf("Command %d: ", i);
-		for (int j = 0; shell->input.commands[i][j]; j++)
-		{
-			printf("%s\n", shell->input.commands[i][j]);
-		}
-		printf("\n");
-	}*/
 	remove_quotes_from_commands(&shell->input);
-	/*for (int i = 0; shell->input.commands[i]; i++)
-	{
-		printf("Command after removed quotes %d: ", i);
-		for (int j = 0; shell->input.commands[i][j]; j++)
-		{
-			printf("%s\n", shell->input.commands[i][j]);
-		}
-		printf("\n");
-	}*/
-	// Execute all commands
 	execute_final_command(shell);
-	// Cleanup
-	// free_commands(shell);  // You'll need to implement this
+	// free shell->input.commands
+	int cmd_idx = 0;
+	while (shell->input.commands[cmd_idx])
+	{
+		free(shell->input.commands[cmd_idx]);
+		cmd_idx++;
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 16:57:18 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/20 14:08:06 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ typedef struct s_shell
 	char			**export_list;
 	int				exit_status;
 	int				is_prompting;
+	int				should_exit;
 	pid_t			last_bg_pid;
 	t_builtin		builtins[8];
 	t_input		input;
@@ -176,6 +177,7 @@ int					builtin_unset(char **args, t_shell *shell);
 // ../cleanup.c
 void				free_array(char **array);
 void				free_shell_resources(t_shell *shell);
+void	free_shell_input(t_shell *shell);
 
 // ../command_handler.c
 int	execute_command(t_shell *shell);
