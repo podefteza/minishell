@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:39:00 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 20:49:43 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,7 @@ char				*expand_dollar_sign(char **input, t_shell *shell);
 
 // ./parser/
 // ./parser/input_utils.c
-char				*process_initial_input(char *input);
+char	*process_initial_input(char *input);
 void				handle_signal_status(t_shell *shell);
 void				remove_quotes_from_commands(t_input *input);
 // ./parser/input.c
@@ -264,6 +264,7 @@ void				setup_shell(t_shell *shell, char **envp);
 // ./utils/
 // ./utils/cleanup.c
 void				free_array(char **array);
+void	free_input(t_input *input);
 void				free_shell_resources(t_shell *shell);
 // ./utils/error.c
 void				ft_puterr(char *msg1, char *msg2, char *msg3, char *msg4);

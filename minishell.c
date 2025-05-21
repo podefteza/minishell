@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:13:07 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:31:46 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:33:49 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,6 @@ int	main(int argc, char **argv, char **envp)
 	setup_signals();
 	run_shell_loop(&shell);
 	exit_status = shell.exit_status;
-	free_shell_resources(&shell);
+	//free_shell_resources(&shell);
 	return (exit_status);
 }

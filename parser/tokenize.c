@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:10:20 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 21:06:49 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static char	**tokenize_command(const char *cmd)
 			ft_lstadd_back(&tokens, ft_lstnew(token));
 	}
 	result = list_to_array(tokens);
-	ft_lstclear(&tokens, NULL);
+	ft_lstclear(&tokens, free);
 	return (result);
 }
 
@@ -75,27 +75,27 @@ static int	fill_commands(char ***commands, char **args, int count)
 		{
 			commands[i] = tokenize_command(args[i]);
 			if (!commands[i])
-				return (-1);
+				return (i);
 		}
 		i++;
 	}
-	return (0);
+	return (count);
 }
 
 void	split_commands(t_shell *shell)
 {
 	int	count;
-	int	status;
+	int	allocated;
 
 	count = count_args(shell->input.args);
 	shell->input.commands = malloc((count + 1) * sizeof(char **));
 	if (!shell->input.commands)
 		return ;
-	status = fill_commands(shell->input.commands, shell->input.args, count);
-	if (status == -1)
+	allocated = fill_commands(shell->input.commands, shell->input.args, count);
+	if (allocated == -1 || allocated < count)
 	{
-		while (count-- > 0)
-			free_array(shell->input.commands[count]);
+		while (--allocated >= 0)
+			free_array(shell->input.commands[allocated]);
 		free(shell->input.commands);
 		shell->input.commands = NULL;
 	}

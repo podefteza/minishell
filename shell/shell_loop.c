@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:19:12 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:10:47 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 20:50:42 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,10 @@ static void	process_input_line(t_shell *shell)
 		add_history(shell->input.raw);
 		handle_input(shell);
 	}
+	else
+	{
+		free_input(&shell->input);
+	}
 }
 
 void	run_shell_loop(t_shell *shell)
@@ -57,9 +61,10 @@ void	run_shell_loop(t_shell *shell)
 		if (!shell->input.raw)
 		{
 			shell->should_exit = 1;
-			exit(shell->exit_status);
+			builtin_exit(NULL, shell);
 		}
-		process_input_line(shell);
+		else
+			process_input_line(shell);
 		if (shell->should_exit)
 			break ;
 	}

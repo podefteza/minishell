@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 14:06:30 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 21:48:35 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,11 @@ int	builtin_exit(char **args, t_shell *shell)
 		if (args[1])
 		{
 			cleaned = strip_inner_quotes(args[1]);
-			args[1] = cleaned;
+			if (cleaned)
+			{
+				free(args[1]);
+				args[1] = cleaned;
+			}
 		}
 		exit_code = builtin_exit_with_code(args, shell);
 		if (exit_code == -1)
@@ -68,7 +72,8 @@ int	builtin_exit(char **args, t_shell *shell)
 		}
 	}
 	ft_putstr_fd("exit\n", 1);
-	free_shell_resources(shell);
 	shell->should_exit = 1;
+	free_input(&shell->input);
+	free_shell_resources(shell);
 	exit(exit_code);
 }

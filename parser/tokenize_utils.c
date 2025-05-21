@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 17:11:38 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:10:17 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 21:06:55 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,15 @@ char	**list_to_array(t_list *lst)
 	i = 0;
 	while (lst)
 	{
-		arr[i++] = lst->content;
+		arr[i] = ft_strdup(lst->content);
+		if (!arr[i])
+		{
+			while (i-- > 0)
+				free(arr[i]);
+			free(arr);
+			return (NULL);
+		}
+		i++;
 		lst = lst->next;
 	}
 	arr[i] = NULL;

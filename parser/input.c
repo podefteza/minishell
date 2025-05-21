@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:10:09 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 21:28:55 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,34 +53,66 @@ static int	is_pipeline(t_shell *shell)
 	}
 	return (FALSE);
 }
-
 static void	execute_final_command(t_shell *shell)
 {
-	int	stdin_backup;
-	int	stdout_backup;
+	int		stdin_backup;
+	int		stdout_backup;
+	int	need_restore;
 
-	stdin_backup = dup(STDIN_FILENO);
-	stdout_backup = dup(STDOUT_FILENO);
-	if (!shell->input.commands)
+	stdin_backup = -1;
+	stdout_backup = -1;
+	need_restore = FALSE;
+	if (shell->input.commands && shell->input.commands[0])
+	{
+		stdin_backup = dup(STDIN_FILENO);
+		stdout_backup = dup(STDOUT_FILENO);
+		need_restore = TRUE;
+	}
+	if (shell->input.commands && shell->input.commands[0]
+		&& ft_strncmp(shell->input.commands[0][0], "exit", 5) == 0)
+	{
+		if (need_restore)
+		{
+			close(stdin_backup);
+			close(stdout_backup);
+		}
+		builtin_exit(shell->input.commands[0], shell);
 		return ;
-	if (shell->input.commands[0] && !is_pipeline(shell))
+	}
+	if (!shell->input.commands || !shell->input.commands[0])
+	{
+		if (need_restore)
+		{
+			close(stdin_backup);
+			close(stdout_backup);
+		}
+		return ;
+	}
+	if (!is_pipeline(shell))
 	{
 		if (execute_builtins(shell, shell->input.commands[0]))
 		{
-			restore_stdio(stdout_backup, stdin_backup);
-			if (shell->should_exit == 1)
-				exit(shell->exit_status);
+			if (shell->should_exit)
+			{
+				if (need_restore)
+				{
+					close(stdin_backup);
+					close(stdout_backup);
+				}
+				builtin_exit(shell->input.commands[0], shell);
+			}
+			else if (need_restore)
+				restore_stdio(stdout_backup, stdin_backup);
 			return ;
 		}
 	}
 	execute_command(shell);
-	restore_stdio(stdout_backup, stdin_backup);
+	if (need_restore)
+		restore_stdio(stdout_backup, stdin_backup);
 }
 
 void	handle_input(t_shell *shell)
 {
-	int	cmd_idx;
-
 	handle_signal_status(shell);
 	shell->input.processed = process_initial_input(shell->input.raw);
 	if (!shell->input.processed)
@@ -88,22 +120,16 @@ void	handle_input(t_shell *shell)
 	shell->input.processed = check_for_expansion(shell);
 	if (!shell->input.processed || shell->input.processed[0] == '\0')
 	{
-		free(shell->input.processed);
+		// free(shell->input.processed);
 		return ;
 	}
 	if (validate_syntax(shell))
 	{
-		free(shell->input.processed);
+		// free(shell->input.processed);
 		return ;
 	}
 	check_for_pipe(shell);
 	split_commands(shell);
 	remove_quotes_from_commands(&shell->input);
 	execute_final_command(shell);
-	cmd_idx = 0;
-	while (shell->input.commands[cmd_idx])
-	{
-		free(shell->input.commands[cmd_idx]);
-		cmd_idx++;
-	}
 }

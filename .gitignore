@@ -1,6 +1,7 @@
 # minishell executable
 minishell
 .vscode/
+compile_commands.json
 
 # Prerequisites
 *.d

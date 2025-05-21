@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 12:08:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:10:05 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 21:41:54 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char	*process_initial_input(char *input)
 	char	*tmp;
 
 	final_input = trim_spaces(input);
-	free(input);
+	// free(input);
 	if (!final_input || count_quotes(final_input))
 	{
 		if (final_input)
@@ -111,6 +111,20 @@ void	remove_quotes_from_commands(t_input *input)
 		while (input->commands[i][j])
 		{
 			cleaned = remove_quotes_concat(input->commands[i][j]);
+			if (!cleaned)
+			{
+				while (i >= 0)
+				{
+					while (j >= 0)
+					{
+						free(input->commands[i][j]);
+						input->commands[i][j] = NULL;
+						j--;
+					}
+					i--;
+				}
+				return ;
+			}
 			free(input->commands[i][j]);
 			input->commands[i][j] = cleaned;
 			j++;

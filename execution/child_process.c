@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 12:02:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 14:49:43 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:18:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ static void	handle_child_execution(char **args, t_shell *shell)
 	if (!full_path)
 	{
 		free_shell_resources(shell);
-		free(full_path);
 		free_array(args);
 		exit(shell->exit_status);
 	}
@@ -68,7 +67,6 @@ static void	handle_child_execution(char **args, t_shell *shell)
 		free(full_path);
 	shell->exit_status = 126;
 	free_shell_resources(shell);
-	free(full_path);
 	exit(shell->exit_status);
 }
 

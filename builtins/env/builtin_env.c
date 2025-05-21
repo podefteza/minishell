@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 14:10:50 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 14:04:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:12:16 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,10 @@ int	builtin_env(char **args, t_shell *shell)
 {
 	int	i;
 
-	i = 1;
 	(void)args;
-	if (!shell || !shell->envp)
+	if (!shell)
+		return (1);
+	if (!shell->envp)
 	{
 		ft_putstr_fd("env: environment not set\n", 2);
 		shell->exit_status = 1;

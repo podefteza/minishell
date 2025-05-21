@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 11:20:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 14:20:36 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 16:19:50 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,11 @@ static char	**create_new_env(t_shell *shell, int env_index, int env_count)
 	int		j;
 	int		k;
 
+	if (env_count <= 0)
+	{
+		shell->exit_status = 1;
+		return (NULL);
+	}
 	new_envp = malloc(env_count * sizeof(char *));
 	if (!new_envp)
 	{
@@ -49,6 +54,8 @@ void	remove_env_var(t_shell *shell, char *var_name)
 		env_count = 0;
 		while (shell->envp[env_count])
 			env_count++;
+		if (env_count <= 0)
+			return ;
 		new_envp = create_new_env(shell, env_index, env_count);
 		if (!new_envp)
 			return ;
@@ -95,6 +102,8 @@ void	remove_export_var(t_shell *shell, char *var_name)
 		export_count = 0;
 		while (shell->export_list[export_count])
 			export_count++;
+		if (export_count <= 0)
+			return ;
 		new_export_list = create_new_export(shell, export_index, export_count);
 		if (!new_export_list)
 			return ;

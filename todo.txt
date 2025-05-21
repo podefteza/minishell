@@ -282,8 +282,10 @@ should print the last directory (like pwd) but AND move between directories
 
 =====================
 
-❌❌❌❌❌ clang-tidy: Detects infinite loops and inefficient conditions.
-clang-tidy --checks='-altera-unroll-loops,loop-*' *.c
+❌❌❌❌❌
+clang-tidy: Detects infinite loops and inefficient conditions.
+$ bear -- make
+$ find . -name '*.c' | xargs -P4 -I{} clang-tidy {} --
 
 ❌❌❌❌❌ cppcheck: Finds unreachable code.
 cppcheck --enable=all file.c
