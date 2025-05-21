@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 10:54:06 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/20 11:40:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:06:14 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@ int	validate_and_get_exit_code(char *exit_code_str, char **args, int i,
 		t_shell *shell)
 {
 	long	exit_code;
-
-	printf("validate_and_get_exit_code called\n");
 
 	while (exit_code_str[i])
 	{

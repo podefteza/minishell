@@ -256,31 +256,31 @@ LEAKS:
 	IF WE CTRL-C, WE CANCEL THE CAT AND THE PROMPT LINE GETS MIXED UP (maybe it is not freeing the input??)
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
 
-os_specific
-❌ export | sort | grep -v SHLVL | grep -v "declare -x _" | grep -v "PS.="
-grep with spaces inside double quotes, should preserve the quotes of the commands
+=====================
 
-❌ echo hi |  "|"
-minishell: ": command not found
+❌❌❌❌❌ NOT IMPLEMENTED:
+expansions in heredoc (+ heredoc with << 'EOF' --> no expansion)
 
 =====================
 
-
-❌❌❌❌❌ OPEN FDS ON:
-✔️+ LEAKS: echo <"./test_files/infile_big" | cat <"./test_files/infile"
-✔️+ LEAKS: echo <"./test_files/infile_big" | echo <"./test_files/infile"
-❌ + LEAKS: echo hi | cat <"./test_files/infile"
-
-
-
-
-
-=====================
-
+❌❌❌❌❌
 minishell vs bash differences detected:
 
+❌minishell $ env PATH
+* executes builtin env*
+✔️bash $ env PATH
+env: ‘PATH’: No such file or directory
 
 
+pipes on heredoc:
+❌minishell $ cat << EOF | wc -l
+infinite loop
+
+❌minishell $ cd -
+should print the last directory (like pwd) but AND move between directories
+
+
+=====================
 
 ❌❌❌❌❌ clang-tidy: Detects infinite loops and inefficient conditions.
 clang-tidy --checks='-altera-unroll-loops,loop-*' *.c
@@ -288,34 +288,15 @@ clang-tidy --checks='-altera-unroll-loops,loop-*' *.c
 ❌❌❌❌❌ cppcheck: Finds unreachable code.
 cppcheck --enable=all file.c
 
-
+=====================
 
 ❌❌❌❌❌
-expansions in heredoc
-
-
-
-=====================
+remove supp file
 
 
 📙 TODO, as stated by the subject:
->> remove "repetitive" code. some tasks are duplicated in separated functions, like trimming spaces and other special characters.
 >> check ./tester syntax + ./tester os_specific
->> when we modify shell->envp during execution (export, unset), do we update it?
 >> before pushing to vogsphere, delete unnecessary files
 >> check if the makefile relinks!!!
->> is_redirection_token // is_redirection_operator do the same...
-
->> check if we have for loops anywhere...
-
->> check if all functions are being used...
 
 =====================
-
-check for static functions and remove them from header file
-
-=====================
-
-io_backup
-restore_io
-^ in command_handler.c, we have similar functions somewhere... make them available to be used on other functions

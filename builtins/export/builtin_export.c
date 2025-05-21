@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 09:14:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 16:22:01 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:11:49 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,10 @@ static void	handle_export_with_value(char *arg, t_shell *shell, char *copy,
 	}
 }
 
-void	handle_export_assignment(char *arg, t_shell *shell)
+static void	handle_export_assignment(char *arg, t_shell *shell)
 {
 	char	*copy;
 	char	*equal_sign;
-
 
 	copy = ft_strdup(arg);
 	if (!copy)
@@ -51,7 +50,7 @@ void	handle_export_assignment(char *arg, t_shell *shell)
 	free(copy);
 }
 
-char	*create_export_display_entry(const char *key, const char *value)
+static char	*create_export_display_entry(const char *key, const char *value)
 {
 	char	*tmp1;
 	char	*tmp2;
@@ -71,7 +70,7 @@ char	*create_export_display_entry(const char *key, const char *value)
 	return (entry);
 }
 
-void	display_export_entry(char *entry)
+static void	display_export_entry(char *entry)
 {
 	char	*equal_sign;
 	char	*display_entry;
@@ -95,12 +94,6 @@ void	display_export_entry(char *entry)
 int	builtin_export(char **args, t_shell *shell)
 {
 	int	i;
-
-	// print args
-	/*for (int j = 0; args[j]; j++)
-	{
-		printf("args[%d]: %s\n", j, args[j]);
-	}*/
 
 	if (!args[1])
 	{

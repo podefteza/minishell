@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 16:28:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 17:21:11 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:09:51 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	print_export_error(char *arg, t_shell *shell)
 	shell->exit_status = 1;
 }
 
-void	swap_env_vars(char **envp, int i, int *swapped)
+static void	swap_env_vars(char **envp, int i, int *swapped)
 {
 	char	*temp;
 

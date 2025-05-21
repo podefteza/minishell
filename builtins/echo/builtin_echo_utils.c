@@ -6,13 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 16:23:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 19:35:46 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:01:01 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-int	get_token_length(char **str, int *in_squote, int *in_dquote)
+static int	get_token_length(char **str, int *in_squote, int *in_dquote)
 {
 	int	len;
 
@@ -31,7 +31,7 @@ int	get_token_length(char **str, int *in_squote, int *in_dquote)
 	return (len);
 }
 
-char	*get_next_token_for_echo(char **str)
+static char	*get_next_token_for_echo(char **str)
 {
 	char	*start;
 	char	*token;
@@ -58,7 +58,7 @@ char	*get_next_token_for_echo(char **str)
 	return (token);
 }
 
-char	*handle_dollar_quotes(char *token, t_shell *shell)
+static char	*handle_dollar_quotes(char *token, t_shell *shell)
 {
 	char	*result;
 

@@ -6,13 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 15:35:55 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 15:37:32 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 13:58:30 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-char	*get_oldpwd_value(char **envp)
+static char	*get_oldpwd_value(char **envp)
 {
 	int	i;
 
@@ -26,7 +26,7 @@ char	*get_oldpwd_value(char **envp)
 	return (NULL);
 }
 
-void	handle_cd_to_oldpwd(t_shell *shell, char *oldpwd, char *old_pwd)
+static void	handle_cd_to_oldpwd(t_shell *shell, char *oldpwd, char *old_pwd)
 {
 	char	new_pwd[PATH_MAX];
 

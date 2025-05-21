@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 16:59:49 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 17:01:30 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:11:09 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	find_export_var(char **export_list, const char *key)
 	return (-1);
 }
 
-char	**handle_new_export_entry(char **export_list, char *new_entry)
+static char	**handle_new_export_entry(char **export_list, char *new_entry)
 {
 	char	**new_list;
 	int		count;
@@ -59,7 +59,7 @@ char	**handle_new_export_entry(char **export_list, char *new_entry)
 	return (new_list);
 }
 
-char	*create_export_entry(const char *key, const char *value)
+static char	*create_export_entry(const char *key, const char *value)
 {
 	char	*tmp;
 	char	*entry;

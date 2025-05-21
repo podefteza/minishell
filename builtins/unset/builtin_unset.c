@@ -6,72 +6,37 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 11:22:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/03 17:21:59 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:20:49 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-void	print_unset_error(char *arg, t_shell *shell)
+int	is_valid_identifier(const char *str)
 {
-	ft_putstr_fd("minishell: unset: `", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putstr_fd("': options aren't supported\n", 2);
-	shell->exit_status = 1;
+	int	i;
+
+	if (!str || str[0] == '\0' || (!ft_isalpha(str[0]) && str[0] != '_'))
+		return (FALSE);
+	i = 1;
+	while (str[i])
+	{
+		if (!ft_isalnum(str[i]) && str[i] != '_')
+			return (FALSE);
+		i++;
+	}
+	return (TRUE);
 }
 
-char	**create_new_env(t_shell *shell, int env_index, int env_count)
-{
-	char	**new_envp;
-	int		j;
-	int		k;
-
-	new_envp = malloc(env_count * sizeof(char *));
-	if (!new_envp)
-	{
-		ft_putstr_fd("minishell: malloc failed\n", 2);
-		shell->exit_status = 1;
-		return (NULL);
-	}
-	j = 0;
-	k = -1;
-	while (shell->envp[++k])
-	{
-		if (k != env_index)
-			new_envp[j++] = shell->envp[k];
-		else
-			free(shell->envp[k]);
-	}
-	new_envp[j] = NULL;
-	return (new_envp);
-}
-
-void	remove_env_var(t_shell *shell, char *var_name)
-{
-	int		env_index;
-	char	**new_envp;
-	int		env_count;
-
-	env_index = find_env_var(shell, var_name);
-	if (env_index != -1)
-	{
-		env_count = 0;
-		while (shell->envp[env_count])
-			env_count++;
-		new_envp = create_new_env(shell, env_index, env_count);
-		if (!new_envp)
-			return ;
-		free(shell->envp);
-		shell->envp = new_envp;
-	}
-}
-
-void	process_unset_arg(char *arg, t_shell *shell)
+static void	process_unset_arg(char *arg, t_shell *shell)
 {
 	if (!is_valid_identifier(arg))
 		shell->exit_status = 0;
 	else
+	{
 		remove_env_var(shell, arg);
+		remove_export_var(shell, arg);
+	}
 }
 
 int	builtin_unset(char **args, t_shell *shell)

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 17:04:37 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/20 11:40:10 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 10:21:45 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,12 @@ void	builtin_setup(t_builtin *builtins)
 
 int	execute_builtins(t_shell *shell, char **cmd)
 {
+	int	i;
+
 	if (!cmd || !cmd[0])
 		return (0);
-	for (int i = 0; shell->builtins[i].cmd; i++)
+	i = 0;
+	while (shell->builtins[i].cmd)
 	{
 		if (ft_strncmp(cmd[0], shell->builtins[i].cmd,
 				ft_strlen(shell->builtins[i].cmd) + 1) == 0)
@@ -49,6 +52,7 @@ int	execute_builtins(t_shell *shell, char **cmd)
 			shell->exit_status = shell->builtins[i].func(cmd, shell);
 			return (1);
 		}
+		i++;
 	}
 	return (0);
 }

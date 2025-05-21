@@ -1,42 +1,9 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror
 LDFLAGS = -lreadline
 NAME = minishell
 
 SRCS = minishell.c \
-		command_handler.c \
-		command_handler_utils.c \
-		shell_setup.c \
-		shell_setup_utils.c \
-		expand_variables.c \
-		expand_variables_utils.c \
-		input.c \
-		input_with_echo.c \
-		input_with_echo_utils.c \
-		input_utils.c \
-		input_parsing.c \
-		path_handler.c \
-		cleanup.c \
-		expansions.c \
-		pipeline.c \
-		execute_child_process.c \
-		execute_parent_process.c \
-		pipe_utils.c \
-		pipe_split.c \
-		pipe_processing.c \
-		pipe_processing_utils.c \
-		pipe_redirection.c \
-		pipe_redirection_utils.c \
-		quotes.c \
-		quotes_utils.c \
-		redirections.c \
-		redirections_utils.c \
-		redirections_processing.c \
-		tokenize.c \
-		tokenize_utils.c \
-		error.c \
-		validate_syntax.c \
-		validate_syntax_utils.c \
 		./builtins/builtin_utils.c \
 		./builtins/cd/builtin_cd.c \
 		./builtins/cd/builtin_cd_utils.c \
@@ -51,10 +18,34 @@ SRCS = minishell.c \
 		./builtins/exit/builtin_exit_utils.c \
 		./builtins/pwd/builtin_pwd.c \
 		./builtins/unset/builtin_unset.c \
-		utils_dump.c \
-		process_execution.c \
-		shell_loop.c \
-		signals.c
+		./builtins/unset/builtin_unset_utils.c \
+		./execution/child_process.c \
+		./execution/command_execution.c \
+		./execution/command_handler_utils.c \
+		./execution/command_handler.c \
+		./execution/path_handler.c \
+		./expansions/expand_variables_utils.c \
+		./expansions/expand_variables.c \
+		./expansions/expansions.c \
+		./parser/input_utils.c \
+		./parser/input.c \
+		./parser/quotes_utils.c \
+		./parser/quotes.c \
+		./parser/tokenize_utils.c \
+		./parser/tokenize.c \
+		./parser/validate_syntax_utils.c \
+		./parser/validate_syntax.c \
+		./pipes/pipe_split.c \
+		./pipes/pipe_utils.c \
+		./redirections/redirections_utils.c \
+		./redirections/redirections.c \
+		./shell/shell_loop.c \
+		./shell/shell_setup_utils.c \
+		./shell/shell_setup.c \
+		./utils/cleanup.c \
+		./utils/error.c \
+		./utils/general_utils.c \
+		./utils/signals.c
 
 OBJ_DIR = obj
 OBJS = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))

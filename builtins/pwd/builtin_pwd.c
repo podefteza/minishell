@@ -6,13 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/12 21:26:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:18:09 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-int	validate_pwd_args(char **args, t_shell *shell)
+static int	validate_pwd_args(char **args, t_shell *shell)
 {
 	int	i;
 

@@ -6,13 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:00:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/09 14:04:29 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 13:57:33 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-void	handle_home_directory(t_shell *shell, char *home, char *old_pwd)
+static void	handle_home_directory(t_shell *shell, char *home, char *old_pwd)
 {
 	char	new_pwd[PATH_MAX];
 
@@ -32,7 +32,7 @@ void	handle_home_directory(t_shell *shell, char *home, char *old_pwd)
 	}
 }
 
-void	change_to_home_directory(t_shell *shell)
+static void	change_to_home_directory(t_shell *shell)
 {
 	char	*home;
 	char	old_pwd[PATH_MAX];
@@ -49,7 +49,7 @@ void	change_to_home_directory(t_shell *shell)
 	}
 }
 
-void	change_directory(char **args, t_shell *shell)
+static void	change_directory(char **args, t_shell *shell)
 {
 	char	old_pwd[PATH_MAX];
 	char	new_pwd[PATH_MAX];
@@ -73,7 +73,7 @@ void	change_directory(char **args, t_shell *shell)
 	}
 }
 
-void	handle_cd_argument(char **args, t_shell *shell)
+static void	handle_cd_argument(char **args, t_shell *shell)
 {
 	char	*expanded_path;
 

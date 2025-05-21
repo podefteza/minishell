@@ -6,13 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 14:10:50 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/16 17:01:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/21 14:04:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-char	*create_env_entry(const char *key, const char *value)
+static char	*create_env_entry(const char *key, const char *value)
 {
 	char	*tmp;
 	char	*new_entry;
@@ -44,7 +44,7 @@ int	find_env_var(t_shell *shell, const char *key)
 	return (-1);
 }
 
-char	**update_envp(t_shell *shell, char *new_entry, int existing_index)
+static char	**update_envp(t_shell *shell, char *new_entry, int existing_index)
 {
 	char	**new_envp;
 	int		env_count;
@@ -95,13 +95,6 @@ int	builtin_env(char **args, t_shell *shell)
 	int	i;
 
 	i = 1;
-	/*while (args[i])
-	{
-		if (args[i - 1] && !ft_strncmp(args[i - 1], "env", 4))
-			execute_command(shell);
-		return (0);
-		i++;
-	}*/
 	(void)args;
 	if (!shell || !shell->envp)
 	{
