@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 21:06:49 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 08:46:38 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ static int	fill_commands(char ***commands, char **args, int count)
 	return (count);
 }
 
+
 void	split_commands(t_shell *shell)
 {
 	int	count;
@@ -94,8 +95,9 @@ void	split_commands(t_shell *shell)
 	allocated = fill_commands(shell->input.commands, shell->input.args, count);
 	if (allocated == -1 || allocated < count)
 	{
-		while (--allocated >= 0)
-			free_array(shell->input.commands[allocated]);
+		int j = 0;
+		while (shell->input.commands[j])
+			free_array(shell->input.commands[j++]);
 		free(shell->input.commands);
 		shell->input.commands = NULL;
 	}

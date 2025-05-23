@@ -6,15 +6,15 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:21:18 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 14:49:38 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 14:30:34 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static void	execute_parent(pid_t *pids, t_exec_state *state, pid_t pid)
+static void	execute_parent(pid_t *child_pids, t_exec_state *state, pid_t pid)
 {
-	pids[state->pid_idx] = pid;
+	child_pids[state->pid_idx] = pid;
 	state->pid_idx++;
 	safe_close(state->prev_read);
 	safe_close(state->pipe_fd[1]);
@@ -37,39 +37,56 @@ static void	setup_next_pipe(t_shell *shell, int i, int pipe_fd[2])
 			perror("pipe");
 }
 
-void	handle_command(t_shell *shell, pid_t *pids, t_exec_state *state)
+void	handle_command(t_shell *shell, pid_t *child_pids, t_exec_state *state)
 {
 	char	**args;
 	pid_t	pid;
 
+	if (!shell->input.commands || !shell->input.commands[state->cmd_idx])
+	{
+		state->cmd_idx += 1;
+		return ;
+	}
 	args = shell->input.commands[state->cmd_idx];
-	if (!args || (args[0] && ft_strncmp(args[0], "|", 2) == 0))
-		return ((void)(state->cmd_idx += 1));
+	if (!args || !args[0] || (args[0][0] == '|' && args[0][1] == '\0'))
+	{
+		state->cmd_idx += 1;
+		return ;
+	}
 	setup_next_pipe(shell, state->cmd_idx, state->pipe_fd);
 	pid = fork();
 	if (pid == 0)
+	{
+		free(child_pids);
 		execute_child(shell, args, state->prev_read, state->pipe_fd);
+	}
 	else if (pid > 0)
-		execute_parent(pids, state, pid);
+		execute_parent(child_pids, state, pid);
 	else
 		perror("fork");
 	state->cmd_idx++;
 }
 
-int	finalize_execution(t_shell *shell, pid_t *pids, t_exec_state *state)
+int	finalize_execution(t_shell *shell, pid_t *child_pids, t_exec_state *state)
 {
 	int	i;
 	int	status;
 
+	status = 0;
 	safe_close(state->prev_read);
 	i = 0;
 	while (i < state->pid_idx)
 	{
-		waitpid(pids[i], &status, 0);
-		if (i == state->pid_idx - 1 && WIFEXITED(status))
-			shell->exit_status = WEXITSTATUS(status);
+		waitpid(child_pids[i], &status, 0);
+		if (i == state->pid_idx - 1)
+		{
+			if (WIFEXITED(status))
+				shell->exit_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+				shell->exit_status = 128 + WTERMSIG(status);
+		}
 		i++;
 	}
-	free(pids);
+	free(child_pids);
 	return (1);
 }

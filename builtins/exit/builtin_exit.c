@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 21:48:35 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 13:52:35 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,17 @@ int	builtin_exit(char **args, t_shell *shell)
 	}
 	ft_putstr_fd("exit\n", 1);
 	shell->should_exit = 1;
-	free_input(&shell->input);
+
+	//free(shell->input.processed);
+	free(shell->input.expanded);
+	free_array(shell->input.args);
+	free_commands_array(shell->input.commands);
+
+
+
+	//free_input(&shell->input);
 	free_shell_resources(shell);
+	//printf("we're here in builtin_exit\n");
+	//rl_clear_history();
 	exit(exit_code);
 }

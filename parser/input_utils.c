@@ -6,59 +6,53 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 12:08:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 21:41:54 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 14:43:07 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static char	*trim_spaces(const char *input)
+static void	trim_spaces(t_shell *shell)
 {
 	int		start;
 	int		end;
-	char	*trimmed;
 	int		i;
 
-	if (!input)
-		return (NULL);
+	if (!shell->input.raw)
+		return ;
 	start = 0;
-	while (input[start] == ' ' || input[start] == '\t')
+	while (shell->input.raw[start] == ' ' || shell->input.raw[start] == '\t')
 		start++;
-	end = ft_strlen(input) - 1;
-	while (end > start && (input[end] == ' ' || input[end] == '\t'))
+	end = ft_strlen(shell->input.raw) - 1;
+	while (end > start && (shell->input.raw[end] == ' ' || shell->input.raw[end] == '\t'))
 		end--;
-	trimmed = malloc((end - start + 2) * sizeof(char));
-	if (!trimmed)
-		return (NULL);
+	shell->input.trim_spaces = malloc((end - start + 2) * sizeof(char));
+	if (!shell->input.trim_spaces)
+		return ;
 	i = 0;
 	while (start <= end)
-		trimmed[i++] = input[start++];
-	trimmed[i] = '\0';
-	return (trimmed);
+		shell->input.trim_spaces[i++] = shell->input.raw[start++];
+	shell->input.trim_spaces[i] = '\0';
 }
 
-char	*process_initial_input(char *input)
+void	process_initial_input(t_shell *shell)
 {
-	char	*final_input;
-	char	*tmp;
-
-	final_input = trim_spaces(input);
-	// free(input);
-	if (!final_input || count_quotes(final_input))
+	trim_spaces(shell);
+	free(shell->input.raw);
+	shell->input.raw = NULL;
+	if (!shell->input.trim_spaces || count_quotes(shell->input.trim_spaces))
 	{
-		if (final_input)
-			free(final_input);
-		return (NULL);
+		free(shell->input.trim_spaces);
+		shell->input.trim_spaces = NULL;
+		return ;
 	}
-	tmp = expand_tilde_unquoted(final_input);
-	if (!tmp)
-	{
-		free(final_input);
-		return (NULL);
-	}
-	free(final_input);
-	return (tmp);
+	shell->input.processed = expand_tilde_unquoted(shell->input.trim_spaces);
+	free(shell->input.trim_spaces);
+	shell->input.trim_spaces = NULL;
+	if (!shell->input.processed)
+		return ;
 }
+
 
 void	handle_signal_status(t_shell *shell)
 {
@@ -98,37 +92,58 @@ static char	*remove_quotes_concat(const char *str)
 	return (result);
 }
 
-void	remove_quotes_from_commands(t_input *input)
+int remove_quotes_from_commands(t_shell *shell)
 {
-	int		i;
-	int		j;
-	char	*cleaned;
+    int     i;
+    int     j;
+    char    *cleaned;
 
-	i = 0;
-	while (input->commands && input->commands[i])
-	{
-		j = 0;
-		while (input->commands[i][j])
-		{
-			cleaned = remove_quotes_concat(input->commands[i][j]);
-			if (!cleaned)
-			{
-				while (i >= 0)
-				{
-					while (j >= 0)
-					{
-						free(input->commands[i][j]);
-						input->commands[i][j] = NULL;
-						j--;
-					}
-					i--;
-				}
-				return ;
-			}
-			free(input->commands[i][j]);
-			input->commands[i][j] = cleaned;
-			j++;
-		}
-		i++;
-	}
+    i = 0;
+    while (shell->input.commands && shell->input.commands[i])
+    {
+        j = 0;
+        while (shell->input.commands[i][j])
+        {
+            cleaned = remove_quotes_concat(shell->input.commands[i][j]);
+            if (!cleaned)
+            {
+                // Free all previously allocated memory
+                while (i >= 0)
+                {
+                    while (shell->input.commands[i] && j >= 0)
+                    {
+                        free(shell->input.commands[i][j]);
+                        shell->input.commands[i][j] = NULL;
+                        j--;
+                    }
+                    i--;
+                }
+                return (1); // Memory allocation error
+            }
+
+            // Check if the cleaned string is empty
+            if (cleaned[0] == '\0')
+            {
+                free(cleaned);
+                // Free all previously allocated memory
+                while (i >= 0)
+                {
+                    while (shell->input.commands[i] && j >= 0)
+                    {
+                        free(shell->input.commands[i][j]);
+                        shell->input.commands[i][j] = NULL;
+                        j--;
+                    }
+                    i--;
+                }
+                return (2); // Empty command error (you can use any error code you prefer)
+            }
+
+            free(shell->input.commands[i][j]);
+            shell->input.commands[i][j] = cleaned;
+            j++;
+        }
+        i++;
+    }
+    return (0); // Success
 }

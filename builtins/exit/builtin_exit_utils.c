@@ -6,14 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 10:54:06 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 14:06:14 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 13:52:29 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-int	validate_and_get_exit_code(char *exit_code_str, char **args, int i,
-		t_shell *shell)
+int	validate_and_get_exit_code(char *exit_code_str, int i, t_shell *shell)
 {
 	long	exit_code;
 
@@ -23,7 +22,11 @@ int	validate_and_get_exit_code(char *exit_code_str, char **args, int i,
 		{
 			ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 			free(exit_code_str);
-			free_array(args);
+			//free_array(args);
+			//free(shell->input.processed);
+			free(shell->input.expanded);
+			free_array(shell->input.args);
+			free_commands_array(shell->input.commands);
 			free_shell_resources(shell);
 			exit(2);
 		}
@@ -53,7 +56,7 @@ int	handle_exit_in_first_arg(char **args, t_shell *shell)
 	i = 0;
 	if (exit_code_str[i] == '+' || exit_code_str[i] == '-')
 		i++;
-	exit_code = validate_and_get_exit_code(exit_code_str, args, i, shell);
+	exit_code = validate_and_get_exit_code(exit_code_str, i, shell);
 	return (exit_code);
 }
 
@@ -111,7 +114,11 @@ int	handle_exit_in_second_arg(char **args, t_shell *shell)
 	if (!is_str_digit(args[1]) || is_overflow(args[1]))
 	{
 		ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
-		free_array(args);
+		//free_array(args);
+		//free(shell->input.processed);
+		free(shell->input.expanded);
+		free_array(shell->input.args);
+		free_commands_array(shell->input.commands);
 		free_shell_resources(shell);
 		exit(2);
 	}

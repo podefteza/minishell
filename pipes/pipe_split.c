@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 13:58:40 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:11:59 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 09:07:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,20 +81,20 @@ char	**split_pipe(t_shell *shell)
 	int		arg_index;
 	int		num_pipes;
 
-	if (has_trailing_pipe(shell->input.processed)
-		|| has_invalid_pipe_syntax(shell->input.processed)
-		|| shell->input.processed[0] == '|')
+	if (has_trailing_pipe(shell->input.expanded)
+		|| has_invalid_pipe_syntax(shell->input.expanded)
+		|| shell->input.expanded[0] == '|')
 	{
 		ft_puterr("minishell", SNT, " `|'", "\n");
 		shell->exit_status = 2;
 		return (NULL);
 	}
-	num_pipes = count_pipes(shell->input.processed);
+	num_pipes = count_pipes(shell->input.expanded);
 	result = malloc((num_pipes * 2 + 2) * sizeof(char *));
 	if (!result)
 		return (NULL);
 	arg_index = 0;
-	if (!split_loop(shell->input.processed, result, &arg_index))
+	if (!split_loop(shell->input.expanded, result, &arg_index))
 		return (NULL);
 	return (result);
 }

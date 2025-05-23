@@ -252,6 +252,8 @@ Other tests (waltergcc on GitHub):
 
 LEAKS:
 
+
+
 ❌ cat << EOF | wc -l
 	IF WE CTRL-C, WE CANCEL THE CAT AND THE PROMPT LINE GETS MIXED UP (maybe it is not freeing the input??)
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 20:49:43 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 14:01:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,12 @@ typedef struct s_builtin
 typedef struct s_input
 {
 	char			*raw;
+	char			*trim_spaces;
 	char			*processed;
+	char			*expanded;
 	char			**args;
 	char			***commands;
+	//int				heredoc_fd;
 }					t_input;
 
 typedef struct s_tokenizer
@@ -204,7 +207,7 @@ char				*search_in_path(char *path, char *cmd);
 void				expand_handle_quotes(char **input, char **ptr,
 						int *in_single, int *in_double);
 char				*get_shell_name(void);
-char				*check_for_expansion(t_shell *shell);
+void				check_for_expansion(t_shell *shell);
 // ./expansions/expand_variables.c
 char				*expand_variables(char *input, t_shell *shell);
 // ./expansions/expansions.c
@@ -212,9 +215,9 @@ char				*expand_dollar_sign(char **input, t_shell *shell);
 
 // ./parser/
 // ./parser/input_utils.c
-char	*process_initial_input(char *input);
+void	process_initial_input(t_shell *shell);
 void				handle_signal_status(t_shell *shell);
-void				remove_quotes_from_commands(t_input *input);
+int				remove_quotes_from_commands(t_shell *shell);
 // ./parser/input.c
 void				handle_input(t_shell *shell);
 // ./parser/quotes_utils.c
@@ -264,7 +267,8 @@ void				setup_shell(t_shell *shell, char **envp);
 // ./utils/
 // ./utils/cleanup.c
 void				free_array(char **array);
-void	free_input(t_input *input);
+void free_commands_array(char ***commands);
+void	free_input(t_shell *shell);
 void				free_shell_resources(t_shell *shell);
 // ./utils/error.c
 void				ft_puterr(char *msg1, char *msg2, char *msg3, char *msg4);

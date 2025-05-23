@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:10:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 10:37:02 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ void	setup_shell(t_shell *shell, char **envp)
 	if (!shell || !envp)
 		return ;
 	env_count = 0;
+	builtin_setup(shell->builtins);
 	user_hostname(shell);
 	while (envp[env_count])
 		env_count++;
@@ -89,10 +90,13 @@ void	setup_shell(t_shell *shell, char **envp)
 		return ;
 	duplicate_env_vars(shell, envp, env_count);
 	shell->is_prompting = FALSE;
-	builtin_setup(shell->builtins);
+	shell->should_exit = FALSE;
+	//builtin_setup(shell->builtins); moved...
 	shell->input.raw = NULL;
+	shell->input.trim_spaces = NULL;
 	shell->input.processed = NULL;
+	shell->input.expanded = NULL;
 	shell->input.args = NULL;
 	shell->input.commands = NULL;
-	shell->should_exit = 0;
+	//shell->input.heredoc_fd = -1;
 }

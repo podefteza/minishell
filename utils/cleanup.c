@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 15:44:13 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 20:50:20 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 13:51:18 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,8 @@ void	free_array(char **array)
 	free(array);
 }
 
-/*void free_commands_array(char ***commands)
+void free_commands_array(char ***commands)
 {
-	int	i;
 	int	i;
 
 	if (!commands)
@@ -45,40 +44,13 @@ void	free_array(char **array)
 		i++;
 	}
 	free(commands);
-}*/
-void	free_input(t_input *input)
+}
+void	free_input(t_shell *shell)
 {
-	int i;
-
-	i = 0;
-	if (!input)
-		return ;
-	if (input->raw)
-	{
-		free(input->raw);
-		input->raw = NULL;
-	}
-	/*if (input->processed)
-	{
-		free(input->processed);
-		input->processed = NULL;
-	}*/
-	if (input->args)
-	{
-		free_array(input->args);
-		input->args = NULL;
-	}
-	if (input->commands)
-	{
-		i = 0;
-		while (input->commands[i])
-		{
-			free_array(input->commands[i]);
-			i++;
-		}
-		free(input->commands);
-		input->commands = NULL;
-	}
+	//free(shell->input.processed);
+	free(shell->input.expanded);
+	free_array(shell->input.args);
+	free_commands_array(shell->input.commands);
 }
 
 void	free_shell_resources(t_shell *shell)

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 12:02:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 16:18:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 12:01:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,25 @@ static char	*validate_and_find_command(char **args, t_shell *shell)
 static void	handle_child_execution(char **args, t_shell *shell)
 {
 	char	*full_path;
+	int i;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	full_path = validate_and_find_command(args, shell);
 	if (!full_path)
 	{
+		/*free(shell->input.processed);
+		free(shell->input.expanded);
+		free_array(shell->input.args);
+		free_commands_array(shell->input.commands);*/
+		free_input(shell);
 		free_shell_resources(shell);
-		free_array(args);
+		i = 3;
+		while (i < 1024)
+		{
+			close(i);
+			i++;
+		}
 		exit(shell->exit_status);
 	}
 	execve(full_path, args, shell->envp);

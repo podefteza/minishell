@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:11:35 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 14:14:45 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static void	free_and_restore(int stdin_backup, int stdout_backup)
 	}
 }
 
-static int	process_commands(t_shell *shell, pid_t *pids, int in_bak,
+static int	process_commands(t_shell *shell, pid_t *child_pids, int in_bak,
 		int out_bak)
 {
 	t_exec_state	state;
@@ -49,8 +49,8 @@ static int	process_commands(t_shell *shell, pid_t *pids, int in_bak,
 	state.pid_idx = 0;
 	state.prev_read = -1;
 	while (shell->input.commands[state.cmd_idx])
-		handle_command(shell, pids, &state);
-	finalize_execution(shell, pids, &state);
+		handle_command(shell, child_pids, &state);
+	finalize_execution(shell, child_pids, &state);
 	restore_stdio(out_bak, in_bak);
 	return (1);
 }
