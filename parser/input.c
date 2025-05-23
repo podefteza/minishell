@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 14:50:18 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/23 16:00:45 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,10 @@ void	handle_input(t_shell *shell)
 		return ;
 	}
 	if (validate_syntax(shell))
+	{
+		free(shell->input.expanded);
 		return ;
+	}
 	check_for_pipe(shell);
 	split_commands(shell);
 

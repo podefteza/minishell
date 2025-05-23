@@ -48,7 +48,7 @@ foreground pipeline.
 ✔️•Handle ctrl-C, ctrl-D and ctrl-\ which should behave like in bash.
 
 ✔️•In interactive mode:
-	✔️◦ctrl-C displays a new prompt on a new line. ⚠️⚠️⚠️ when using ctrl+c in the middle of a process, it puts the promp duplicated !!!!!
+	✔️◦ctrl-C displays a new prompt on a new line.
 	✔️◦ctrl-D exits the shell.
 	✔️◦ctrl-\ does nothing.
 
@@ -252,7 +252,19 @@ Other tests (waltergcc on GitHub):
 
 LEAKS:
 
+❌ < ., d|
+>, <, >>, <<, |
 
+❌ > file
+
+❌ >> file
+
+❌ << EOF
+❌ << file
+
+❌ ctrl << EOF
+
+❌ ctrl+c in heredoc !
 
 ❌ cat << EOF | wc -l
 	IF WE CTRL-C, WE CANCEL THE CAT AND THE PROMPT LINE GETS MIXED UP (maybe it is not freeing the input??)
@@ -267,6 +279,9 @@ expansions in heredoc (+ heredoc with << 'EOF' --> no expansion)
 
 ❌❌❌❌❌
 minishell vs bash differences detected:
+
+$ .
+minishell: /home/carlos-j/.local/bin/.: Is a directory
 
 ❌minishell $ env PATH
 * executes builtin env*
