@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:21:18 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 14:30:34 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/26 14:50:24 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	handle_command(t_shell *shell, pid_t *child_pids, t_exec_state *state)
 		return ;
 	}
 	setup_next_pipe(shell, state->cmd_idx, state->pipe_fd);
+
 	pid = fork();
 	if (pid == 0)
 	{
@@ -77,6 +78,10 @@ int	finalize_execution(t_shell *shell, pid_t *child_pids, t_exec_state *state)
 	i = 0;
 	while (i < state->pid_idx)
 	{
+		if (g_signal_status)
+		{
+			exit(shell->exit_status);
+		}
 		waitpid(child_pids[i], &status, 0);
 		if (i == state->pid_idx - 1)
 		{

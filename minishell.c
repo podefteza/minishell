@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:13:07 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 08:33:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:30:15 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr_fd("error: minishell should not have any arguments.\n", 2);
 		return (1);
 	}
-	setup_shell(&shell, envp); // check why is is here???
 	get_shell_context(&shell);
 	setup_signals();
+	setup_shell(&shell, envp);
 	run_shell_loop(&shell);
 	exit_status = shell.exit_status;
 	//free_shell_resources(&shell);

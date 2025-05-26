@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 12:02:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 12:01:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/26 14:50:05 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,6 @@ static void	handle_child_execution(char **args, t_shell *shell)
 	full_path = validate_and_find_command(args, shell);
 	if (!full_path)
 	{
-		/*free(shell->input.processed);
-		free(shell->input.expanded);
-		free_array(shell->input.args);
-		free_commands_array(shell->input.commands);*/
 		free_input(shell);
 		free_shell_resources(shell);
 		i = 3;
@@ -83,6 +79,7 @@ static void	handle_child_execution(char **args, t_shell *shell)
 
 void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
 {
+
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	if (prev != -1)
@@ -97,7 +94,11 @@ void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
 	}
 	safe_close(pipe_fd[0]);
 	if (handle_redirections(args, shell) == -1)
+	{
+		free_shell_resources(shell);  // OK!
+		free_input(shell); // OK!
 		exit(1);
+	}
 	if (is_builtin(args[0], shell))
 	{
 		execute_builtins(shell, args);

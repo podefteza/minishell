@@ -6,33 +6,85 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 10:35:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/26 16:00:22 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+void	heredoc_sigint_handler(int sig)
+{
+	(void)sig;
+	g_signal_status = 1;
+	write(STDOUT_FILENO, "\n", 1);
+	rl_replace_line("", 0);
+	rl_on_new_line();
+	rl_done = 1;
+}
+
 int	handle_heredoc(char *delimiter)
 {
-	int		fd[2];
-	char	*line;
+	int					fd[2];
+	char				*line;
+	struct termios		original_term;
+	struct termios		temp_term;
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
 
 	if (pipe(fd) == -1)
-	{
-		perror("pipe");
 		return (-1);
-	}
-	while (1)
+
+	// Save original terminal settings
+	tcgetattr(STDIN_FILENO, &original_term);
+	memcpy(&temp_term, &original_term, sizeof(temp_term));
+
+	// Set up signal handlers
+	sa_int.sa_handler = heredoc_sigint_handler;
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_flags = 0;
+	sigaction(SIGINT, &sa_int, NULL);
+
+	sa_quit.sa_handler = SIG_IGN;
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_flags = 0;
+	sigaction(SIGQUIT, &sa_quit, NULL);
+
+	// Main heredoc loop
+	while (!g_signal_status)
 	{
 		line = readline("> ");
-		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
-			break ;
+		if (!line)
+			break;
+		if (ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
+		{
+			free(line);
+			break;
+		}
 		write(fd[1], line, ft_strlen(line));
 		write(fd[1], "\n", 1);
 		free(line);
 	}
-	free(line);
 	close(fd[1]);
+
+	// Restore terminal settings
+	tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
+
+	// Restore default signal handlers
+	sa_int.sa_handler = SIG_DFL;
+	sigaction(SIGINT, &sa_int, NULL);
+	sa_quit.sa_handler = SIG_DFL;
+	sigaction(SIGQUIT, &sa_quit, NULL);
+
+	if (g_signal_status)
+	{
+		int i = 3;
+		while (i < 1024)
+		{
+			close(i);
+			i++;
+		}
+		return (-1);
+	}
 	return (fd[0]);
 }
 
@@ -70,10 +122,18 @@ static int	process_redirection(char *op, char *filename, t_shell *shell,
 	fd = open_redirection_file(op, filename);
 	if (fd == -1)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		perror(filename);
-		shell->exit_status = 1;
-		return (-1);
+		if (!g_signal_status)
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			perror(filename);
+			shell->exit_status = 1;
+			return (-1);
+		}
+		else
+		{
+			//g_signal_status = 0; // Reset signal status after handling error
+			return (-1);
+		}
 	}
 	if (op[0] == '<')
 	{
@@ -95,7 +155,11 @@ static int	compact_args_array(char **args)
 	while (args[i])
 	{
 		if (is_redirection_operator(args[i]) && args[i + 1])
+		{
+			free(args[i]);
+			free(args[i + 1]);
 			i += 2;
+		}
 		else
 			args[j++] = args[i++];
 	}

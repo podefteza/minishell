@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 16:00:45 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/26 16:45:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static void	execute_final_command(t_shell *shell)
 {
 	int		stdin_backup;
 	int		stdout_backup;
-	int	need_restore;
+	int		need_restore;
 
 	stdin_backup = -1;
 	stdout_backup = -1;
@@ -134,17 +134,11 @@ void	handle_input(t_shell *shell)
 	}
 	check_for_pipe(shell);
 	split_commands(shell);
-
 	if (remove_quotes_from_commands(shell))
 	{
-
 		free_input(shell);
-
 		return ;
 	}
-
 	execute_final_command(shell);
-
 	free_input(shell);
-
 }

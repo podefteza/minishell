@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:11:46 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:11:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:50:40 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,22 @@ t_shell	*get_shell_context(t_shell *new_shell)
 	return (shell);
 }
 
+void	reset_terminal_settings(void)
+{
+	struct termios	term;
+
+	tcgetattr(STDIN_FILENO, &term);
+	term.c_lflag |= (ECHO | ICANON | ISIG);
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+}
+
 void	handle_signal(int sig, siginfo_t *info, void *context)
 {
 	t_shell	*shell;
 
 	(void)info;
 	(void)context;
+	reset_terminal_settings();
 	shell = get_shell_context(NULL);
 	if (!shell)
 		return ;

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 14:01:36 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:48:14 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <termios.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 // check if all libraries are needed
 

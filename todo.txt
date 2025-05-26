@@ -248,54 +248,40 @@ Surprise! (or not...)
 
 ===================================================================================================================================================================
 
-Other tests (waltergcc on GitHub):
+⚠️ STILL NOT WORKING...
 
-LEAKS:
-
-❌ < ., d|
->, <, >>, <<, |
-
-❌ > file
-
-❌ >> file
-
-❌ << EOF
-❌ << file
-
-❌ ctrl << EOF
-
-❌ ctrl+c in heredoc !
-
-❌ cat << EOF | wc -l
-	IF WE CTRL-C, WE CANCEL THE CAT AND THE PROMPT LINE GETS MIXED UP (maybe it is not freeing the input??)
+heredocs:
+❌ $ << EOF
+	❌CTRL+C in heredoc has a weird behavior
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
+	✔️CTRL+\ DOES NOT DO ANYTHING
 
-=====================
+❌ $ cat << EOF
+	> hey
+	> ^C
+	❌CTRL+C in heredoc has a weird behavior
+	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
+	✔️CTRL+\ DOES NOT DO ANYTHING
 
-❌❌❌❌❌ NOT IMPLEMENTED:
-expansions in heredoc (+ heredoc with << 'EOF' --> no expansion)
 
-=====================
+===================================================================================================================================================================
 
-❌❌❌❌❌
-minishell vs bash differences detected:
-
-$ .
+⚠️ minishell vs bash differences detected:
+-----------------
+❌$ .
 minishell: /home/carlos-j/.local/bin/.: Is a directory
-
-❌minishell $ env PATH
-* executes builtin env*
-✔️bash $ env PATH
-env: ‘PATH’: No such file or directory
-
 
 pipes on heredoc:
 ❌minishell $ cat << EOF | wc -l
 infinite loop
 
 ❌minishell $ cd -
-should print the last directory (like pwd) but AND move between directories
+should print the last directory (like pwd) AND move between directories
 
+=====================
+
+⚠️ NOT YET IMPLEMENTED:
+❌❌❌❌❌ expansions in heredoc (+ heredoc with << 'EOF' --> no expansion)
 
 =====================
 
