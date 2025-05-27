@@ -253,22 +253,7 @@ heredocs:
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
 	✔️CTRL+\ DOES NOT DO ANYTHING
 
-
 ===================================================================================================================================================================
-
-⚠️ NOT YET IMPLEMENTED:
-❌❌❌❌❌ expansions in heredoc (+ heredoc with << 'EOF' --> no expansion)
-
-⚠️
-$ cat << heredoc
-> hello
-> $USER
-heredoc
-✔️hello
-❌$USER
-⚠️ WE NEED TO READ FROM HEREDOC FIRST, AND THEN CHECK THE EXPANSIONS>>>>change the order of the operations in the handle_input
-
-=====================
 
 ❌❌❌❌❌
 clang-tidy: Detects infinite loops and inefficient conditions.
