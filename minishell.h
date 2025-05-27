@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 15:48:14 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:00:17 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,15 +89,6 @@ typedef struct s_input
 	//int				heredoc_fd;
 }					t_input;
 
-typedef struct s_tokenizer
-{
-	const char		*input;
-	int				pos;
-	bool			done;
-	bool			in_quotes;
-	char			quote_char;
-}					t_tokenizer;
-
 typedef struct s_shell
 {
 	char			*user;
@@ -112,6 +103,16 @@ typedef struct s_shell
 	t_builtin		builtins[8];
 	t_input			input;
 }					t_shell;
+
+typedef struct s_tokenizer
+{
+	const char		*input;
+	int				pos;
+	bool			done;
+	bool			in_quotes;
+	char			quote_char;
+	t_shell *shell;
+}					t_tokenizer;
 
 typedef struct s_env
 {
@@ -230,6 +231,7 @@ char				*handle_quotes(char *input);
 char				**list_to_array(t_list *lst);
 char				*get_next_token_tokenizer(t_tokenizer *t);
 // ./parser/tokenize.c
+char *preprocess_heredocs(char *input);
 void				split_commands(t_shell *shell);
 // ./parser/validate_syntax_utils.c
 void				print_syntax_error(char *token);

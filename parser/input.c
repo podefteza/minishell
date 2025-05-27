@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 16:45:08 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:02:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static void	check_for_pipe(t_shell *shell)
 {
+	// printf(">>>>>>>>>>> check_for_pipe\n");
 	if (!ft_strchr(shell->input.expanded, '|')
 		|| !is_pipe_outside_quotes(shell->input.expanded))
 	{
@@ -54,13 +55,13 @@ static int	is_pipeline(t_shell *shell)
 	return (FALSE);
 }
 
-
 static void	execute_final_command(t_shell *shell)
 {
-	int		stdin_backup;
-	int		stdout_backup;
-	int		need_restore;
+	int	stdin_backup;
+	int	stdout_backup;
+	int	need_restore;
 
+	// printf(">>>>>>>>>>> execute_final_command\n");
 	stdin_backup = -1;
 	stdout_backup = -1;
 	need_restore = FALSE;
@@ -115,12 +116,12 @@ static void	execute_final_command(t_shell *shell)
 
 void	handle_input(t_shell *shell)
 {
+	char	*processed_input;
+
 	handle_signal_status(shell);
 	process_initial_input(shell);
 	if (!shell->input.processed)
-	{
 		return ;
-	}
 	check_for_expansion(shell);
 	if (!shell->input.expanded || shell->input.expanded[0] == '\0')
 	{
@@ -132,6 +133,14 @@ void	handle_input(t_shell *shell)
 		free(shell->input.expanded);
 		return ;
 	}
+	processed_input = preprocess_heredocs(shell->input.expanded);
+	if (!processed_input)
+	{
+		free(shell->input.expanded);
+		return ;
+	}
+	free(shell->input.expanded);
+	shell->input.expanded = processed_input;
 	check_for_pipe(shell);
 	split_commands(shell);
 	if (remove_quotes_from_commands(shell))

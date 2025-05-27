@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 16:54:20 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 10:26:35 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static void	print_echo_arguments(char **args, int i)
 	}
 }
 
-char	**handle_echo(char *modified_input, t_shell *shell)
+/*char	**handle_echo(char *modified_input, t_shell *shell)
 {
 	char	**args;
 	char	*tmp_input;
@@ -73,7 +73,7 @@ char	**handle_echo(char *modified_input, t_shell *shell)
 	process_echo_tokens(args, skip_whitespace(tmp_input), shell);
 	free(tmp_input);
 	return (args);
-}
+}*/
 
 static void	print_echo_core(char **args, int start, int newline)
 {

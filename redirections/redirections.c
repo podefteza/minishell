@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 16:00:22 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:15:17 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	heredoc_sigint_handler(int sig)
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_done = 1;
+	rl_redisplay();
 }
 
 int	handle_heredoc(char *delimiter)
@@ -27,29 +28,20 @@ int	handle_heredoc(char *delimiter)
 	int					fd[2];
 	char				*line;
 	struct termios		original_term;
-	struct termios		temp_term;
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
 
 	if (pipe(fd) == -1)
 		return (-1);
-
-	// Save original terminal settings
 	tcgetattr(STDIN_FILENO, &original_term);
-	memcpy(&temp_term, &original_term, sizeof(temp_term));
-
-	// Set up signal handlers
 	sa_int.sa_handler = heredoc_sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
 	sigaction(SIGINT, &sa_int, NULL);
-
 	sa_quit.sa_handler = SIG_IGN;
 	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;
 	sigaction(SIGQUIT, &sa_quit, NULL);
-
-	// Main heredoc loop
 	while (!g_signal_status)
 	{
 		line = readline("> ");
@@ -65,26 +57,25 @@ int	handle_heredoc(char *delimiter)
 		free(line);
 	}
 	close(fd[1]);
-
-	// Restore terminal settings
-	tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
-
-	// Restore default signal handlers
+	if (g_signal_status)
+	{
+		close(fd[0]);
+		tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
+		rl_reset_terminal(NULL);
+		rl_cleanup_after_signal();
+		sa_int.sa_handler = SIG_DFL;
+		sigaction(SIGINT, &sa_int, NULL);
+		sa_quit.sa_handler = SIG_DFL;
+		sigaction(SIGQUIT, &sa_quit, NULL);
+		int i = 3;
+		while (i < 1024)
+			close(i++);
+		return (-1);
+	}
 	sa_int.sa_handler = SIG_DFL;
 	sigaction(SIGINT, &sa_int, NULL);
 	sa_quit.sa_handler = SIG_DFL;
 	sigaction(SIGQUIT, &sa_quit, NULL);
-
-	if (g_signal_status)
-	{
-		int i = 3;
-		while (i < 1024)
-		{
-			close(i);
-			i++;
-		}
-		return (-1);
-	}
 	return (fd[0]);
 }
 

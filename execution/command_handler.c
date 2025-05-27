@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 14:15:03 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 11:32:45 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:04:31 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ static int	process_commands(t_shell *shell, pid_t *child_pids, int in_bak,
 {
 	t_exec_state	state;
 
+	//printf(">>>>>>>>>>> process_commands\n");
+
 	state.cmd_idx = 0;
 	state.pid_idx = 0;
 	state.prev_read = -1;
@@ -61,6 +63,8 @@ int	execute_command(t_shell *shell)
 	int		stdout_backup;
 	int		num_commands;
 	pid_t	*child_pids;
+
+	//printf(">>>>>>>>>>> execute_command\n");
 
 	stdin_backup = dup(STDIN_FILENO);
 	stdout_backup = dup(STDOUT_FILENO);

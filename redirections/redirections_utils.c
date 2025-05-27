@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:56:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 14:53:27 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:10:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int	is_redirection_operator(char *str)
 
 char	*get_redirection_symbol(char *token)
 {
+	// this function is never used!!!!!!!!!!!!!!
 	if (!token)
 		return (NULL);
 	if (ft_strncmp(token, ">>", 3) == 0 && token[2] == '\0')
@@ -57,7 +58,7 @@ int	open_redirection_file(char *op, char *filename)
 		return (open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644));
 	if (ft_strncmp(op, "<", 2) == 0)
 		return (open(filename, O_RDONLY));
-	if (ft_strncmp(op, "<<", 3) == 0)
-		return (handle_heredoc(filename));
+	/*if (ft_strncmp(op, "<<", 3) == 0)
+		return (handle_heredoc(filename));*/
 	return (-1);
 }

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:21:18 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 14:50:24 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 11:04:39 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ void	handle_command(t_shell *shell, pid_t *child_pids, t_exec_state *state)
 {
 	char	**args;
 	pid_t	pid;
+
+	//printf(">>>>>>>>>>> handle_command\n");
 
 	if (!shell->input.commands || !shell->input.commands[state->cmd_idx])
 	{
