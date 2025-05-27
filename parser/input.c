@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 11:02:23 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 23:11:55 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ void	handle_input(t_shell *shell)
 	check_for_expansion(shell);
 	if (!shell->input.expanded || shell->input.expanded[0] == '\0')
 	{
+		shell->exit_status = 0;
 		free(shell->input.expanded);
 		return ;
 	}

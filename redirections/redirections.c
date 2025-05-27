@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 11:15:17 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 22:19:59 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,17 @@ int	handle_heredoc(char *delimiter)
 	struct termios		original_term;
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
+	struct sigaction	old_sa_int;  // Add this to save original handler
+	struct sigaction	old_sa_quit; // Add this to save original handler
 
 	if (pipe(fd) == -1)
 		return (-1);
 	tcgetattr(STDIN_FILENO, &original_term);
+
+	// Save the current signal handlers before changing them
+	sigaction(SIGINT, NULL, &old_sa_int);
+	sigaction(SIGQUIT, NULL, &old_sa_quit);
+
 	sa_int.sa_handler = heredoc_sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
@@ -42,6 +49,7 @@ int	handle_heredoc(char *delimiter)
 	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;
 	sigaction(SIGQUIT, &sa_quit, NULL);
+
 	while (!g_signal_status)
 	{
 		line = readline("> ");
@@ -57,25 +65,27 @@ int	handle_heredoc(char *delimiter)
 		free(line);
 	}
 	close(fd[1]);
+
 	if (g_signal_status)
 	{
 		close(fd[0]);
 		tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
 		rl_reset_terminal(NULL);
 		rl_cleanup_after_signal();
-		sa_int.sa_handler = SIG_DFL;
-		sigaction(SIGINT, &sa_int, NULL);
-		sa_quit.sa_handler = SIG_DFL;
-		sigaction(SIGQUIT, &sa_quit, NULL);
+
+		// Restore original signal handlers
+		sigaction(SIGINT, &old_sa_int, NULL);
+		sigaction(SIGQUIT, &old_sa_quit, NULL);
+
 		int i = 3;
 		while (i < 1024)
 			close(i++);
 		return (-1);
 	}
-	sa_int.sa_handler = SIG_DFL;
-	sigaction(SIGINT, &sa_int, NULL);
-	sa_quit.sa_handler = SIG_DFL;
-	sigaction(SIGQUIT, &sa_quit, NULL);
+
+	// Restore original signal handlers in success case too
+	sigaction(SIGINT, &old_sa_int, NULL);
+	sigaction(SIGQUIT, &old_sa_quit, NULL);
 	return (fd[0]);
 }
 

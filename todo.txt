@@ -256,18 +256,17 @@ heredocs:
 
 ===================================================================================================================================================================
 
-⚠️ minishell vs bash differences detected:
------------------
-❌$ .
-minishell: /home/carlos-j/.local/bin/.: Is a directory
-
-❌minishell $ cd -
-should print the last directory (like pwd) AND move between directories
-
-=====================
-
 ⚠️ NOT YET IMPLEMENTED:
 ❌❌❌❌❌ expansions in heredoc (+ heredoc with << 'EOF' --> no expansion)
+
+⚠️
+$ cat << heredoc
+> hello
+> $USER
+heredoc
+✔️hello
+❌$USER
+⚠️ WE NEED TO READ FROM HEREDOC FIRST, AND THEN CHECK THE EXPANSIONS>>>>change the order of the operations in the handle_input
 
 =====================
 

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 11:03:59 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 22:16:01 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,8 +144,7 @@ char	*preprocess_heredocs(char *input)
 			free(result);
 			return (NULL);
 		}
-		snprintf(replacement, sizeof(replacement), "</proc/self/fd/%d",
-			heredoc_fd); // can't use snprintf !!!!!!!!
+		snprintf(replacement, sizeof(replacement), "</proc/self/fd/%d", heredoc_fd); // can't use snprintf !!!!!!!!
 		original_len = delim_end - pos;
 		replacement_len = ft_strlen(replacement);
 		result_len = ft_strlen(result);
