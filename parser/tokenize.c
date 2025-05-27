@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 22:16:01 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 23:31:38 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static char	**tokenize_command(const char *cmd, t_shell *shell)
 					ft_lstclear(&tokens, free);
 					return (NULL);
 				}
-				heredoc_fd = handle_heredoc(delimiter_token);
+				heredoc_fd = handle_heredoc(delimiter_token, 0, shell);
 				free(delimiter_token);
 				if (heredoc_fd == -1)
 				{
@@ -96,7 +96,7 @@ static int	is_inside_quotes(const char *str, const char *pos)
 	return (in_single || in_double);
 }
 
-char	*preprocess_heredocs(char *input)
+char	*preprocess_heredocs(char *input, t_shell *shell)
 {
 	char	*result;
 	char	*pos;
@@ -134,17 +134,29 @@ char	*preprocess_heredocs(char *input)
 			&& *delim_end != '>')
 			delim_end++;
 		delim_len = delim_end - delim_start;
+		int quoted = (*delim_start == '\'' || *delim_start == '"');
+		if (quoted)
+		{
+			delim_start++;
+			delim_end--;
+			delim_len -= 2;
+		}
 		delimiter = malloc(delim_len + 1);
 		ft_strlcpy(delimiter, delim_start, delim_len + 1);
 		delimiter[delim_len] = '\0';
-		heredoc_fd = handle_heredoc(delimiter);
+		heredoc_fd = handle_heredoc(delimiter, !quoted, shell);
 		free(delimiter);
 		if (heredoc_fd == -1)
 		{
 			free(result);
 			return (NULL);
 		}
-		snprintf(replacement, sizeof(replacement), "</proc/self/fd/%d", heredoc_fd); // can't use snprintf !!!!!!!!
+		//snprintf(replacement, sizeof(replacement), "</proc/self/fd/%d", heredoc_fd); // can't use snprintf !!!!!!!!
+		char	*fd_str = ft_itoa(heredoc_fd);
+		ft_strlcpy(replacement, "/proc/self/fd/", sizeof(replacement));
+		ft_strlcat(replacement, fd_str, sizeof(replacement));
+		free(fd_str);
+
 		original_len = delim_end - pos;
 		replacement_len = ft_strlen(replacement);
 		result_len = ft_strlen(result);

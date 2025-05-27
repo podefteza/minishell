@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 23:11:55 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 23:29:28 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,15 @@ void	handle_input(t_shell *shell)
 	process_initial_input(shell);
 	if (!shell->input.processed)
 		return ;
+	processed_input = preprocess_heredocs(shell->input.processed, shell);
+	if (!processed_input)
+	{
+		free(shell->input.processed);
+		return ;
+	}
+	free(shell->input.processed);
+	shell->input.processed = processed_input;
+
 	check_for_expansion(shell);
 	if (!shell->input.expanded || shell->input.expanded[0] == '\0')
 	{
@@ -134,14 +143,6 @@ void	handle_input(t_shell *shell)
 		free(shell->input.expanded);
 		return ;
 	}
-	processed_input = preprocess_heredocs(shell->input.expanded);
-	if (!processed_input)
-	{
-		free(shell->input.expanded);
-		return ;
-	}
-	free(shell->input.expanded);
-	shell->input.expanded = processed_input;
 	check_for_pipe(shell);
 	split_commands(shell);
 	if (remove_quotes_from_commands(shell))

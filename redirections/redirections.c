@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 22:19:59 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 23:31:04 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,24 +23,21 @@ void	heredoc_sigint_handler(int sig)
 	rl_redisplay();
 }
 
-int	handle_heredoc(char *delimiter)
+int	handle_heredoc(char *delimiter, int expand, t_shell *shell)
 {
 	int					fd[2];
 	char				*line;
 	struct termios		original_term;
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
-	struct sigaction	old_sa_int;  // Add this to save original handler
-	struct sigaction	old_sa_quit; // Add this to save original handler
+	struct sigaction	old_sa_int;
+	struct sigaction	old_sa_quit;
 
 	if (pipe(fd) == -1)
 		return (-1);
 	tcgetattr(STDIN_FILENO, &original_term);
-
-	// Save the current signal handlers before changing them
 	sigaction(SIGINT, NULL, &old_sa_int);
 	sigaction(SIGQUIT, NULL, &old_sa_quit);
-
 	sa_int.sa_handler = heredoc_sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
@@ -49,7 +46,6 @@ int	handle_heredoc(char *delimiter)
 	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;
 	sigaction(SIGQUIT, &sa_quit, NULL);
-
 	while (!g_signal_status)
 	{
 		line = readline("> ");
@@ -60,30 +56,26 @@ int	handle_heredoc(char *delimiter)
 			free(line);
 			break;
 		}
+		if (expand)
+			line = expand_variables(line, shell);
 		write(fd[1], line, ft_strlen(line));
 		write(fd[1], "\n", 1);
 		free(line);
 	}
 	close(fd[1]);
-
 	if (g_signal_status)
 	{
 		close(fd[0]);
 		tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
 		rl_reset_terminal(NULL);
 		rl_cleanup_after_signal();
-
-		// Restore original signal handlers
 		sigaction(SIGINT, &old_sa_int, NULL);
 		sigaction(SIGQUIT, &old_sa_quit, NULL);
-
 		int i = 3;
 		while (i < 1024)
 			close(i++);
 		return (-1);
 	}
-
-	// Restore original signal handlers in success case too
 	sigaction(SIGINT, &old_sa_int, NULL);
 	sigaction(SIGQUIT, &old_sa_quit, NULL);
 	return (fd[0]);
