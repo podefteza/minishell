@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 01:29:39 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 12:58:46 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,57 +82,91 @@ void	heredoc_sigint_handler(int sig)
 	return (fd[0]);
 }*/
 
-int	handle_heredoc(char *delimiter, int expand, t_shell *shell)
+int handle_heredoc(char *delimiter, int expand, t_shell *shell)
 {
-	int					fd[2];
-	char				*line;
-	struct termios		original_term;
-	struct sigaction	sa_int;
-	struct sigaction	sa_quit;
-	struct sigaction	old_sa_int;
-	struct sigaction	old_sa_quit;
+    int fd[2];
+    char *line;
+    struct termios original_term;
+    struct termios new_term;  // Add this for proper terminal handling
+    struct sigaction sa_int;
+    struct sigaction sa_quit;
+    struct sigaction old_sa_int;
+    struct sigaction old_sa_quit;
 
-	if (pipe(fd) == -1)
-		return (-1);
-	tcgetattr(STDIN_FILENO, &original_term);
-	sigaction(SIGINT, NULL, &old_sa_int);
-	sigaction(SIGQUIT, NULL, &old_sa_quit);
-	sa_int.sa_handler = heredoc_sigint_handler;
-	sigemptyset(&sa_int.sa_mask);
-	sa_int.sa_flags = 0;
-	sigaction(SIGINT, &sa_int, NULL);
-	sa_quit.sa_handler = SIG_IGN;
-	sigemptyset(&sa_quit.sa_mask);
-	sa_quit.sa_flags = 0;
-	sigaction(SIGQUIT, &sa_quit, NULL);
-	while (!g_signal_status)
-	{
-		line = readline("> ");
-		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
-		{
-			free(line);
-			break;
-		}
-		if (expand)
-		{
-			char *expanded = expand_variables(line, shell);
-			free(line);
-			line = expanded;
-		}
-		write(fd[1], line, ft_strlen(line));
-		write(fd[1], "\n", 1);
-		free(line);
-	}
-	close(fd[1]);
-	tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
-	sigaction(SIGINT, &old_sa_int, NULL);
-	sigaction(SIGQUIT, &old_sa_quit, NULL);
-	if (g_signal_status)
-	{
-		close(fd[0]);
-		return (-1);
-	}
-	return (fd[0]);
+    if (pipe(fd) == -1)
+        return (-1);
+
+    // Initialize terminal settings properly
+    ft_memset(&original_term, 0, sizeof(original_term));
+    ft_memset(&new_term, 0, sizeof(new_term));
+
+    if (tcgetattr(STDIN_FILENO, &original_term) == -1) {
+        perror("tcgetattr");
+        close(fd[0]);
+        close(fd[1]);
+        return (-1);
+    }
+
+    // Copy original settings to new_term
+    new_term = original_term;
+
+    // Modify terminal settings if needed (e.g., disable echo)
+    // new_term.c_lflag &= ~(ECHO | ICANON);
+
+    // Set new terminal settings
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &new_term) == -1) {
+        perror("tcsetattr");
+        close(fd[0]);
+        close(fd[1]);
+        return (-1);
+    }
+
+    // Rest of your signal handling code...
+    sigaction(SIGINT, NULL, &old_sa_int);
+    sigaction(SIGQUIT, NULL, &old_sa_quit);
+    sa_int.sa_handler = heredoc_sigint_handler;
+    sigemptyset(&sa_int.sa_mask);
+    sa_int.sa_flags = 0;
+    sigaction(SIGINT, &sa_int, NULL);
+    sa_quit.sa_handler = SIG_IGN;
+    sigemptyset(&sa_quit.sa_mask);
+    sa_quit.sa_flags = 0;
+    sigaction(SIGQUIT, &sa_quit, NULL);
+
+    while (!g_signal_status)
+    {
+        line = readline("> ");
+        if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
+        {
+            free(line);
+            break;
+        }
+        if (expand)
+        {
+            char *expanded = expand_variables(line, shell);
+            free(line);
+            line = expanded;
+        }
+        write(fd[1], line, ft_strlen(line));
+        write(fd[1], "\n", 1);
+        free(line);
+    }
+    close(fd[1]);
+
+    // Restore original terminal settings
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &original_term) == -1) {
+        perror("tcsetattr restore");
+    }
+
+    sigaction(SIGINT, &old_sa_int, NULL);
+    sigaction(SIGQUIT, &old_sa_quit, NULL);
+
+    if (g_signal_status)
+    {
+        close(fd[0]);
+        return (-1);
+    }
+    return (fd[0]);
 }
 
 

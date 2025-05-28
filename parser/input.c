@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 01:07:34 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 13:45:39 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,7 @@ void	handle_input(t_shell *shell)
 	processed_input = preprocess_heredocs(shell->input.processed, shell);
 	if (!processed_input)
 	{
+		cleanup_all_temp_files(shell);
 		close_all_fds();
 		free(shell->input.processed);
 		return ;
@@ -149,6 +150,7 @@ void	handle_input(t_shell *shell)
 	check_for_expansion(shell);
 	if (!shell->input.expanded || shell->input.expanded[0] == '\0')
 	{
+		cleanup_all_temp_files(shell);
 		close_all_fds();
 		shell->exit_status = 0;
 		free(shell->input.expanded);
@@ -156,6 +158,7 @@ void	handle_input(t_shell *shell)
 	}
 	if (validate_syntax(shell))
 	{
+		cleanup_all_temp_files(shell);
 		close_all_fds();
 		free(shell->input.expanded);
 		return ;
@@ -164,12 +167,14 @@ void	handle_input(t_shell *shell)
 	split_commands(shell);
 	if (remove_quotes_from_commands(shell))
 	{
+		cleanup_all_temp_files(shell);
 		free_input(shell);
 		close_all_fds();
 		return ;
 	}
 	//printf("before executing commands...\n");
 	execute_final_command(shell);
+	cleanup_all_temp_files(shell);
 	free_input(shell);
 	//printf("end of execution, will close fds\n");
 	close_all_fds();

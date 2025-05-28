@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 02:06:57 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 13:34:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ typedef struct s_shell
 	int				exit_status;
 	int				is_prompting;
 	int				should_exit;
+	t_list *temp_files;
 	pid_t			last_bg_pid;
 	t_builtin		builtins[8];
 	t_input			input;
@@ -271,6 +272,7 @@ void				free_shell_resources(t_shell *shell);
 // ./utils/error.c
 void				ft_puterr(char *msg1, char *msg2, char *msg3, char *msg4);
 // ./utils/general_utils.c
+void cleanup_all_temp_files(t_shell *shell);
 int					is_redirection_token(char *token);
 int					ft_isspace(int c);
 char				*ft_strndup(const char *s, size_t n);

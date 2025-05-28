@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 01:47:10 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 13:32:07 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ void	setup_shell(t_shell *shell, char **envp)
 	signal(SIGPIPE, SIG_IGN);
 	if (!shell || !envp)
 		return ;
+	ft_memset(shell, 0, sizeof(t_shell)); // added this...
 	env_count = 0;
 	builtin_setup(shell->builtins);
 	user_hostname(shell);
@@ -91,6 +92,7 @@ void	setup_shell(t_shell *shell, char **envp)
 		return ;
 	duplicate_env_vars(shell, envp, env_count);
 	add_or_update_env(shell, "OLDPWD", "");
+	shell->temp_files = NULL;
 	shell->is_prompting = FALSE;
 	shell->should_exit = FALSE;
 	//builtin_setup(shell->builtins); moved...

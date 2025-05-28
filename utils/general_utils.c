@@ -6,11 +6,31 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 19:10:30 by pesoares          #+#    #+#             */
-/*   Updated: 2025/05/28 02:07:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 13:34:15 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+static void cleanup_temp_file(void *filename_ptr)
+{
+    char *filename = (char *)filename_ptr;
+
+    if (filename)
+    {
+        unlink(filename);
+        free(filename);
+    }
+}
+
+void cleanup_all_temp_files(t_shell *shell)
+{
+    if (!shell || !shell->temp_files)
+        return;
+
+    ft_lstclear(&shell->temp_files, cleanup_temp_file);
+    shell->temp_files = NULL;
+}
 
 int	is_redirection_token(char *token)
 {
