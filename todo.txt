@@ -238,7 +238,7 @@ Surprise! (or not...)
 
 ===================================================================================================================================================================
 
-⚠️ STILL NOT WORKING...
+⚠️ STILL NOT WORKING CORRECTLY...
 
 heredocs:
 ❌ $ << EOF
@@ -254,6 +254,17 @@ heredocs:
 	✔️CTRL+\ DOES NOT DO ANYTHING
 
 ===================================================================================================================================================================
+
+⚠️ FUNCTIONS NOT ALLOWED BUT USED:
+❌❌❌❌❌
+NEED TO FIND AN ALTERNATIVE TO:
+rl_cleanup_after_signal
+rl_reset_terminal
+snprintf
+strchr✔️ft_strchr
+
+
+
 
 ❌❌❌❌❌
 clang-tidy: Detects infinite loops and inefficient conditions.

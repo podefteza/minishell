@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 22:53:34 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 01:20:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ void	setup_shell(t_shell *shell, char **envp)
 {
 	int	env_count;
 
+	signal(SIGPIPE, SIG_IGN);
 	if (!shell || !envp)
 		return ;
 	env_count = 0;

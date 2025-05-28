@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 09:30:50 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 01:05:12 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,5 +84,6 @@ int	builtin_exit(char **args, t_shell *shell)
 	//free_input(&shell->input);
 	free_shell_resources(shell);
 	//rl_clear_history();
+	close_all_fds();
 	exit(exit_code);
 }

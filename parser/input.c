@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 23:29:28 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 01:07:34 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,16 +61,18 @@ static void	execute_final_command(t_shell *shell)
 	int	stdout_backup;
 	int	need_restore;
 
-	// printf(">>>>>>>>>>> execute_final_command\n");
+	//printf(">>>>>>>>>>> execute_final_command\n");
 	stdin_backup = -1;
 	stdout_backup = -1;
 	need_restore = FALSE;
+	//printf(">>>> debug1 >>>>>>\n");
 	if (shell->input.commands && shell->input.commands[0])
 	{
 		stdin_backup = dup(STDIN_FILENO);
 		stdout_backup = dup(STDOUT_FILENO);
 		need_restore = TRUE;
 	}
+	//printf(">>>> debug2 >>>>>>\n");
 	if (shell->input.commands && shell->input.commands[0]
 		&& ft_strncmp(shell->input.commands[0][0], "exit", 5) == 0)
 	{
@@ -82,6 +84,7 @@ static void	execute_final_command(t_shell *shell)
 		builtin_exit(shell->input.commands[0], shell);
 		return ;
 	}
+	//printf(">>>> debug3 >>>>>>\n");
 	if (!shell->input.commands || !shell->input.commands[0])
 	{
 		if (need_restore)
@@ -91,6 +94,7 @@ static void	execute_final_command(t_shell *shell)
 		}
 		return ;
 	}
+	//printf(">>>> debug4 >>>>>>\n");
 	if (!is_pipeline(shell))
 	{
 		if (execute_builtins(shell, shell->input.commands[0]))
@@ -109,9 +113,20 @@ static void	execute_final_command(t_shell *shell)
 			return ;
 		}
 	}
+	//printf(">>>> debug5 >>>>>>\n");
 	execute_command(shell);
 	if (need_restore)
 		restore_stdio(stdout_backup, stdin_backup);
+	//printf(">>>> debug6 >>>>>>\n");
+}
+
+void close_all_fds()
+{
+	// close all open file descriptors
+	//printf("Closing all file descriptors...\n");
+	int i = 3;
+	while (i < 1024)
+		close(i++);
 }
 
 void	handle_input(t_shell *shell)
@@ -125,21 +140,23 @@ void	handle_input(t_shell *shell)
 	processed_input = preprocess_heredocs(shell->input.processed, shell);
 	if (!processed_input)
 	{
+		close_all_fds();
 		free(shell->input.processed);
 		return ;
 	}
 	free(shell->input.processed);
 	shell->input.processed = processed_input;
-
 	check_for_expansion(shell);
 	if (!shell->input.expanded || shell->input.expanded[0] == '\0')
 	{
+		close_all_fds();
 		shell->exit_status = 0;
 		free(shell->input.expanded);
 		return ;
 	}
 	if (validate_syntax(shell))
 	{
+		close_all_fds();
 		free(shell->input.expanded);
 		return ;
 	}
@@ -148,8 +165,12 @@ void	handle_input(t_shell *shell)
 	if (remove_quotes_from_commands(shell))
 	{
 		free_input(shell);
+		close_all_fds();
 		return ;
 	}
+	//printf("before executing commands...\n");
 	execute_final_command(shell);
 	free_input(shell);
+	//printf("end of execution, will close fds\n");
+	close_all_fds();
 }

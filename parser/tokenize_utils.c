@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 17:11:38 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 21:06:55 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/27 23:41:40 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static void	skip_token_while_valid(t_tokenizer *t)
 		if (!t->in_quotes && (t->input[t->pos] == ' '
 				|| t->input[t->pos] == '\t'))
 			break ;
-		if (!t->in_quotes && strchr("><|", t->input[t->pos]))
+		if (!t->in_quotes && ft_strchr("><|", t->input[t->pos]))
 			break ;
 		if (t->input[t->pos] == '\'' || t->input[t->pos] == '\"')
 		{
@@ -81,7 +81,7 @@ static void	skip_token_while_valid(t_tokenizer *t)
 				t->in_quotes = FALSE;
 		}
 		t->pos++;
-		if (!t->in_quotes && (isspace(t->input[t->pos]) || strchr("><|",
+		if (!t->in_quotes && (isspace(t->input[t->pos]) || ft_strchr("><|",
 					t->input[t->pos])))
 			break ;
 	}

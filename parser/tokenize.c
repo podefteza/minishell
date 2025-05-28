@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 23:31:38 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 00:04:11 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ static char	**tokenize_command(const char *cmd, t_shell *shell)
 	char		**result;
 	char		*delimiter_token;
 	int			heredoc_fd;
-				char fd_str[32];
+	char		*fd_num;
+	char		*fd_path;
 
 	init_tokenizer(&tokenizer, cmd, shell);
 	tokens = NULL;
@@ -42,35 +43,31 @@ static char	**tokenize_command(const char *cmd, t_shell *shell)
 			ft_lstclear(&tokens, free);
 			return (NULL);
 		}
-		if (token)
+		if (token && ft_strncmp(token, "<<", 3) == 0)
 		{
-			if (ft_strncmp(token, "<<", 3) == 0)
-			{
-				delimiter_token = get_next_token_tokenizer(&tokenizer);
-				if (!delimiter_token)
-				{
-					free(token);
-					ft_lstclear(&tokens, free);
-					return (NULL);
-				}
-				heredoc_fd = handle_heredoc(delimiter_token, 0, shell);
-				free(delimiter_token);
-				if (heredoc_fd == -1)
-				{
-					free(token);
-					ft_lstclear(&tokens, free);
-					return (NULL);
-				}
-				free(token);
-				token = ft_strdup("<");
-				ft_lstadd_back(&tokens, ft_lstnew(token));
-				snprintf(fd_str, sizeof(fd_str), "/proc/self/fd/%d",
-					heredoc_fd);
-				ft_lstadd_back(&tokens, ft_lstnew(ft_strdup(fd_str)));
-			}
-			else
-				ft_lstadd_back(&tokens, ft_lstnew(token));
+			delimiter_token = get_next_token_tokenizer(&tokenizer);
+			if (!delimiter_token)
+				return (free(token), ft_lstclear(&tokens, free), NULL);
+			heredoc_fd = handle_heredoc(delimiter_token, 0, shell);
+			free(delimiter_token);
+			if (heredoc_fd == -1)
+				return (free(token), ft_lstclear(&tokens, free), NULL);
+			free(token);
+			token = ft_strdup("<");
+			if (!token)
+				return (ft_lstclear(&tokens, free), NULL);
+			ft_lstadd_back(&tokens, ft_lstnew(token));
+			fd_num = ft_itoa(heredoc_fd);
+			if (!fd_num)
+				return (ft_lstclear(&tokens, free), NULL);
+			fd_path = ft_strjoin("/proc/self/fd/", fd_num);
+			free(fd_num);
+			if (!fd_path)
+				return (ft_lstclear(&tokens, free), NULL);
+			ft_lstadd_back(&tokens, ft_lstnew(fd_path));
 		}
+		else if (token)
+			ft_lstadd_back(&tokens, ft_lstnew(token));
 	}
 	result = list_to_array(tokens);
 	ft_lstclear(&tokens, free);

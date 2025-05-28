@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 12:02:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 14:50:05 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 01:08:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,13 @@ static void	handle_child_execution(char **args, t_shell *shell)
 		free(full_path);
 	shell->exit_status = 126;
 	free_shell_resources(shell);
+	close_all_fds();
 	exit(shell->exit_status);
 }
 
 void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
 {
+	//printf(">>>>>>>>>>> execute_child\n");
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
@@ -97,12 +99,15 @@ void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
 	{
 		free_shell_resources(shell);  // OK!
 		free_input(shell); // OK!
+		close_all_fds();
 		exit(1);
 	}
 	if (is_builtin(args[0], shell))
 	{
 		execute_builtins(shell, args);
 		free_shell_resources(shell);
+		free_input(shell); // OK!
+		close_all_fds();
 		exit(shell->exit_status);
 	}
 	safe_close(prev);

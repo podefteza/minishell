@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 23:26:00 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 01:00:52 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,6 +221,7 @@ void	process_initial_input(t_shell *shell);
 void				handle_signal_status(t_shell *shell);
 int				remove_quotes_from_commands(t_shell *shell);
 // ./parser/input.c
+void close_all_fds();
 void				handle_input(t_shell *shell);
 // ./parser/quotes_utils.c
 int					count_quotes(char *input);

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 10:26:35 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 01:23:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,32 +48,14 @@ static void	print_echo_arguments(char **args, int i)
 			continue ;
 		}
 		tmp = handle_quotes(args[i]);
-		printf("%s", tmp);
+		if (printf("%s", tmp) < 0)
+			break;
 		if (args[i + 1])
 			printf(" ");
 		i++;
 		free(tmp);
 	}
 }
-
-/*char	**handle_echo(char *modified_input, t_shell *shell)
-{
-	char	**args;
-	char	*tmp_input;
-	char	*message;
-
-	tmp_input = ft_strdup(modified_input + 4);
-	if (!tmp_input)
-		return (NULL);
-	message = skip_whitespace(tmp_input);
-	args = malloc(sizeof(char *) * (count_args_for_echo(message) + 1));
-	if (!args)
-		return (free(tmp_input), NULL);
-	args[0] = ft_strdup("echo");
-	process_echo_tokens(args, skip_whitespace(tmp_input), shell);
-	free(tmp_input);
-	return (args);
-}*/
 
 static void	print_echo_core(char **args, int start, int newline)
 {
