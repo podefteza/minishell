@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:21:18 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 00:45:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 02:01:53 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 static void	execute_parent(pid_t *child_pids, t_exec_state *state, pid_t pid)
 {
 	//printf(">>>>>>>>>>> execute_parent\n");
+	signal(SIGPIPE, SIG_IGN);
+
 	child_pids[state->pid_idx] = pid;
 	state->pid_idx++;
 	safe_close(state->prev_read);

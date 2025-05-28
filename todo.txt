@@ -255,17 +255,6 @@ heredocs:
 
 ===================================================================================================================================================================
 
-⚠️ FUNCTIONS NOT ALLOWED BUT USED:
-❌❌❌❌❌
-NEED TO FIND AN ALTERNATIVE TO:
-rl_cleanup_after_signal
-rl_reset_terminal
-snprintf
-strchr✔️ft_strchr
-
-
-
-
 ❌❌❌❌❌
 clang-tidy: Detects infinite loops and inefficient conditions.
 $ bear -- make
@@ -288,7 +277,6 @@ remove supp file
 =====================
 
 ===================================================================================================================================================================
-
 
 💡 HELPERS:
 	- check functions used: nm -Ud minishell | grep " U "

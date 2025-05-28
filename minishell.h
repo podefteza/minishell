@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 01:00:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 02:06:57 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,10 +142,7 @@ void				change_to_previous_directory(t_shell *shell);
 // ./builtins/echo/
 // ./builtins/echo/builtin_echo_utils.c
 int					count_args_for_echo(char *message);
-void				process_echo_tokens(char **args, char *message,
-						t_shell *shell);
 // ./builtins/echo/builtin_echo.c
-char				**handle_echo(char *modified_input, t_shell *shell);
 int					builtin_echo(char **args, t_shell *shell);
 // ./builtins/env/
 // ./builtins/env/builtin_env.c
@@ -188,10 +185,8 @@ int					execute_builtins(t_shell *shell, char **cmd);
 void				execute_child(t_shell *shell, char **args, int prev,
 						int pipe_fd[2]);
 // ./execution/command_execution.c
-void				handle_command(t_shell *shell, pid_t *pids,
-						t_exec_state *state);
-int					finalize_execution(t_shell *shell, pid_t *pids,
-						t_exec_state *state);
+void	handle_command(t_shell *shell, pid_t *child_pids, t_exec_state *state);
+int	finalize_execution(t_shell *shell, pid_t *child_pids, t_exec_state *state);
 // ./execution/command_handler_utils.c
 char				*find_command(char *cmd, t_shell *shell);
 int					count_executables(char ***commands);
@@ -252,7 +247,6 @@ int					is_pipe_outside_quotes(char *input);
 // ./redirections/
 // ./redirections/redirections_utils.c
 int					is_redirection_operator(char *str);
-char				*get_redirection_symbol(char *token);
 int					open_redirection_file(char *op, char *filename);
 // ./redirections/redirections.c
 int	handle_heredoc(char *delimiter, int expand, t_shell *shell);
@@ -278,7 +272,6 @@ void				free_shell_resources(t_shell *shell);
 void				ft_puterr(char *msg1, char *msg2, char *msg3, char *msg4);
 // ./utils/general_utils.c
 int					is_redirection_token(char *token);
-char				*skip_whitespace(char *str);
 int					ft_isspace(int c);
 char				*ft_strndup(const char *s, size_t n);
 void				restore_stdio(int out, int in);

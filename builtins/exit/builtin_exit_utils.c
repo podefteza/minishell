@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 10:54:06 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 13:52:29 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 02:03:58 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int	handle_exit_in_first_arg(char **args, t_shell *shell)
 
 	exit_code_str = NULL;
 	k = 4;
-	while (args[0][k] && args[0][k] == ' ')
+	while (args[0][k] == ' ')
 		k++;
 	if (!args[0][k])
 		return (0);

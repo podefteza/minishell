@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 19:10:30 by pesoares          #+#    #+#             */
-/*   Updated: 2025/05/21 15:11:01 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 02:07:02 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,6 @@ int	is_redirection_token(char *token)
 		|| (ft_strncmp(token, "<<", 2) == 0 && ft_strlen(token) == 2)
 		|| (ft_strncmp(token, ">", 1) == 0 && ft_strlen(token) == 1)
 		|| (ft_strncmp(token, ">>", 2) == 0 && ft_strlen(token) == 2));
-}
-
-char	*skip_whitespace(char *str)
-{
-	while (*str == ' ' || *str == '\t')
-		str++;
-	return (str);
 }
 
 int	ft_isspace(int c)

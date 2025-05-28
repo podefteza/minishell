@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 23:31:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 01:29:39 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ void	heredoc_sigint_handler(int sig)
 	rl_redisplay();
 }
 
-int	handle_heredoc(char *delimiter, int expand, t_shell *shell)
+// version with rl_cleanup_after_signal and rl_reset_terminal
+/*int	handle_heredoc(char *delimiter, int expand, t_shell *shell)
 {
 	int					fd[2];
 	char				*line;
@@ -79,7 +80,61 @@ int	handle_heredoc(char *delimiter, int expand, t_shell *shell)
 	sigaction(SIGINT, &old_sa_int, NULL);
 	sigaction(SIGQUIT, &old_sa_quit, NULL);
 	return (fd[0]);
+}*/
+
+int	handle_heredoc(char *delimiter, int expand, t_shell *shell)
+{
+	int					fd[2];
+	char				*line;
+	struct termios		original_term;
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
+	struct sigaction	old_sa_int;
+	struct sigaction	old_sa_quit;
+
+	if (pipe(fd) == -1)
+		return (-1);
+	tcgetattr(STDIN_FILENO, &original_term);
+	sigaction(SIGINT, NULL, &old_sa_int);
+	sigaction(SIGQUIT, NULL, &old_sa_quit);
+	sa_int.sa_handler = heredoc_sigint_handler;
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_flags = 0;
+	sigaction(SIGINT, &sa_int, NULL);
+	sa_quit.sa_handler = SIG_IGN;
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_flags = 0;
+	sigaction(SIGQUIT, &sa_quit, NULL);
+	while (!g_signal_status)
+	{
+		line = readline("> ");
+		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
+		{
+			free(line);
+			break;
+		}
+		if (expand)
+		{
+			char *expanded = expand_variables(line, shell);
+			free(line);
+			line = expanded;
+		}
+		write(fd[1], line, ft_strlen(line));
+		write(fd[1], "\n", 1);
+		free(line);
+	}
+	close(fd[1]);
+	tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
+	sigaction(SIGINT, &old_sa_int, NULL);
+	sigaction(SIGQUIT, &old_sa_quit, NULL);
+	if (g_signal_status)
+	{
+		close(fd[0]);
+		return (-1);
+	}
+	return (fd[0]);
 }
+
 
 static int	apply_redirection(char *op, int fd, int *stored_fd)
 {

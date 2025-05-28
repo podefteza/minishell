@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 16:23:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 14:01:01 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 02:07:28 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,25 +58,6 @@ static char	*get_next_token_for_echo(char **str)
 	return (token);
 }
 
-static char	*handle_dollar_quotes(char *token, t_shell *shell)
-{
-	char	*result;
-
-	if (!token)
-		return (NULL);
-	if (token[0] == '$' && token[1] == '"')
-	{
-		result = malloc(ft_strlen(token));
-		if (!result)
-			return (NULL);
-		ft_strlcpy(result, token + 1, ft_strlen(token));
-		free(token);
-		token = expand_variables(result, shell);
-		return (token);
-	}
-	return (token);
-}
-
 int	count_args_for_echo(char *message)
 {
 	int		arg_count;
@@ -93,26 +74,4 @@ int	count_args_for_echo(char *message)
 		token = get_next_token_for_echo(&count_message);
 	}
 	return (arg_count);
-}
-
-void	process_echo_tokens(char **args, char *message, t_shell *shell)
-{
-	char	*token;
-	char	*cleaned_token;
-	int		i;
-
-	i = 1;
-	token = get_next_token_for_echo(&message);
-	while (token != NULL)
-	{
-		cleaned_token = ft_strdup(token);
-		if (cleaned_token && cleaned_token[0] == '$' && cleaned_token[1] == '"')
-			cleaned_token = handle_dollar_quotes(cleaned_token, shell);
-		else if (cleaned_token && cleaned_token[0] != '\'')
-			cleaned_token = expand_variables(cleaned_token, shell);
-		args[i++] = handle_quotes(cleaned_token);
-		free(token);
-		token = get_next_token_for_echo(&message);
-	}
-	args[i] = NULL;
 }

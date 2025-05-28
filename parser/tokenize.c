@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 00:04:11 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 01:58:22 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,11 @@ char	*preprocess_heredocs(char *input, t_shell *shell)
 			delim_end--;
 			delim_len -= 2;
 		}
+		if (delim_len <= 0)
+		{
+			free(result);
+			return (NULL);
+		}
 		delimiter = malloc(delim_len + 1);
 		ft_strlcpy(delimiter, delim_start, delim_len + 1);
 		delimiter[delim_len] = '\0';
@@ -148,7 +153,6 @@ char	*preprocess_heredocs(char *input, t_shell *shell)
 			free(result);
 			return (NULL);
 		}
-		//snprintf(replacement, sizeof(replacement), "</proc/self/fd/%d", heredoc_fd); // can't use snprintf !!!!!!!!
 		char	*fd_str = ft_itoa(heredoc_fd);
 		ft_strlcpy(replacement, "/proc/self/fd/", sizeof(replacement));
 		ft_strlcat(replacement, fd_str, sizeof(replacement));

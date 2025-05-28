@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 12:02:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 01:08:23 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 01:47:42 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,12 @@ static char	*validate_and_find_command(char **args, t_shell *shell)
 static void	handle_child_execution(char **args, t_shell *shell)
 {
 	char	*full_path;
-	int i;
+	int		i;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
+	signal(SIGPIPE, SIG_DFL); // 🔧 Restore default SIGPIPE behavior
+
 	full_path = validate_and_find_command(args, shell);
 	if (!full_path)
 	{
@@ -77,6 +79,7 @@ static void	handle_child_execution(char **args, t_shell *shell)
 	close_all_fds();
 	exit(shell->exit_status);
 }
+
 
 void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
 {

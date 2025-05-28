@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 15:44:13 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 13:51:18 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 02:05:19 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,8 @@ void	free_array(char **array)
 	i = 0;
 	while (array[i])
 	{
-		if (array[i])
-		{
-			free(array[i]);
-			array[i] = NULL;
-		}
+		free(array[i]);
+		array[i] = NULL;
 		i++;
 	}
 	free(array);
