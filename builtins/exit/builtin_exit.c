@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 01:05:12 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 14:14:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,24 +45,42 @@ static char	*strip_inner_quotes(const char *str)
 	return (result);
 }
 
+static void	clean_exit_arg(char **args)
+{
+	char	*cleaned;
+
+	if (args[1])
+	{
+		cleaned = strip_inner_quotes(args[1]);
+		if (cleaned)
+		{
+			free(args[1]);
+			args[1] = cleaned;
+		}
+	}
+}
+
+static void	exit_and_cleanup(t_shell *shell, int exit_code)
+{
+	ft_putstr_fd("exit\n", 1);
+	shell->should_exit = 1;
+	free(shell->input.expanded);
+	free_array(shell->input.args);
+	free_commands_array(shell->input.commands);
+	free_shell_resources(shell);
+	close_all_fds();
+	exit(exit_code);
+}
+
 int	builtin_exit(char **args, t_shell *shell)
 {
-	int		exit_code;
-	char	*cleaned;
+	int	exit_code;
 
 	if (!args || !args[0])
 		exit_code = 0;
 	else
 	{
-		if (args[1])
-		{
-			cleaned = strip_inner_quotes(args[1]);
-			if (cleaned)
-			{
-				free(args[1]);
-				args[1] = cleaned;
-			}
-		}
+		clean_exit_arg(args);
 		exit_code = builtin_exit_with_code(args, shell);
 		if (exit_code == -1)
 		{
@@ -71,19 +89,6 @@ int	builtin_exit(char **args, t_shell *shell)
 			return (1);
 		}
 	}
-	ft_putstr_fd("exit\n", 1);
-	shell->should_exit = 1;
-
-	//free(shell->input.processed);
-	free(shell->input.expanded);
-	free_array(shell->input.args);
-	free_commands_array(shell->input.commands);
-
-
-
-	//free_input(&shell->input);
-	free_shell_resources(shell);
-	//rl_clear_history();
-	close_all_fds();
-	exit(exit_code);
+	exit_and_cleanup(shell, exit_code);
+	return (0);
 }

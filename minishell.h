@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 13:34:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/29 02:28:52 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,8 +141,6 @@ int					builtin_cd(char **args, t_shell *shell);
 // ./builtins/cd/builtin_oldpwd.c
 void				change_to_previous_directory(t_shell *shell);
 // ./builtins/echo/
-// ./builtins/echo/builtin_echo_utils.c
-int					count_args_for_echo(char *message);
 // ./builtins/echo/builtin_echo.c
 int					builtin_echo(char **args, t_shell *shell);
 // ./builtins/env/
@@ -187,13 +185,16 @@ void				execute_child(t_shell *shell, char **args, int prev,
 						int pipe_fd[2]);
 // ./execution/command_execution.c
 void	handle_command(t_shell *shell, pid_t *child_pids, t_exec_state *state);
-int	finalize_execution(t_shell *shell, pid_t *child_pids, t_exec_state *state);
 // ./execution/command_handler_utils.c
 char				*find_command(char *cmd, t_shell *shell);
 int					count_executables(char ***commands);
 void				safe_close(int fd);
 // ./execution/command_handler.c
 int					execute_command(t_shell *shell);
+// ./execution/execute_final_command.c
+void				execute_final_command(t_shell *shell);
+// ./execution/finalize_execution.c
+int	finalize_execution(t_shell *shell, pid_t *child_pids, t_exec_state *state);
 // ./execution/path_handler.c
 char				*shorten_path(const char *cwd, const char *home);
 int					cmd_is_path(char *cmd, char **result, t_shell *shell);
@@ -217,14 +218,19 @@ void	process_initial_input(t_shell *shell);
 void				handle_signal_status(t_shell *shell);
 int				remove_quotes_from_commands(t_shell *shell);
 // ./parser/input.c
-void close_all_fds();
 void				handle_input(t_shell *shell);
+// ./parser/process_heredoc.c
+char *handle_heredoc_to_file(char *delimiter, int expand, t_shell *shell);
+char *preprocess_heredocs(char *input, t_shell *shell);
 // ./parser/quotes_utils.c
 int					count_quotes(char *input);
 int					is_quoted(char *str);
+char	*remove_quotes_concat(const char *str);
+int	handle_quote_error(char ***cmds, int i, int j, int is_empty);
 // ./parser/quotes.c
 char				*handle_quotes(char *input);
 // ./parser/tokenize_utils.c
+int	count_args(char **args);
 char				**list_to_array(t_list *lst);
 char				*get_next_token_tokenizer(t_tokenizer *t);
 // ./parser/tokenize.c
@@ -250,7 +256,7 @@ int					is_pipe_outside_quotes(char *input);
 int					is_redirection_operator(char *str);
 int					open_redirection_file(char *op, char *filename);
 // ./redirections/redirections.c
-int	handle_heredoc(char *delimiter, int expand, t_shell *shell);
+//int	handle_heredoc(char *delimiter, int expand, t_shell *shell);
 int					handle_redirections(char **args, t_shell *shell);
 
 // ./shell/
@@ -277,6 +283,9 @@ int					is_redirection_token(char *token);
 int					ft_isspace(int c);
 char				*ft_strndup(const char *s, size_t n);
 void				restore_stdio(int out, int in);
+void close_all_fds();
+void	handle_signal_status(t_shell *shell);
+
 // ./utils/signals.c
 t_shell				*get_shell_context(t_shell *new_shell);
 void				handle_signal(int sig, siginfo_t *info, void *context);

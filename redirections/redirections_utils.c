@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:56:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 02:06:17 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 14:08:06 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,5 @@ int	open_redirection_file(char *op, char *filename)
 		return (open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644));
 	if (ft_strncmp(op, "<", 2) == 0)
 		return (open(filename, O_RDONLY));
-	/*if (ft_strncmp(op, "<<", 3) == 0)
-		return (handle_heredoc(filename));*/
 	return (-1);
 }

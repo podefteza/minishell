@@ -6,11 +6,21 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 17:11:38 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 23:41:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/29 02:11:32 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+int	count_args(char **args)
+{
+	int	count;
+
+	count = 0;
+	while (args[count])
+		count++;
+	return (count);
+}
 
 char	**list_to_array(t_list *lst)
 {

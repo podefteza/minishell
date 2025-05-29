@@ -9,7 +9,6 @@ SRCS = minishell.c \
 		./builtins/cd/builtin_cd_utils.c \
 		./builtins/cd/builtin_oldpwd.c \
 		./builtins/echo/builtin_echo.c \
-		./builtins/echo/builtin_echo_utils.c \
 		./builtins/env/builtin_env.c \
 		./builtins/export/builtin_export.c \
 		./builtins/export/builtin_export_utils.c \
@@ -23,12 +22,15 @@ SRCS = minishell.c \
 		./execution/command_execution.c \
 		./execution/command_handler_utils.c \
 		./execution/command_handler.c \
+		./execution/execute_final_command.c \
+		./execution/finalize_execution.c \
 		./execution/path_handler.c \
 		./expansions/expand_variables_utils.c \
 		./expansions/expand_variables.c \
 		./expansions/expansions.c \
 		./parser/input_utils.c \
 		./parser/input.c \
+		./parser/process_heredoc.c \
 		./parser/quotes_utils.c \
 		./parser/quotes.c \
 		./parser/tokenize_utils.c \

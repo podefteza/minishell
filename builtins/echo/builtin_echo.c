@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 01:23:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 14:11:39 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static void	print_echo_arguments(char **args, int i)
 		}
 		tmp = handle_quotes(args[i]);
 		if (printf("%s", tmp) < 0)
-			break;
+			break ;
 		if (args[i + 1])
 			printf(" ");
 		i++;

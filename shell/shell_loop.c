@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:19:12 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 13:35:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/29 02:24:08 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,7 @@ static char	*get_display_path(char *cwd, t_shell *shell)
 
 static char	*read_user_input(t_shell *shell, char *display_path, char *prompt)
 {
-	if (g_signal_status)
-	{
-		g_signal_status = 0;
-		shell->exit_status = 130;
-	}
+	handle_signal_status(shell);
 	build_prompt(prompt, shell, display_path);
 	shell->is_prompting = TRUE;
 	return (readline(prompt));

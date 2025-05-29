@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 14:10:50 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 11:55:50 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 14:12:46 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,37 +44,32 @@ int	find_env_var(t_shell *shell, const char *key)
 	return (-1);
 }
 
-static char **update_envp(t_shell *shell, char *new_entry, int existing_index)
+static char	**update_envp(t_shell *shell, char *new_entry, int existing_index)
 {
-    char    **new_envp;
-    int     env_count;
-    int     i;
+	char	**new_envp;
+	int		env_count;
+	int		i;
 
-    if (existing_index != -1)
-    {
-        free(shell->envp[existing_index]);
-        shell->envp[existing_index] = new_entry;
-        return (shell->envp);
-    }
-
-    env_count = 0;
-    while (shell->envp[env_count])
-        env_count++;
-
-    new_envp = malloc((env_count + 2) * sizeof(char *));
-    if (!new_envp)
-        return (NULL);
-
-    i = -1;
-    while (++i < env_count)
-        new_envp[i] = shell->envp[i];
-
-    new_envp[env_count] = new_entry;
-    new_envp[env_count + 1] = NULL;
-
-	free(shell->envp);  // Free the original envp array
-    shell->envp = new_envp;
-    return (new_envp);
+	if (existing_index != -1)
+	{
+		free(shell->envp[existing_index]);
+		shell->envp[existing_index] = new_entry;
+		return (shell->envp);
+	}
+	env_count = 0;
+	while (shell->envp[env_count])
+		env_count++;
+	new_envp = malloc((env_count + 2) * sizeof(char *));
+	if (!new_envp)
+		return (NULL);
+	i = -1;
+	while (++i < env_count)
+		new_envp[i] = shell->envp[i];
+	new_envp[env_count] = new_entry;
+	new_envp[env_count + 1] = NULL;
+	free(shell->envp);
+	shell->envp = new_envp;
+	return (new_envp);
 }
 
 char	**add_or_update_env(t_shell *shell, const char *key, const char *value)
@@ -107,8 +102,8 @@ int	builtin_env(char **args, t_shell *shell)
 			shell->exit_status = 1;
 		return (1);
 	}
-	if (args[1] && !is_redirection_operator(args[1])
-		&& ft_strncmp(args[1], "|", 2) != 0)
+	if (args[1] && !is_redirection_operator(args[1]) && ft_strncmp(args[1], "|",
+			2) != 0)
 	{
 		ft_putstr_fd("env: too many arguments\n", 2);
 		shell->exit_status = 1;

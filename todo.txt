@@ -253,59 +253,9 @@ heredocs:
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
 	✔️CTRL+\ DOES NOT DO ANYTHING
 
-===================================================================================================================================================================
-
-
-
-
-[minishell] carlos-j@podefteza:~/minishell/pedro_script$ cat << EOF
-> ==17789== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
-==17789==    at 0x49D2DE5: tcsetattr (tcsetattr.c:83)
-==17789==    by 0x11162C: handle_heredoc (in /home/carlos-j/minishell/minishell)
-==17789==    by 0x10FF2B: preprocess_heredocs (in /home/carlos-j/minishell/minishell)
-==17789==    by 0x10EF07: handle_input (in /home/carlos-j/minishell/minishell)
-==17789==    by 0x111BB3: process_input_line (in /home/carlos-j/minishell/minishell)
-==17789==    by 0x111CA8: run_shell_loop (in /home/carlos-j/minishell/minishell)
-==17789==    by 0x10960A: main (in /home/carlos-j/minishell/minishell)
-==17789==  Address 0x1ffeffd700 is on thread 1's stack
-==17789==  in frame #0, created by tcsetattr (tcsetattr.c:45)
-==17789==  Uninitialised value was created by a stack allocation
-==17789==    at 0x1113E3: handle_heredoc (in /home/carlos-j/minishell/minishell)
-==17789==
-
-
-[minishell] carlos-j@podefteza:~/minishell/pedro_script$ cat << EOF | wc -l
-> ==17798== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
-==17798==    at 0x49D2DE5: tcsetattr (tcsetattr.c:83)
-==17798==    by 0x11162C: handle_heredoc (in /home/carlos-j/minishell/minishell)
-==17798==    by 0x10FF2B: preprocess_heredocs (in /home/carlos-j/minishell/minishell)
-==17798==    by 0x10EF07: handle_input (in /home/carlos-j/minishell/minishell)
-==17798==    by 0x111BB3: process_input_line (in /home/carlos-j/minishell/minishell)
-==17798==    by 0x111CA8: run_shell_loop (in /home/carlos-j/minishell/minishell)
-==17798==    by 0x10960A: main (in /home/carlos-j/minishell/minishell)
-==17798==  Address 0x1ffeffd700 is on thread 1's stack
-==17798==  in frame #0, created by tcsetattr (tcsetattr.c:45)
-==17798==  Uninitialised value was created by a stack allocation
-==17798==    at 0x1113E3: handle_heredoc (in /home/carlos-j/minishell/minishell)
-==17798==
-
-<< EOF
-> ==18173== Syscall param ioctl(TCSET{S,SW,SF}) points to uninitialised byte(s)
-==18173==    at 0x49D2DE5: tcsetattr (tcsetattr.c:83)
-==18173==    by 0x11162C: handle_heredoc (in /home/carlos-j/minishell/minishell)
-==18173==    by 0x10FF2B: preprocess_heredocs (in /home/carlos-j/minishell/minishell)
-==18173==    by 0x10EF07: handle_input (in /home/carlos-j/minishell/minishell)
-==18173==    by 0x111BB3: process_input_line (in /home/carlos-j/minishell/minishell)
-==18173==    by 0x111CA8: run_shell_loop (in /home/carlos-j/minishell/minishell)
-==18173==    by 0x10960A: main (in /home/carlos-j/minishell/minishell)
-==18173==  Address 0x1ffeffd700 is on thread 1's stack
-==18173==  in frame #0, created by tcsetattr (tcsetattr.c:45)
-==18173==  Uninitialised value was created by a stack allocation
-==18173==    at 0x1113E3: handle_heredoc (in /home/carlos-j/minishell/minishell)
-==18173==
-minishell: /proc/self/fd/3: Permission denied
 
 ===================================================================================================================================================================
+
 
 ❌❌❌❌❌
 clang-tidy: Detects infinite loops and inefficient conditions.
@@ -313,7 +263,7 @@ $ bear -- make
 $ find . -name '*.c' | xargs -P4 -I{} clang-tidy {} --
 
 ❌❌❌❌❌ cppcheck: Finds unreachable code.
-cppcheck --enable=all file.c
+find . -name "*.c" -exec cppcheck --enable=all {} +
 
 =====================
 

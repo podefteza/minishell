@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 19:10:30 by pesoares          #+#    #+#             */
-/*   Updated: 2025/05/28 13:34:15 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/29 02:24:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,4 +68,20 @@ void	restore_stdio(int out, int in)
 	dup2(in, STDIN_FILENO);
 	close(out);
 	close(in);
+}
+
+void close_all_fds()
+{
+	int i = 3;
+	while (i < 1024)
+		close(i++);
+}
+
+void	handle_signal_status(t_shell *shell)
+{
+	if (g_signal_status)
+	{
+		shell->exit_status = 130;
+		g_signal_status = 0;
+	}
 }

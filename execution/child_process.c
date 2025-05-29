@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 12:02:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 01:47:42 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/29 02:00:55 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,23 +51,16 @@ static char	*validate_and_find_command(char **args, t_shell *shell)
 static void	handle_child_execution(char **args, t_shell *shell)
 {
 	char	*full_path;
-	int		i;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	signal(SIGPIPE, SIG_DFL); // 🔧 Restore default SIGPIPE behavior
-
+	signal(SIGPIPE, SIG_DFL);
 	full_path = validate_and_find_command(args, shell);
 	if (!full_path)
 	{
 		free_input(shell);
 		free_shell_resources(shell);
-		i = 3;
-		while (i < 1024)
-		{
-			close(i);
-			i++;
-		}
+		close_all_fds();
 		exit(shell->exit_status);
 	}
 	execve(full_path, args, shell->envp);
@@ -80,11 +73,8 @@ static void	handle_child_execution(char **args, t_shell *shell)
 	exit(shell->exit_status);
 }
 
-
-void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
+static void	setup_child_fds(int prev, int pipe_fd[2])
 {
-	//printf(">>>>>>>>>>> execute_child\n");
-
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	if (prev != -1)
@@ -98,10 +88,15 @@ void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
 		close(pipe_fd[1]);
 	}
 	safe_close(pipe_fd[0]);
+}
+
+void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
+{
+	setup_child_fds(prev, pipe_fd);
 	if (handle_redirections(args, shell) == -1)
 	{
-		free_shell_resources(shell);  // OK!
-		free_input(shell); // OK!
+		free_shell_resources(shell);
+		free_input(shell);
 		close_all_fds();
 		exit(1);
 	}
@@ -109,7 +104,7 @@ void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
 	{
 		execute_builtins(shell, args);
 		free_shell_resources(shell);
-		free_input(shell); // OK!
+		free_input(shell);
 		close_all_fds();
 		exit(shell->exit_status);
 	}

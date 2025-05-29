@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 11:49:52 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 13:44:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/29 02:02:21 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,21 +42,18 @@ static char	*input_with_expansion(t_shell *shell)
 	old = shell->input.processed;
 	shell->input.processed = expand_variables(old, shell);
 	free(old);
-
 	if (!shell->input.processed)
 		return (ft_strdup(""));
-
 	trimmed = ft_strtrim(shell->input.processed, " ");
 	free(shell->input.processed);
 	return (trimmed);
 }
 
-
 void	check_for_expansion(t_shell *shell)
 {
-	int		i;
-	int		in_single;
-	int		needs_expansion;
+	int	i;
+	int	in_single;
+	int	needs_expansion;
 
 	i = -1;
 	in_single = 0;
@@ -65,8 +62,8 @@ void	check_for_expansion(t_shell *shell)
 	{
 		if (shell->input.processed[i] == '\'')
 			in_single = !in_single;
-		else if (shell->input.processed[i] == '$' && !in_single
-			&& (i == 0 || shell->input.processed[i - 1] != '\\'))
+		else if (shell->input.processed[i] == '$' && !in_single && (i == 0
+				|| shell->input.processed[i - 1] != '\\'))
 			needs_expansion = 1;
 	}
 	if (!needs_expansion)

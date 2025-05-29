@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 15:35:55 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/27 22:54:55 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/28 14:11:03 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	change_to_previous_directory(t_shell *shell)
 	{
 		ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
 		shell->exit_status = 1;
-		return;
+		return ;
 	}
 	if (!getcwd(old_pwd, sizeof(old_pwd)))
 		ft_strlcpy(old_pwd, "", sizeof(old_pwd));

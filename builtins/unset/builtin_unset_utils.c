@@ -6,17 +6,15 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 11:20:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 16:19:50 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/29 01:49:29 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-static char	**create_new_env(t_shell *shell, int env_index, int env_count)
+static char	**alloc_new_env(int env_count, t_shell *shell)
 {
 	char	**new_envp;
-	int		j;
-	int		k;
 
 	if (env_count <= 0)
 	{
@@ -29,14 +27,30 @@ static char	**create_new_env(t_shell *shell, int env_index, int env_count)
 		shell->exit_status = 1;
 		return (NULL);
 	}
+	return (new_envp);
+}
+
+static char	**create_new_env(t_shell *shell, int env_index, int env_count)
+{
+	char	**new_envp;
+	int		j;
+	int		k;
+
+	new_envp = alloc_new_env(env_count, shell);
+	if (!new_envp)
+		return (NULL);
 	j = 0;
-	k = -1;
-	while (shell->envp[++k])
+	k = 0;
+	while (shell->envp[k])
 	{
 		if (k != env_index)
-			new_envp[j++] = shell->envp[k];
+		{
+			new_envp[j] = shell->envp[k];
+			j++;
+		}
 		else
 			free(shell->envp[k]);
+		k++;
 	}
 	new_envp[j] = NULL;
 	return (new_envp);

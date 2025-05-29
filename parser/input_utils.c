@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 12:08:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 13:42:25 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/29 02:33:28 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,139 +54,50 @@ void	process_initial_input(t_shell *shell)
 		return ;
 }
 
-void	handle_signal_status(t_shell *shell)
+static int	process_command_args(int is_echo, int i, t_shell *shell)
 {
-	if (g_signal_status)
-	{
-		shell->exit_status = 130;
-		g_signal_status = 0;
-	}
-}
-
-static char	*remove_quotes_concat(const char *str)
-{
-	int		i;
 	int		j;
-	char	quote;
-	char	*result;
+	char	*cleaned;
 
-	i = 0;
 	j = 0;
-	quote = 0;
-	result = malloc(ft_strlen(str) + 1);
-	if (!result)
-		return (NULL);
-	while (str[i])
+	while (shell->input.commands[i][j])
 	{
-		if ((str[i] == '"' || str[i] == '\'') && !quote)
-			quote = str[i++];
-		else if (str[i] == quote)
+		cleaned = remove_quotes_concat(shell->input.commands[i][j]);
+		if (!cleaned)
+			return (handle_quote_error(shell->input.commands, i, j, 0));
+		if (is_echo && j > 0 && is_redirection_operator(cleaned))
 		{
-			quote = 0;
-			i++;
+			free(cleaned);
+			j++;
+			continue ;
 		}
-		else
-			result[j++] = str[i++];
+		if (cleaned[0] == '\0' && !is_echo)
+		{
+			free(cleaned);
+			return (handle_quote_error(shell->input.commands, i, j, 1));
+		}
+		free(shell->input.commands[i][j]);
+		shell->input.commands[i][j] = cleaned;
+		j++;
 	}
-	result[j] = '\0';
-	return (result);
+	return (0);
 }
 
 int	remove_quotes_from_commands(t_shell *shell)
 {
-	int		i;
-	int		j;
-	char	*cleaned;
-	int		is_echo_command;
+	int	i;
+	int	is_echo;
+	int	result;
 
 	i = 0;
 	while (shell->input.commands && shell->input.commands[i])
 	{
-		// Check if this command is echo
-		is_echo_command = (shell->input.commands[i][0] &&
-						   ft_strncmp(shell->input.commands[i][0], "echo", ft_strlen(shell->input.commands[i][0])) == 0);
-
-		j = 0;
-		while (shell->input.commands[i][j])
-		{
-			// For echo commands, check if removing quotes would create a redirection operator
-			if (is_echo_command && j > 0) // Skip the "echo" command itself (j=0)
-			{
-				cleaned = remove_quotes_concat(shell->input.commands[i][j]);
-				if (!cleaned)
-				{
-					while (i >= 0)
-					{
-						while (shell->input.commands[i] && j >= 0)
-						{
-							free(shell->input.commands[i][j]);
-							shell->input.commands[i][j] = NULL;
-							j--;
-						}
-						i--;
-					}
-					return (1);
-				}
-
-				// If this is an echo command and the cleaned token is a redirection operator,
-				// keep the original quoted version
-				if (is_redirection_operator(cleaned))
-				{
-					free(cleaned);
-					// Keep the original quoted token - don't remove quotes
-					j++;
-					continue;
-				}
-
-				// For echo commands, preserve empty strings after quote removal
-				if (cleaned[0] == '\0')
-				{
-					free(shell->input.commands[i][j]);
-					shell->input.commands[i][j] = cleaned;
-					j++;
-					continue;
-				}
-			}
-			else
-			{
-				cleaned = remove_quotes_concat(shell->input.commands[i][j]);
-				if (!cleaned)
-				{
-					while (i >= 0)
-					{
-						while (shell->input.commands[i] && j >= 0)
-						{
-							free(shell->input.commands[i][j]);
-							shell->input.commands[i][j] = NULL;
-							j--;
-						}
-						i--;
-					}
-					return (1);
-				}
-
-				// For non-echo commands, treat empty strings as errors
-				if (cleaned[0] == '\0')
-				{
-					free(cleaned);
-					while (i >= 0)
-					{
-						while (shell->input.commands[i] && j >= 0)
-						{
-							free(shell->input.commands[i][j]);
-							shell->input.commands[i][j] = NULL;
-							j--;
-						}
-						i--;
-					}
-					return (2);
-				}
-			}
-
-			free(shell->input.commands[i][j]);
-			shell->input.commands[i][j] = cleaned;
-			j++;
-		}
+		is_echo = (shell->input.commands[i][0]
+				&& ft_strncmp(shell->input.commands[i][0], "echo",
+					ft_strlen(shell->input.commands[i][0])) == 0);
+		result = process_command_args(is_echo, i, shell);
+		if (result != 0)
+			return (result);
 		i++;
 	}
 	return (0);
