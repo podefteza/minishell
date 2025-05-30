@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:29:25 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/29 02:11:36 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 17:40:31 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,31 +20,6 @@ static void	init_tokenizer(t_tokenizer *t, const char *input, t_shell *shell)
 	t->in_quotes = FALSE;
 	t->quote_char = 0;
 	t->shell = shell;
-}
-
-static int	handle_heredoc_token(t_list **tokens, t_tokenizer *tokenizer,
-		t_shell *shell)
-{
-	char	*delimiter_token;
-	char	*temp_filename;
-	char	*token;
-
-	delimiter_token = get_next_token_tokenizer(tokenizer);
-	if (!delimiter_token)
-		return (0);
-	temp_filename = handle_heredoc_to_file(delimiter_token, 0, shell);
-	free(delimiter_token);
-	if (!temp_filename)
-		return (0);
-	token = ft_strdup("<");
-	if (!token)
-	{
-		free(temp_filename);
-		return (0);
-	}
-	ft_lstadd_back(tokens, ft_lstnew(token));
-	ft_lstadd_back(tokens, ft_lstnew(temp_filename));
-	return (1);
 }
 
 static char	**tokenize_command(const char *cmd, t_shell *shell)
@@ -61,12 +36,6 @@ static char	**tokenize_command(const char *cmd, t_shell *shell)
 		token = get_next_token_tokenizer(&tokenizer);
 		if (!token && !tokenizer.done)
 			return (ft_lstclear(&tokens, free), NULL);
-		if (token && ft_strncmp(token, "<<", 3) == 0)
-		{
-			free(token);
-			if (!handle_heredoc_token(&tokens, &tokenizer, shell))
-				return (ft_lstclear(&tokens, free), NULL);
-		}
 		else if (token)
 			ft_lstadd_back(&tokens, ft_lstnew(token));
 	}

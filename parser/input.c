@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/29 02:19:50 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 17:40:35 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,11 @@ static int	validate_and_prepare_commands(t_shell *shell)
 
 void	handle_input(t_shell *shell)
 {
-	handle_signal_status(shell);
+	if (g_signal_status)
+	{
+		shell->exit_status = 130;
+		g_signal_status = 0;
+	}
 	process_initial_input(shell);
 	if (!shell->input.processed)
 		return ;

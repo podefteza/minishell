@@ -253,9 +253,12 @@ heredocs:
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
 	✔️CTRL+\ DOES NOT DO ANYTHING
 
-
 ===================================================================================================================================================================
 
+// check if all libraries are needed
+
+
+💡 instead of closing fds up to, store open fds in a linked list and close them at the end of execution...
 
 ❌❌❌❌❌
 clang-tidy: Detects infinite loops and inefficient conditions.

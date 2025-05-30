@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:19:12 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/29 02:24:08 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 17:40:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,11 @@ static char	*get_display_path(char *cwd, t_shell *shell)
 
 static char	*read_user_input(t_shell *shell, char *display_path, char *prompt)
 {
-	handle_signal_status(shell);
+	if (g_signal_status)
+	{
+		shell->exit_status = 130;
+		g_signal_status = 0;
+	}
 	build_prompt(prompt, shell, display_path);
 	shell->is_prompting = TRUE;
 	return (readline(prompt));
@@ -36,10 +40,6 @@ static void	process_input_line(t_shell *shell)
 	{
 		add_history(shell->input.raw);
 		handle_input(shell);
-	}
-	else
-	{
-			//free_input(&shell->input);
 	}
 }
 
@@ -59,7 +59,6 @@ void	run_shell_loop(t_shell *shell)
 			shell->should_exit = 1;
 			free_shell_resources(shell);
 			exit(shell->exit_status);
-			//builtin_exit(NULL, shell);
 		}
 		else
 			process_input_line(shell);

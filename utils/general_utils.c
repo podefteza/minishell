@@ -6,38 +6,34 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 19:10:30 by pesoares          #+#    #+#             */
-/*   Updated: 2025/05/29 02:24:26 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 12:08:07 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static void cleanup_temp_file(void *filename_ptr)
+void	cleanup_all_temp_files(t_shell *shell)
 {
-    char *filename = (char *)filename_ptr;
+	t_list	*current;
+	t_list	*next;
+	char	*filename;
 
-    if (filename)
-    {
-        unlink(filename);
-        free(filename);
-    }
-}
-
-void cleanup_all_temp_files(t_shell *shell)
-{
-    if (!shell || !shell->temp_files)
-        return;
-
-    ft_lstclear(&shell->temp_files, cleanup_temp_file);
-    shell->temp_files = NULL;
-}
-
-int	is_redirection_token(char *token)
-{
-	return ((ft_strncmp(token, "<", 1) == 0 && ft_strlen(token) == 1)
-		|| (ft_strncmp(token, "<<", 2) == 0 && ft_strlen(token) == 2)
-		|| (ft_strncmp(token, ">", 1) == 0 && ft_strlen(token) == 1)
-		|| (ft_strncmp(token, ">>", 2) == 0 && ft_strlen(token) == 2));
+	if (!shell || !shell->temp_files)
+		return ;
+	current = shell->temp_files;
+	while (current)
+	{
+		next = current->next;
+		filename = (char *)current->content;
+		if (filename)
+		{
+			unlink(filename);
+			free(filename);
+		}
+		free(current);
+		current = next;
+	}
+	shell->temp_files = NULL;
 }
 
 int	ft_isspace(int c)
@@ -70,18 +66,11 @@ void	restore_stdio(int out, int in)
 	close(in);
 }
 
-void close_all_fds()
+void	close_all_fds(void)
 {
-	int i = 3;
+	int	i;
+
+	i = 3;
 	while (i < 1024)
 		close(i++);
-}
-
-void	handle_signal_status(t_shell *shell)
-{
-	if (g_signal_status)
-	{
-		shell->exit_status = 130;
-		g_signal_status = 0;
-	}
 }

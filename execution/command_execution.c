@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 13:21:18 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/29 01:59:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 15:01:41 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static int	is_invalid_command(t_shell *shell, t_exec_state *state)
 	if (!shell->input.commands || !shell->input.commands[state->cmd_idx])
 		return (1);
 	args = shell->input.commands[state->cmd_idx];
-	if (!args || !args[0] || (args[0][0] == '|' && args[0][1] == '\0'))
+	if (!args[0] || (args[0][0] == '|' && args[0][1] == '\0'))
 		return (1);
 	return (0);
 }

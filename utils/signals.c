@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:11:46 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/26 15:50:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 15:08:59 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,11 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 	}
 }
 
-void	setup_signals(void)
+void	setup_signals(t_shell *shell)
 {
 	struct sigaction	sa;
 
+	get_shell_context(shell);
 	sa.sa_handler = NULL;
 	sa.sa_sigaction = &handle_signal;
 	sigemptyset(&sa.sa_mask);
@@ -66,3 +67,4 @@ void	setup_signals(void)
 	sigaction(SIGINT, &sa, NULL);
 	signal(SIGQUIT, SIG_IGN);
 }
+

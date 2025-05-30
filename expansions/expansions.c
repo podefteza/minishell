@@ -6,21 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:42:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:10:00 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 14:41:01 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-static char	*expand_last_bg_pid(t_shell *shell)
-{
-	if (shell->last_bg_pid == -1)
-	{
-		ft_putchar_fd('\0', 1);
-		return (NULL);
-	}
-	return (ft_itoa(shell->last_bg_pid));
-}
 
 static char	*expand_env_variable(char **input, t_shell *shell)
 {
@@ -61,11 +51,6 @@ char	*expand_dollar_sign(char **input, t_shell *shell)
 	{
 		(*input)++;
 		var_value = ft_itoa(shell->exit_status);
-	}
-	else if (**input == '!')
-	{
-		(*input)++;
-		var_value = expand_last_bg_pid(shell);
 	}
 	else if (**input == '0')
 	{

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:04:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/29 01:51:17 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 12:10:21 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,16 @@ static int	apply_redirection(char *op, int fd, int *stored_fd)
 	return (0);
 }
 
+static void	handle_file_error(char *filename, t_shell *shell)
+{
+	if (!g_signal_status)
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		perror(filename);
+		shell->exit_status = 1;
+	}
+}
+
 static int	process_redirection(char *op, char *filename, t_shell *shell,
 		int *fd_pair)
 {
@@ -46,18 +56,8 @@ static int	process_redirection(char *op, char *filename, t_shell *shell,
 	fd = open_redirection_file(op, filename);
 	if (fd == -1)
 	{
-		if (!g_signal_status)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			perror(filename);
-			shell->exit_status = 1;
-			return (-1);
-		}
-		else
-		{
-			//g_signal_status = 0; // Reset signal status after handling error
-			return (-1);
-		}
+		handle_file_error(filename, shell);
+		return (-1);
 	}
 	if (op[0] == '<')
 	{

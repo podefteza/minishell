@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 15:44:13 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 02:05:19 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 12:08:47 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	free_array(char **array)
 	free(array);
 }
 
-void free_commands_array(char ***commands)
+void	free_commands_array(char ***commands)
 {
 	int	i;
 
@@ -42,9 +42,9 @@ void free_commands_array(char ***commands)
 	}
 	free(commands);
 }
+
 void	free_input(t_shell *shell)
 {
-	//free(shell->input.processed);
 	free(shell->input.expanded);
 	free_array(shell->input.args);
 	free_commands_array(shell->input.commands);

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 14:11:39 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 12:03:29 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,14 @@ static int	skip_n_flags(char **args, int *newline)
 		i++;
 	}
 	return (i);
+}
+
+static int	is_redirection_token(char *token)
+{
+	return ((ft_strncmp(token, "<", 1) == 0 && ft_strlen(token) == 1)
+		|| (ft_strncmp(token, "<<", 2) == 0 && ft_strlen(token) == 2)
+		|| (ft_strncmp(token, ">", 1) == 0 && ft_strlen(token) == 1)
+		|| (ft_strncmp(token, ">>", 2) == 0 && ft_strlen(token) == 2));
 }
 
 static void	print_echo_arguments(char **args, int i)

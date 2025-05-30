@@ -6,14 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/29 02:28:52 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 15:07:54 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft/libft.h"
 #include <errno.h>
 #include <fcntl.h>
-#include <limits.h>
 #include <linux/limits.h>
 #include <readline/history.h>
 #include <readline/readline.h>
@@ -22,20 +21,16 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+//#include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <termios.h>
-#include <time.h>
+//#include <time.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
-
-// check if all libraries are needed
 
 #define HOSTNAME_MAX 256
-#define PROMPT_MAX 4416
-#define MAX_VAR_NAME 100
-#define MAX_PIPELINE_CMDS 64
+#define PROMPT_MAX 4096
 
 #define GREEN "\001\033[32m\002"
 #define RED "\001\033[31m\002"
@@ -50,10 +45,10 @@
 #define TRUE 1
 #define FALSE 0
 
-#define IN_SQUOTE 0
-#define SQUOTE_COUNT 1
-#define IN_DQUOTE 2
-#define DQUOTE_COUNT 3
+/*#define IN_single_quote 0
+#define single_quote_COUNT 1
+#define IN_double_quote 2
+#define double_quote_COUNT 3*/
 
 #define CNF ": command not found"
 #define IAD ": Is a directory"
@@ -62,15 +57,17 @@
 #define SNT ": syntax error near unexpected token"
 #define UNQ ": syntax error: unclosed quotes"
 
-/**
- * 	"global variable to indicate a received signal"
- * 	"0: no signal received"
- * 	"1: SIGINT received"
- * 	"2: SIGQUIT received"
-**/
 extern int			g_signal_status;
 
-struct s_shell;
+struct				s_shell;
+
+typedef struct s_quote_flags
+{
+	int				in_single_quote;
+	int				single_quote_count;
+	int				in_double_quote;
+	int				double_quote_count;
+}					t_quote_flags;
 
 typedef struct s_builtin
 {
@@ -86,7 +83,6 @@ typedef struct s_input
 	char			*expanded;
 	char			**args;
 	char			***commands;
-	//int				heredoc_fd;
 }					t_input;
 
 typedef struct s_shell
@@ -99,8 +95,8 @@ typedef struct s_shell
 	int				exit_status;
 	int				is_prompting;
 	int				should_exit;
-	t_list *temp_files;
-	pid_t			last_bg_pid;
+	t_list			*temp_files;
+	//pid_t			last_bg_pid;
 	t_builtin		builtins[8];
 	t_input			input;
 }					t_shell;
@@ -112,7 +108,7 @@ typedef struct s_tokenizer
 	bool			done;
 	bool			in_quotes;
 	char			quote_char;
-	t_shell *shell;
+	t_shell			*shell;
 }					t_tokenizer;
 
 typedef struct s_env
@@ -130,6 +126,14 @@ typedef struct s_exec_state
 	int				prev_read;
 	int				pipe_fd[2];
 }					t_exec_state;
+
+typedef struct s_heredoc_info
+{
+	char			*delimiter;
+	int				delim_len;
+	int				quoted;
+	char			*delim_end;
+}					t_heredoc_info;
 
 // ./
 // ./builtins/
@@ -184,7 +188,8 @@ int					execute_builtins(t_shell *shell, char **cmd);
 void				execute_child(t_shell *shell, char **args, int prev,
 						int pipe_fd[2]);
 // ./execution/command_execution.c
-void	handle_command(t_shell *shell, pid_t *child_pids, t_exec_state *state);
+void				handle_command(t_shell *shell, pid_t *child_pids,
+						t_exec_state *state);
 // ./execution/command_handler_utils.c
 char				*find_command(char *cmd, t_shell *shell);
 int					count_executables(char ***commands);
@@ -194,7 +199,8 @@ int					execute_command(t_shell *shell);
 // ./execution/execute_final_command.c
 void				execute_final_command(t_shell *shell);
 // ./execution/finalize_execution.c
-int	finalize_execution(t_shell *shell, pid_t *child_pids, t_exec_state *state);
+int					finalize_execution(t_shell *shell, pid_t *child_pids,
+						t_exec_state *state);
 // ./execution/path_handler.c
 char				*shorten_path(const char *cwd, const char *home);
 int					cmd_is_path(char *cmd, char **result, t_shell *shell);
@@ -213,28 +219,40 @@ char				*expand_variables(char *input, t_shell *shell);
 char				*expand_dollar_sign(char **input, t_shell *shell);
 
 // ./parser/
+// ./parser/heredoc_content_utils.c
+int					process_single_heredoc_line(char **content, char *delimiter,
+						int expand, t_shell *shell);
+// ./parser/heredoc_content.c
+char				*collect_heredoc_content(char *delimiter, int expand,
+						t_shell *shell);
+// ./parser/heredoc_delimiter.c
+t_heredoc_info		*parse_heredoc_delimiter(char *heredoc_start);
+// ./parser/heredoc_replacement.c
+int					handle_heredoc_replacement(char **result, char **pos,
+						t_shell *shell);
+// ./parser/heredoc_temp_file.c
+char				*handle_heredoc_to_file(char *delimiter, int expand,
+						t_shell *shell);
 // ./parser/input_utils.c
-void	process_initial_input(t_shell *shell);
-void				handle_signal_status(t_shell *shell);
-int				remove_quotes_from_commands(t_shell *shell);
+void				process_initial_input(t_shell *shell);
+int					remove_quotes_from_commands(t_shell *shell);
 // ./parser/input.c
 void				handle_input(t_shell *shell);
 // ./parser/process_heredoc.c
-char *handle_heredoc_to_file(char *delimiter, int expand, t_shell *shell);
-char *preprocess_heredocs(char *input, t_shell *shell);
+char				*preprocess_heredocs(char *input, t_shell *shell);
 // ./parser/quotes_utils.c
 int					count_quotes(char *input);
 int					is_quoted(char *str);
-char	*remove_quotes_concat(const char *str);
-int	handle_quote_error(char ***cmds, int i, int j, int is_empty);
+char				*remove_quotes_concat(const char *str);
+int					handle_quote_error(char ***cmds, int i, int j,
+						int is_empty);
 // ./parser/quotes.c
 char				*handle_quotes(char *input);
 // ./parser/tokenize_utils.c
-int	count_args(char **args);
+int					count_args(char **args);
 char				**list_to_array(t_list *lst);
 char				*get_next_token_tokenizer(t_tokenizer *t);
 // ./parser/tokenize.c
-char	*preprocess_heredocs(char *input, t_shell *shell);
 void				split_commands(t_shell *shell);
 // ./parser/validate_syntax_utils.c
 void				print_syntax_error(char *token);
@@ -256,7 +274,7 @@ int					is_pipe_outside_quotes(char *input);
 int					is_redirection_operator(char *str);
 int					open_redirection_file(char *op, char *filename);
 // ./redirections/redirections.c
-//int	handle_heredoc(char *delimiter, int expand, t_shell *shell);
+// int	handle_heredoc(char *delimiter, int expand, t_shell *shell);
 int					handle_redirections(char **args, t_shell *shell);
 
 // ./shell/
@@ -272,21 +290,18 @@ void				setup_shell(t_shell *shell, char **envp);
 // ./utils/
 // ./utils/cleanup.c
 void				free_array(char **array);
-void free_commands_array(char ***commands);
-void	free_input(t_shell *shell);
+void				free_commands_array(char ***commands);
+void				free_input(t_shell *shell);
 void				free_shell_resources(t_shell *shell);
 // ./utils/error.c
 void				ft_puterr(char *msg1, char *msg2, char *msg3, char *msg4);
 // ./utils/general_utils.c
-void cleanup_all_temp_files(t_shell *shell);
-int					is_redirection_token(char *token);
+void				cleanup_all_temp_files(t_shell *shell);
 int					ft_isspace(int c);
 char				*ft_strndup(const char *s, size_t n);
 void				restore_stdio(int out, int in);
-void close_all_fds();
-void	handle_signal_status(t_shell *shell);
-
+void				close_all_fds(void);
 // ./utils/signals.c
 t_shell				*get_shell_context(t_shell *new_shell);
 void				handle_signal(int sig, siginfo_t *info, void *context);
-void				setup_signals(void);
+void				setup_signals(t_shell *shell);

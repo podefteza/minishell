@@ -6,13 +6,13 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 11:22:45 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 15:32:39 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 14:37:50 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-void	print_unset_error(char *arg)
+static void	print_unset_error(char *arg)
 {
 	ft_putstr_fd("minishell: unset: `", 2);
 	ft_putstr_fd(arg, 2);

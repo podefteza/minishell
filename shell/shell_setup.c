@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 13:32:07 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 12:11:18 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ void	setup_shell(t_shell *shell, char **envp)
 	signal(SIGPIPE, SIG_IGN);
 	if (!shell || !envp)
 		return ;
-	ft_memset(shell, 0, sizeof(t_shell)); // added this...
+	ft_memset(shell, 0, sizeof(t_shell));
 	env_count = 0;
 	builtin_setup(shell->builtins);
 	user_hostname(shell);
@@ -95,12 +95,10 @@ void	setup_shell(t_shell *shell, char **envp)
 	shell->temp_files = NULL;
 	shell->is_prompting = FALSE;
 	shell->should_exit = FALSE;
-	//builtin_setup(shell->builtins); moved...
 	shell->input.raw = NULL;
 	shell->input.trim_spaces = NULL;
 	shell->input.processed = NULL;
 	shell->input.expanded = NULL;
 	shell->input.args = NULL;
 	shell->input.commands = NULL;
-	//shell->input.heredoc_fd = -1;
 }

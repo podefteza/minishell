@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 14:28:26 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:10:14 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 14:17:26 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,57 +28,47 @@ static int	number_of_quotes(char *input, char quote_type)
 	return (count);
 }
 
-static void	handle_single_quote(char c, int *flags, int *j, char *result)
+static void	handle_single_quote(char c, t_quote_flags *flags, int *j,
+		char *result)
 {
-	int	in_squote;
-	int	squote_count;
-
-	in_squote = flags[IN_SQUOTE];
-	squote_count = flags[SQUOTE_COUNT];
-	if (c == '\'' && !flags[IN_DQUOTE])
+	if (c == '\'' && !flags->in_double_quote)
 	{
-		in_squote = !in_squote;
-		if (squote_count % 2 != 0)
+		flags->in_single_quote = !flags->in_single_quote;
+		if (flags->single_quote_count % 2 != 0)
 			result[(*j)++] = c;
 	}
-	flags[IN_SQUOTE] = in_squote;
 }
 
-static void	handle_double_quote(char c, int *flags, int *j, char *result)
+static void	handle_double_quote(char c, t_quote_flags *flags, int *j,
+		char *result)
 {
-	int	in_dquote;
-	int	dquote_count;
-
-	in_dquote = flags[IN_DQUOTE];
-	dquote_count = flags[DQUOTE_COUNT];
-	if (c == '"' && !flags[IN_SQUOTE])
+	if (c == '"' && !flags->in_single_quote)
 	{
-		in_dquote = !in_dquote;
-		if (dquote_count % 2 != 0)
+		flags->in_double_quote = !flags->in_double_quote;
+		if (flags->double_quote_count % 2 != 0)
 			result[(*j)++] = c;
 	}
-	flags[IN_DQUOTE] = in_dquote;
 }
 
-static char	*process_quotes(char *input, char *result, int squote_count,
-		int dquote_count)
+static char	*process_quotes(char *input, char *result, int single_quote_count,
+		int double_quote_count)
 {
-	int	i;
-	int	j;
-	int	flags[4];
+	int				i;
+	int				j;
+	t_quote_flags	flags;
 
 	i = 0;
 	j = 0;
-	flags[IN_SQUOTE] = FALSE;
-	flags[SQUOTE_COUNT] = squote_count;
-	flags[IN_DQUOTE] = FALSE;
-	flags[DQUOTE_COUNT] = dquote_count;
+	flags.in_single_quote = 0;
+	flags.single_quote_count = single_quote_count;
+	flags.in_double_quote = 0;
+	flags.double_quote_count = double_quote_count;
 	while (input[i])
 	{
-		handle_single_quote(input[i], flags, &j, result);
-		handle_double_quote(input[i], flags, &j, result);
-		if ((input[i] != '\'' || flags[IN_DQUOTE]) && (input[i] != '"'
-				|| flags[IN_SQUOTE]))
+		handle_single_quote(input[i], &flags, &j, result);
+		handle_double_quote(input[i], &flags, &j, result);
+		if ((input[i] != '\'' || flags.in_double_quote) && (input[i] != '"'
+				|| flags.in_single_quote))
 			result[j++] = input[i];
 		i++;
 	}
@@ -89,16 +79,17 @@ static char	*process_quotes(char *input, char *result, int squote_count,
 char	*handle_quotes(char *input)
 {
 	char	*result;
-	int		squote_count;
-	int		dquote_count;
+	int		single_quote_count;
+	int		double_quote_count;
 
 	if (!input)
 		return (NULL);
-	squote_count = number_of_quotes(input, '\'');
-	dquote_count = number_of_quotes(input, '"');
+	single_quote_count = number_of_quotes(input, '\'');
+	double_quote_count = number_of_quotes(input, '"');
 	result = malloc(ft_strlen(input) + 1);
 	if (!result)
 		return (NULL);
-	result = process_quotes(input, result, squote_count, dquote_count);
+	result = process_quotes(input, result, single_quote_count,
+			double_quote_count);
 	return (result);
 }

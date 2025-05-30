@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 16:41:21 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/21 15:10:50 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/05/30 15:02:33 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,4 @@ void	user_hostname(t_shell *shell)
 	if (!shell->home)
 		shell->home = "";
 	shell->exit_status = 0;
-	shell->last_bg_pid = -1;
 }

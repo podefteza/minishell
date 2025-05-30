@@ -28,6 +28,11 @@ SRCS = minishell.c \
 		./expansions/expand_variables_utils.c \
 		./expansions/expand_variables.c \
 		./expansions/expansions.c \
+		./parser/heredoc_content_utils.c \
+		./parser/heredoc_content.c \
+		./parser/heredoc_delimiter.c \
+		./parser/heredoc_replacement.c \
+		./parser/heredoc_temp_file.c \
 		./parser/input_utils.c \
 		./parser/input.c \
 		./parser/process_heredoc.c \
