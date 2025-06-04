@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/30 15:07:54 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/03 07:07:29 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,6 @@
 //#include <time.h>
 #include <unistd.h>
 
-#define HOSTNAME_MAX 256
-#define PROMPT_MAX 4096
-
 #define GREEN "\001\033[32m\002"
 #define RED "\001\033[31m\002"
 #define YELLOW "\001\033[33m\002"
@@ -42,13 +39,11 @@
 #define BOLD "\001\033[1m\002"
 #define RESET "\001\033[0m\002"
 
+#define HOSTNAME_MAX 256
+#define PROMPT_MAX 4096
+
 #define TRUE 1
 #define FALSE 0
-
-/*#define IN_single_quote 0
-#define single_quote_COUNT 1
-#define IN_double_quote 2
-#define double_quote_COUNT 3*/
 
 #define CNF ": command not found"
 #define IAD ": Is a directory"
