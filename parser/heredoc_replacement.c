@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 11:54:39 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/30 16:46:21 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/04 10:41:00 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ static char	*create_redirect_replacement(char *delimiter, int quoted,
 	temp_filename = handle_heredoc_to_file(delimiter, !quoted, shell);
 	if (!temp_filename)
 		return (NULL);
+	ft_lstadd_back(&shell->temp_files, ft_lstnew(temp_filename));
 	redirect_and_file = ft_strjoin("< ", temp_filename);
-	free(temp_filename);
 	return (redirect_and_file);
 }
 

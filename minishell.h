@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/03 07:07:29 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/04 10:28:34 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,30 +21,25 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <termios.h>
-//#include <time.h>
 #include <unistd.h>
 
 #define GREEN "\001\033[32m\002"
-#define RED "\001\033[31m\002"
-#define YELLOW "\001\033[33m\002"
+//#define RED "\001\033[31m\002"
+//#define YELLOW "\001\033[33m\002"
 #define BLUE "\001\033[34m\002"
-#define MAGENTA "\001\033[35m\002"
-#define CYAN "\001\033[36m\002"
-#define WHITE "\001\033[37m\002"
+//#define MAGENTA "\001\033[35m\002"
+//#define CYAN "\001\033[36m\002"
+//#define WHITE "\001\033[37m\002"
 #define BOLD "\001\033[1m\002"
 #define RESET "\001\033[0m\002"
-
 #define HOSTNAME_MAX 256
 #define PROMPT_MAX 4096
-
 #define TRUE 1
 #define FALSE 0
-
 #define CNF ": command not found"
 #define IAD ": Is a directory"
 #define NFD ": No such file or directory"
@@ -91,7 +86,6 @@ typedef struct s_shell
 	int				is_prompting;
 	int				should_exit;
 	t_list			*temp_files;
-	//pid_t			last_bg_pid;
 	t_builtin		builtins[8];
 	t_input			input;
 }					t_shell;
