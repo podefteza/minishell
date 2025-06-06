@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/04 10:28:34 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/06 14:14:01 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,7 @@
 #include <unistd.h>
 
 #define GREEN "\001\033[32m\002"
-//#define RED "\001\033[31m\002"
-//#define YELLOW "\001\033[33m\002"
 #define BLUE "\001\033[34m\002"
-//#define MAGENTA "\001\033[35m\002"
-//#define CYAN "\001\033[36m\002"
-//#define WHITE "\001\033[37m\002"
 #define BOLD "\001\033[1m\002"
 #define RESET "\001\033[0m\002"
 #define HOSTNAME_MAX 256
@@ -293,4 +288,5 @@ void				close_all_fds(void);
 // ./utils/signals.c
 t_shell				*get_shell_context(t_shell *new_shell);
 void				handle_signal(int sig, siginfo_t *info, void *context);
-void				setup_signals(t_shell *shell);
+//void				setup_signals(t_shell *shell);
+void				setup_signals(void);

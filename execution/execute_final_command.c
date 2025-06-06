@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 02:15:42 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/04 10:19:55 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/06 15:20:11 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,36 +31,41 @@ static int	is_pipeline(t_shell *shell)
 	return (FALSE);
 }
 
+static void	close_backups(int stdin_backup, int stdout_backup)
+{
+	close(stdin_backup);
+	close(stdout_backup);
+}
+
 static void	handle_exit_if_needed(t_shell *shell, int stdin_backup,
 		int stdout_backup)
 {
 	if (!shell->input.commands || !shell->input.commands[0])
 	{
-		close(stdin_backup);
-		close(stdout_backup);
+		close_backups(stdin_backup, stdout_backup);
 		return ;
 	}
 	if (ft_strncmp(shell->input.commands[0][0], "exit", 5) == 0
 		&& !is_pipeline(shell))
 	{
-		close(stdin_backup);
-		close(stdout_backup);
+		close_backups(stdin_backup, stdout_backup);
 		builtin_exit(shell->input.commands[0], shell);
 	}
 }
 
-static int	handle_builtin_if_needed(t_shell *shell, int stdin_backup,
-		int stdout_backup)
+static int	handle_builtin_if_needed(t_shell *shell,
+		int stdin_backup, int stdout_backup)
 {
-	if (!is_pipeline(shell) && execute_builtins(shell,
-			shell->input.commands[0]))
+	if (!is_pipeline(shell)
+		&& shell->input.commands[0]
+		&& shell->input.commands[0][0]
+		&& ft_strncmp(shell->input.commands[0][0], "exit", 5) == 0)
+		return (1);
+	if (!is_pipeline(shell)
+		&& execute_builtins(shell, shell->input.commands[0]))
 	{
 		if (shell->should_exit)
-		{
-			close(stdin_backup);
-			close(stdout_backup);
-			builtin_exit(shell->input.commands[0], shell);
-		}
+			close_backups(stdin_backup, stdout_backup);
 		else
 			restore_stdio(stdout_backup, stdin_backup);
 		return (1);
