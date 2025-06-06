@@ -47,6 +47,11 @@ cd minishell/
 make
 ./minishell
 ```
+Alternatively, to run the shell with Valgrind and check for memory leaks (excluding known readline leaks, using the readline.supp file provided):
+```bash
+valgrind --suppressions=readline.supp -s --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes ./minishell
+```
+
 <p align="center"><img src="https://github.com/podefteza/minishell/blob/main/ms.png"></p>
 
 ## 📝 Notes
