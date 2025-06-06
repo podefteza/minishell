@@ -53,7 +53,6 @@ make
 This project follows the 42 School coding standards and includes comprehensive error handling, memory management, and modular code organization. The implementation aims to replicate core bash functionality while maintaining clean, readable code structure.
 
 ## 🤝 Contributing
-Minishell is a group project made with pesoares' help. If you're a 42 student working on minishell, feel free to use this as reference, but make sure to understand the code and implement your own solution.
-https://github.com/pesoares42
+Minishell is a group project made with [pesoares](https://github.com/pesoares42)' help. If you're a 42 student working on minishell, feel free to use this as reference, but make sure to understand the code and implement your own solution.
 
 <p align="center"><img src="https://github.com/podefteza/minishell/blob/main/minishell.png"></p>
