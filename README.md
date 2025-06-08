@@ -40,7 +40,7 @@ Minishell is a minimal UNIX shell that mimics Bash behavior. It handles command 
 ## 🛠️ Build & Usage
 
 ``` bash
-git clone https://github.com/podefteza/minishell
+git clone --recurse-submodules https://github.com/podefteza/minishell
 ```
 ```bash
 cd minishell/
