@@ -253,12 +253,66 @@ heredocs:
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
 	✔️CTRL+\ DOES NOT DO ANYTHING
 
+❌ LEAKS HEREDOCS + CTRL+D
+<< heredoc
+CTRL+D
+
+❌ LEAKS ON PIPES WITH HEREDOCS + CTRL+D
+echo test |  << heredoc
+CTRL+D
+
+❌ LEAK ON COMMAND $T$E"C"$L "" -""n
+
+❌ LEAK ON COMMAND '''''''''''''''' echo ok
+
+❌ LEAK ON COMMAND /bin/echo '' ""
+
+❌ <<<<<<<<<
+
+❌ /bin/echo "'$?'"
+'$?'
+vs
+'0'
+
+❌ $ echo "'totally logical'"
+totally logical
+vs
+'totally logical'
+
+❌ echo "$""$"
+$
+vs
+$$
+
+❌ eecho "$""$"
+$
+vs
+$$
+
+❌ echo '$'$
+$
+vs
+$$
+
+❌ /bin/echo \$USER
+
+❌ /bin/echo \$USER
+
+❌ /bin/echo \\$USER
+
+❌ /bin/echo \\$USER
+
+❌ /bin/echo \\\$USER
+
+❌ /bin/echo \\\\\$USER
+
+❌ /bin/echo \\\\\\\\\\\\\\\\\$USER \$PATH \$PWD
+
+❌ /bin/echo "'$USER'"
+
+/bin/echo " '$USER' "
+
 ===================================================================================================================================================================
-
-// check if all libraries are needed
-
-
-💡 instead of closing fds up to, store open fds in a linked list and close them at the end of execution...
 
 ❌❌❌❌❌
 clang-tidy: Detects infinite loops and inefficient conditions.
