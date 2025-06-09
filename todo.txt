@@ -253,64 +253,54 @@ heredocs:
 	✔️CTRL-D WORKS FINE, IT ASSUMES EOF
 	✔️CTRL+\ DOES NOT DO ANYTHING
 
-❌ LEAKS HEREDOCS + CTRL+D
+✔️ LEAKS HEREDOCS + CTRL+D
 << heredoc
 CTRL+D
 
-❌ LEAKS ON PIPES WITH HEREDOCS + CTRL+D
+✔️ LEAKS ON PIPES WITH HEREDOCS + CTRL+D
 echo test |  << heredoc
 CTRL+D
 
-❌ LEAK ON COMMAND $T$E"C"$L "" -""n
+✔️ LEAK ON COMMAND $T$E"C"$L "" -""n
 
-❌ LEAK ON COMMAND '''''''''''''''' echo ok
+✔️ LEAK ON COMMAND '''''''''''''''' echo ok
 
-❌ LEAK ON COMMAND /bin/echo '' ""
+✔️ LEAK ON COMMAND /bin/echo '' ""
 
-❌ <<<<<<<<<
+✔️ <<<<<<<<<
 
-❌ /bin/echo "'$?'"
-'$?'
-vs
-'0'
-
-❌ $ echo "'totally logical'"
+✔️ $ echo "'totally logical'"
 totally logical
 vs
 'totally logical'
 
-❌ echo "$""$"
+✔️ echo "$""$"
 $
 vs
 $$
 
-❌ eecho "$""$"
+✔️ echo '$'$
 $
 vs
 $$
 
-❌ echo '$'$
-$
+✔️ echo "'$USER'"
+
+✔️ /bin/echo "'$?'"
+'$?'
 vs
-$$
+'0'
 
 ❌ /bin/echo \$USER
-
 ❌ /bin/echo \$USER
-
 ❌ /bin/echo \\$USER
-
 ❌ /bin/echo \\$USER
-
 ❌ /bin/echo \\\$USER
-
 ❌ /bin/echo \\\\\$USER
-
 ❌ /bin/echo \\\\\\\\\\\\\\\\\$USER \$PATH \$PWD
-
 ❌ /bin/echo "'$USER'"
-
-/bin/echo " '$USER' "
+❌ /bin/echo " '$USER' "
+⚠️ this is not builtin echo... ✔️ "Not interpret unclosed quotes or special characters which are not required by the subject such as \ (backslash) or ; (semicolon)"
 
 ===================================================================================================================================================================
 

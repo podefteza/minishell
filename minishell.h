@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/06 14:14:01 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/09 14:30:46 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,8 +230,6 @@ int					is_quoted(char *str);
 char				*remove_quotes_concat(const char *str);
 int					handle_quote_error(char ***cmds, int i, int j,
 						int is_empty);
-// ./parser/quotes.c
-char				*handle_quotes(char *input);
 // ./parser/tokenize_utils.c
 int					count_args(char **args);
 char				**list_to_array(t_list *lst);

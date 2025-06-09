@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/30 12:03:29 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/09 13:35:47 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,6 @@ static int	is_redirection_token(char *token)
 
 static void	print_echo_arguments(char **args, int i)
 {
-	char	*tmp;
-
 	while (args[i])
 	{
 		if (!is_quoted(args[i]) && is_redirection_token(args[i]))
@@ -55,13 +53,11 @@ static void	print_echo_arguments(char **args, int i)
 				i++;
 			continue ;
 		}
-		tmp = handle_quotes(args[i]);
-		if (printf("%s", tmp) < 0)
+		if (printf("%s", args[i]) < 0)
 			break ;
 		if (args[i + 1])
 			printf(" ");
 		i++;
-		free(tmp);
 	}
 }
 

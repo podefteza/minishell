@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 12:08:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/29 02:33:28 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/09 13:35:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,6 @@ static int	process_command_args(int is_echo, int i, t_shell *shell)
 			free(cleaned);
 			j++;
 			continue ;
-		}
-		if (cleaned[0] == '\0' && !is_echo)
-		{
-			free(cleaned);
-			return (handle_quote_error(shell->input.commands, i, j, 1));
 		}
 		free(shell->input.commands[i][j]);
 		shell->input.commands[i][j] = cleaned;

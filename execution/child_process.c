@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 12:02:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/06 15:00:51 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/09 13:36:34 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ static void	handle_child_execution(char **args, t_shell *shell)
 		free_input(shell);
 		free_shell_resources(shell);
 		close_all_fds();
+		cleanup_all_temp_files(shell);
 		exit(shell->exit_status);
 	}
 	execve(full_path, args, shell->envp);
@@ -106,6 +107,7 @@ void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
 		free_shell_resources(shell);
 		free_input(shell);
 		close_all_fds();
+		cleanup_all_temp_files(shell);
 		exit(shell->exit_status);
 	}
 	safe_close(prev);

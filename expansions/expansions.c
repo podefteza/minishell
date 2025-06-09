@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:42:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/30 14:41:01 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/09 14:02:06 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,11 @@ char	*expand_dollar_sign(char **input, t_shell *shell)
 	char	*var_value;
 
 	(*input)++;
-	if (**input == '\0' || **input == ' ' || **input == '\"' || **input == '\'')
+	if (**input == '\0' || **input == ' ')
 		return (ft_strdup("$"));
-	else if (**input == '?')
+	if (**input == '\"' || **input == '\'')
+		return (ft_strdup("$"));
+	if (**input == '?')
 	{
 		(*input)++;
 		var_value = ft_itoa(shell->exit_status);
@@ -57,9 +59,11 @@ char	*expand_dollar_sign(char **input, t_shell *shell)
 		(*input)++;
 		var_value = ft_strdup(get_shell_name());
 	}
-	else
+	else if (ft_isalnum(**input) || **input == '_')
 		var_value = expand_env_variable(input, shell);
+	else
+		return (ft_strdup("$"));
 	if (!var_value)
-		return (ft_strdup("\"\""));
+		return (ft_strdup(""));
 	return (var_value);
 }
