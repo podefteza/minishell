@@ -6,49 +6,26 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 10:57:28 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/30 11:02:23 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/11 15:12:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static char	*build_temp_path(char *dir, char *pid_str, char *counter_str)
-{
-	char	*temp_with_pid;
-	char	*temp_path;
-	char	*final_path;
-
-	temp_with_pid = ft_strjoin(dir, pid_str);
-	if (!temp_with_pid)
-		return (NULL);
-	temp_path = ft_strjoin(temp_with_pid, "_");
-	free(temp_with_pid);
-	if (!temp_path)
-		return (NULL);
-	final_path = ft_strjoin(temp_path, counter_str);
-	free(temp_path);
-	return (final_path);
-}
-
 static char	*create_temp_filename(void)
 {
-	char		*pid_str;
-	char		*counter_str;
 	static int	counter = 0;
-	char		*result;
+	char		*counter_str;
+	char		*filename;
 
-	pid_str = ft_itoa(getpid());
 	counter_str = ft_itoa(counter++);
-	if (!pid_str || !counter_str)
-	{
-		free(pid_str);
-		free(counter_str);
+	if (!counter_str)
 		return (NULL);
-	}
-	result = build_temp_path("/tmp/heredoc_", pid_str, counter_str);
-	free(pid_str);
+	filename = ft_strjoin("/tmp/heredoc_", counter_str);
 	free(counter_str);
-	return (result);
+	if (!filename)
+		return (NULL);
+	return (filename);
 }
 
 static int	write_heredoc_to_file(char *filename, char *content)
