@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:42:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/09 14:02:06 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/12 13:53:38 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,28 +42,25 @@ static char	*expand_env_variable(char **input, t_shell *shell)
 
 char	*expand_dollar_sign(char **input, t_shell *shell)
 {
-	char	*var_value;
-
 	(*input)++;
-	if (**input == '\0' || **input == ' ')
-		return (ft_strdup("$"));
-	if (**input == '\"' || **input == '\'')
+	if (**input == '\0' || **input == ' ' || **input == '\"' || **input == '\'')
 		return (ft_strdup("$"));
 	if (**input == '?')
 	{
 		(*input)++;
-		var_value = ft_itoa(shell->exit_status);
+		return (ft_itoa(shell->exit_status));
 	}
-	else if (**input == '0')
+	if (**input == '0')
 	{
 		(*input)++;
-		var_value = ft_strdup(get_shell_name());
+		return (ft_strdup(get_shell_name()));
 	}
-	else if (ft_isalnum(**input) || **input == '_')
-		var_value = expand_env_variable(input, shell);
-	else
-		return (ft_strdup("$"));
-	if (!var_value)
+	if (ft_isdigit(**input))
+	{
+		(*input)++;
 		return (ft_strdup(""));
-	return (var_value);
+	}
+	if (ft_isalnum(**input) || **input == '_')
+		return (expand_env_variable(input, shell));
+	return (ft_strdup("$"));
 }

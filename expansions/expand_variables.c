@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/09 14:02:40 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/12 13:53:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ static void	expand_process_input(char **input, char **ptr, t_shell *shell,
 {
 	char	*var_value;
 	int		in_double_quote;
+	char	next_char;
 
 	in_double_quote = 0;
 	while (**input)
@@ -41,8 +42,11 @@ static void	expand_process_input(char **input, char **ptr, t_shell *shell,
 			expand_handle_quotes(input, ptr, in_single_quote, &in_double_quote);
 		else if (**input == '$' && !(*in_single_quote))
 		{
+			next_char = 0;
 			var_value = expand_dollar_sign(input, shell);
 			append_var_value(ptr, var_value);
+			if (next_char && !(ft_isalnum(next_char) || next_char == '_'))
+				*(*ptr)++ = next_char;
 		}
 		else
 			*(*ptr)++ = *(*input)++;

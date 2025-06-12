@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/09 14:30:46 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/12 13:53:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,7 +256,6 @@ int					is_pipe_outside_quotes(char *input);
 int					is_redirection_operator(char *str);
 int					open_redirection_file(char *op, char *filename);
 // ./redirections/redirections.c
-// int	handle_heredoc(char *delimiter, int expand, t_shell *shell);
 int					handle_redirections(char **args, t_shell *shell);
 
 // ./shell/
