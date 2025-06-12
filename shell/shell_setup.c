@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/06 14:14:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/12 16:33:33 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,30 @@ static void	allocate_env_memory(t_shell *shell, int count)
 	}
 }
 
+void	update_shlvl(t_shell *shell)
+{
+	char	*lvl_str;
+	int		shlvl;
+	char	*new_value;
+
+	lvl_str = getenv("SHLVL");
+	if (!lvl_str)
+		shlvl = 1;
+	else
+		shlvl = ft_atoi(lvl_str) + 1;
+	new_value = ft_itoa(shlvl);
+	if (!new_value)
+		return ;
+	shell->envp = add_or_update_env(shell, "SHLVL", new_value);
+	shell->export_list = add_or_update_export_list(shell->export_list, "SHLVL",
+			new_value);
+	free(new_value);
+}
+
 void	setup_shell(t_shell *shell, char **envp)
 {
 	int	env_count;
 
-	signal(SIGPIPE, SIG_IGN);
 	if (!shell || !envp)
 		return ;
 	ft_memset(shell, 0, sizeof(t_shell));
@@ -92,6 +111,7 @@ void	setup_shell(t_shell *shell, char **envp)
 		return ;
 	duplicate_env_vars(shell, envp, env_count);
 	add_or_update_env(shell, "OLDPWD", "");
+	update_shlvl(shell);
 	shell->temp_files = NULL;
 	shell->is_prompting = FALSE;
 	shell->should_exit = FALSE;
