@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/13 15:44:39 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/13 16:03:13 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,5 +287,4 @@ void				close_all_fds(void);
 // ./utils/signals.c
 t_shell				*get_shell_context(t_shell *new_shell);
 void				handle_signal(int sig, siginfo_t *info, void *context);
-//void				setup_signals(t_shell *shell);
 void				setup_signals(void);
