@@ -54,6 +54,21 @@ valgrind --suppressions=readline.supp -s --leak-check=full --show-leak-kinds=all
 
 <p align="center"><img src="https://github.com/podefteza/minishell/blob/main/ms.png"></p>
 
+## 🔍 Testing
+
+To compare if **minishell** output matches **bash**, you can use `tmux` with synchronized panes:
+
+1. Open `tmux` and split the window vertically:  
+   - Press `Ctrl+B`, then `%`
+
+2. Run **minishell** in one pane and **bash** in the other.
+
+3. Synchronize input to both panes:  
+   - Press `Ctrl+B`, then type `:setw synchronize-panes on`
+
+Now any input will be executed simultaneously in both shells for easy comparison.
+
+
 ## 📝 Notes
 This project follows the 42 School coding standards and includes comprehensive error handling, memory management, and modular code organization. The implementation aims to replicate core bash functionality while maintaining clean, readable code structure.
 
