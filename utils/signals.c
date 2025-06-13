@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 14:11:46 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/12 16:33:24 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/13 08:20:53 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-		g_signal_status = 1;
+		g_signal_status = SIGINT;
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 01:58:56 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/06 15:00:21 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/13 08:42:09 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static void	handle_exit_status(t_shell *shell, int status)
 	{
 		shell->exit_status = 128 + WTERMSIG(status);
 		if (WTERMSIG(status) == SIGINT)
-			g_signal_status = 1;
+			g_signal_status = WTERMSIG(status);
 	}
 }
 

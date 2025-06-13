@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/09 11:40:53 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/13 08:20:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static int	preprocess_and_expand(t_shell *shell)
 	char	*processed_input;
 
 	processed_input = preprocess_heredocs(shell->input.processed, shell);
-	if (!processed_input || g_signal_status == 1)
+	if (!processed_input || g_signal_status)
 	{
 		free(processed_input);
 		cleanup_all_temp_files(shell);

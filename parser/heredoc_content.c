@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:10:34 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/30 10:59:39 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/13 09:02:57 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	heredoc_sigint_handler(int signo)
 {
 	(void)signo;
-	g_signal_status = 1;
+	g_signal_status = SIGINT;
 	write(STDERR_FILENO, "\n", 1);
 }
 
