@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 15:35:55 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 14:11:03 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/13 15:34:41 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,13 @@ static void	handle_cd_to_oldpwd(t_shell *shell, char *oldpwd, char *old_pwd)
 	if (chdir(oldpwd) == 0)
 	{
 		shell->envp = add_or_update_env(shell, "OLDPWD", old_pwd);
+		shell->export_list = add_or_update_export_list(shell->export_list,
+				"OLDPWD", old_pwd);
 		if (getcwd(new_pwd, sizeof(new_pwd)))
 		{
 			shell->envp = add_or_update_env(shell, "PWD", new_pwd);
+			shell->export_list = add_or_update_export_list(shell->export_list,
+					"PWD", new_pwd);
 			ft_putendl_fd(new_pwd, STDOUT_FILENO);
 		}
 		shell->exit_status = 0;

@@ -6,27 +6,11 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:43:51 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/12 16:33:33 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/13 15:49:01 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-void	build_prompt(char *prompt, t_shell *shell, const char *display_path)
-{
-	size_t	i;
-
-	i = 0;
-	i += ft_strlcpy(prompt + i, BOLD GREEN "[minishell]" RESET " ", PROMPT_MAX
-			- i);
-	i += ft_strlcpy(prompt + i, BOLD BLUE, PROMPT_MAX - i);
-	i += ft_strlcpy(prompt + i, shell->user, PROMPT_MAX - i);
-	i += ft_strlcpy(prompt + i, "@", PROMPT_MAX - i);
-	i += ft_strlcpy(prompt + i, shell->hostname, PROMPT_MAX - i);
-	i += ft_strlcpy(prompt + i, RESET ":", PROMPT_MAX - i);
-	i += ft_strlcpy(prompt + i, display_path, PROMPT_MAX - i);
-	ft_strlcpy(prompt + i, GREEN "$" RESET " ", PROMPT_MAX - i);
-}
 
 static void	cleanup_and_exit(t_shell *shell)
 {
@@ -74,44 +58,8 @@ static void	allocate_env_memory(t_shell *shell, int count)
 	}
 }
 
-void	update_shlvl(t_shell *shell)
+static void	init_input_fields(t_shell *shell)
 {
-	char	*lvl_str;
-	int		shlvl;
-	char	*new_value;
-
-	lvl_str = getenv("SHLVL");
-	if (!lvl_str)
-		shlvl = 1;
-	else
-		shlvl = ft_atoi(lvl_str) + 1;
-	new_value = ft_itoa(shlvl);
-	if (!new_value)
-		return ;
-	shell->envp = add_or_update_env(shell, "SHLVL", new_value);
-	shell->export_list = add_or_update_export_list(shell->export_list, "SHLVL",
-			new_value);
-	free(new_value);
-}
-
-void	setup_shell(t_shell *shell, char **envp)
-{
-	int	env_count;
-
-	if (!shell || !envp)
-		return ;
-	ft_memset(shell, 0, sizeof(t_shell));
-	env_count = 0;
-	builtin_setup(shell->builtins);
-	user_hostname(shell);
-	while (envp[env_count])
-		env_count++;
-	allocate_env_memory(shell, env_count);
-	if (!shell->envp || !shell->export_list)
-		return ;
-	duplicate_env_vars(shell, envp, env_count);
-	add_or_update_env(shell, "OLDPWD", "");
-	update_shlvl(shell);
 	shell->temp_files = NULL;
 	shell->is_prompting = FALSE;
 	shell->should_exit = FALSE;
@@ -121,4 +69,30 @@ void	setup_shell(t_shell *shell, char **envp)
 	shell->input.expanded = NULL;
 	shell->input.args = NULL;
 	shell->input.commands = NULL;
+}
+
+void	setup_shell(t_shell *shell, char **envp)
+{
+	int		env_count;
+	char	*init_oldpwd[3];
+
+	if (!shell || !envp)
+		return ;
+	ft_memset(shell, 0, sizeof(t_shell));
+	builtin_setup(shell->builtins);
+	user_hostname(shell);
+	env_count = 0;
+	while (envp[env_count])
+		env_count++;
+	allocate_env_memory(shell, env_count);
+	if (!shell->envp || !shell->export_list)
+		return ;
+	duplicate_env_vars(shell, envp, env_count);
+	add_or_update_env(shell, "OLDPWD", "");
+	init_oldpwd[0] = "export";
+	init_oldpwd[1] = "OLDPWD=";
+	init_oldpwd[2] = NULL;
+	builtin_export(init_oldpwd, shell);
+	update_shlvl(shell);
+	init_input_fields(shell);
 }

@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:00:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/12 14:14:34 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/13 15:36:55 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,11 @@ static void	handle_home_directory(t_shell *shell, char *home, char *old_pwd)
 		if (getcwd(new_pwd, sizeof(new_pwd)))
 		{
 			shell->envp = add_or_update_env(shell, "OLDPWD", old_pwd);
+			shell->export_list = add_or_update_export_list(shell->export_list,
+					"OLDPWD", old_pwd);
 			shell->envp = add_or_update_env(shell, "PWD", new_pwd);
+			shell->export_list = add_or_update_export_list(shell->export_list,
+					"PWD", new_pwd);
 		}
 		shell->exit_status = 0;
 	}
@@ -59,16 +63,20 @@ static void	change_directory(char **args, t_shell *shell)
 	if (chdir(args[1]) == 0)
 	{
 		shell->envp = add_or_update_env(shell, "OLDPWD", old_pwd);
+		shell->export_list = add_or_update_export_list(shell->export_list,
+				"OLDPWD", old_pwd);
 		if (getcwd(new_pwd, sizeof(new_pwd)))
+		{
 			shell->envp = add_or_update_env(shell, "PWD", new_pwd);
+			shell->export_list = add_or_update_export_list(shell->export_list,
+					"PWD", new_pwd);
+		}
 		shell->exit_status = 0;
 	}
 	else
 	{
 		shell->exit_status = 1;
-		ft_putstr_fd("minishell: cd: ", 2);
-		ft_putstr_fd(args[1], 2);
-		ft_putstr_fd(": ", 2);
+		ft_puterr("minishell: cd: ", args[1], ": ", NULL);
 		perror("");
 	}
 }

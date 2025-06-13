@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/12 13:53:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/13 15:44:39 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,10 +132,11 @@ void				change_to_previous_directory(t_shell *shell);
 // ./builtins/echo/builtin_echo.c
 int					builtin_echo(char **args, t_shell *shell);
 // ./builtins/env/
-// ./builtins/env/builtin_env.c
+// ./builtins/env/builtin_env_utils.c
 int					find_env_var(t_shell *shell, const char *key);
 char				**add_or_update_env(t_shell *shell, const char *key,
 						const char *value);
+// ./builtins/env/builtin_env.c
 int					builtin_env(char **args, t_shell *shell);
 // ./builtins/exit/
 // ./builtins/exit/builtin_exit_utils.c
@@ -261,11 +262,12 @@ int					handle_redirections(char **args, t_shell *shell);
 // ./shell/
 // ./shell/shell_loop.c
 void				run_shell_loop(t_shell *shell);
-// ./shell/shell_loop_utils.c
+// ./shell/shell_setup_utils.c
 void				user_hostname(t_shell *shell);
-// ./shell/shell_setup.c
+void				update_shlvl(t_shell *shell);
 void				build_prompt(char *prompt, t_shell *shell,
 						const char *display_path);
+// ./shell/shell_setup.c
 void				setup_shell(t_shell *shell, char **envp);
 
 // ./utils/
