@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/13 16:03:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/15 19:02:48 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ int					handle_heredoc_replacement(char **result, char **pos,
 char				*handle_heredoc_to_file(char *delimiter, int expand,
 						t_shell *shell);
 // ./parser/input_utils.c
-void				process_initial_input(t_shell *shell);
+int					process_initial_input(t_shell *shell);
 int					remove_quotes_from_commands(t_shell *shell);
 // ./parser/input.c
 void				handle_input(t_shell *shell);

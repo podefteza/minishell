@@ -1,0 +1,38 @@
+Test cases where it crashes (double free / segfault):
+
+=====================================================
+
+echo hey "$USER" '$USER '
+echo hey "$USER" '$USER ' '
+
+echo hey "$USER"
+echo hey "$USER" '
+
+echo hey "$USER"
+echo hey "$USER" "
+
+echo hey "$USER"
+"
+
+echo $USER
+"
+
+cd $OLDPWD
+"
+
+cd $PWD
+"
+
+echo $NONEXISTENT
+"
+
+$JUSTEXPANSION
+'
+
+=====================================================
+REASON:
+The error happens when using any command with unclosed quotes AFTER using a command with expansions.
+=====================================================
+SOLUTION:
+Change process_initial_input() to int instead of void, and return 1 on error or 0 on success.
+In handle_input(), check the returned value and if it was 1, do not proceed, (return ; instead).

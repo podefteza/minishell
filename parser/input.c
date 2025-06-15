@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/13 08:20:23 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/15 19:01:42 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,8 @@ void	handle_input(t_shell *shell)
 		shell->exit_status = 130;
 		g_signal_status = 0;
 	}
-	process_initial_input(shell);
+	if (process_initial_input(shell))
+		return ;
 	if (!shell->input.processed)
 		return ;
 	if (preprocess_and_expand(shell))

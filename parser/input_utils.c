@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 12:08:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/09 13:35:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/15 19:03:10 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static void	trim_spaces(t_shell *shell)
 	shell->input.trim_spaces[i] = '\0';
 }
 
-void	process_initial_input(t_shell *shell)
+int	process_initial_input(t_shell *shell)
 {
 	trim_spaces(shell);
 	free(shell->input.raw);
@@ -45,13 +45,14 @@ void	process_initial_input(t_shell *shell)
 	{
 		free(shell->input.trim_spaces);
 		shell->input.trim_spaces = NULL;
-		return ;
+		return (1);
 	}
 	shell->input.processed = expand_tilde_unquoted(shell->input.trim_spaces);
 	free(shell->input.trim_spaces);
 	shell->input.trim_spaces = NULL;
 	if (!shell->input.processed)
-		return ;
+		return (1);
+	return (0);
 }
 
 static int	process_command_args(int is_echo, int i, t_shell *shell)
