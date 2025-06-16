@@ -6,6 +6,7 @@ NAME = minishell
 SRCS = minishell.c \
 		./builtins/builtin_utils.c \
 		./builtins/cd/builtin_cd.c \
+		./builtins/cd/builtin_cd_utils_2.c \
 		./builtins/cd/builtin_cd_utils.c \
 		./builtins/cd/builtin_oldpwd.c \
 		./builtins/echo/builtin_echo_utils.c \

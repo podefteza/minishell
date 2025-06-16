@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 13:00:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/13 15:36:55 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 09:06:02 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static void	handle_cd_argument(char **args, t_shell *shell)
 
 	if (args[1][0] == '~')
 	{
-		expanded_path = expand_tilde_unquoted(args[1]);
+		expanded_path = expand_tilde_unquoted(args[1], shell);
 		if (!expanded_path)
 		{
 			shell->exit_status = 1;

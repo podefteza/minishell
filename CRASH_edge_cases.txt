@@ -1,6 +1,5 @@
-✔️ Test cases where it crashes (double free / segfault):
-
-=====================================================
+===========================================
+FIXED ✔️ Test cases where it crashes (double free / segfault):
 
 echo hey "$USER" '$USER '
 echo hey "$USER" '$USER ' '
@@ -29,15 +28,14 @@ echo $NONEXISTENT
 $JUSTEXPANSION
 '
 
-=====================================================
 REASON:
 The error happens when using any command with unclosed quotes AFTER using a command with expansions.
-=====================================================
 SOLUTION:
 Change process_initial_input() to int instead of void, and return 1 on error or 0 on success.
 In handle_input(), check the returned value and if it was 1, do not proceed, (return ; instead).
-======================================================
-OTHER ERRORS FOUND:
+
+===========================================
+FIXED ✔️OTHER ERRORS FOUND:
 
 bash:
 carlos-j@podefteza:~/minishell$ export T='<<'
@@ -52,16 +50,16 @@ minishell: grep: Success
 IDEA: preserve quotes in the variable expanded?
 Test with single and double quotes
 
-=====================================================
+===========================================
 
 Multiple heredocs, when CTRL+C is pressed, an aditional ENTER is necessary for each heredoc to finish, instead, it should finish immediately all child processes.
 
-=====================================================
-bash:
+===========================================
+FIXED ✔️bash:
 carlos-j@podefteza:~/minishell$ cd ~carlos-j
 carlos-j@podefteza:~$ pwd
 /home/carlos-j
 
 [minishell] carlos-j@podefteza:~/minishell$ cd ~carlos-j
 minishell: cd: ~carlos-j: No such file or directory
-=====================================================
+===========================================

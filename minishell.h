@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 08:45:50 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 09:16:57 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,14 @@ typedef struct s_heredoc_info
 // ./
 // ./builtins/
 // ./builtins/cd/
+// ./builtins/cd/builtin_cd_utils_2.c
+int					is_tilde_expansion_point(char *input, int i);
+int					get_username_length(char *input, int start);
+int					is_current_user(char *input, int start, int len, t_shell *shell);
+void				update_quote_state(char c, int *in_single, int *in_double);
+int					copy_home(char *result, int j, char *home);
 // ./builtins/cd/builtin_cd_utils.c
-char				*expand_tilde_unquoted(char *input);
+char				*expand_tilde_unquoted(char *input, t_shell *shell);
 // ./builtins/cd/builtin_cd.c
 int					builtin_cd(char **args, t_shell *shell);
 // ./builtins/cd/builtin_oldpwd.c

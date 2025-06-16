@@ -6,51 +6,39 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 16:18:48 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/23 14:01:43 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 09:23:33 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-static int	is_tilde_expansion_point(char *input, int i)
+static int	should_expand_tilde(char *input, int i, int in_single,
+		int in_double)
 {
-	if (input[i] != '~')
-		return (0);
-	if (i > 0 && input[i - 1] != ' ')
-		return (0);
-	if (input[i + 1] && input[i + 1] != '/' && input[i + 1] != ' ')
-		return (0);
-	return (1);
+	return (!in_single && !in_double && is_tilde_expansion_point(input, i));
 }
 
-static void	update_quote_state(char c, int *in_single, int *in_double)
+static int	expand_tilde(char *input, int i, t_shell *shell, int *skip)
 {
-	if (c == '\'' && !(*in_double))
-		*in_single = !(*in_single);
-	else if (c == '"' && !(*in_single))
-		*in_double = !(*in_double);
-}
+	int	username_len;
 
-static int	copy_home(char *result, int j, char *home)
-{
-	int	k;
-
-	k = 0;
-	while (home[k])
+	username_len = get_username_length(input, i + 1);
+	if (is_current_user(input, i + 1, username_len, shell))
 	{
-		result[j] = home[k];
-		j++;
-		k++;
+		*skip = 1 + username_len;
+		return (1);
 	}
-	return (j);
+	*skip = 1;
+	return (0);
 }
 
-static void	expand_loop(char *input, char *result, char *home)
+static void	expand_loop(char *input, char *result, t_shell *shell)
 {
 	int	i;
 	int	j;
 	int	in_single;
 	int	in_double;
+	int	skip;
 
 	i = 0;
 	j = 0;
@@ -59,32 +47,27 @@ static void	expand_loop(char *input, char *result, char *home)
 	while (input[i])
 	{
 		update_quote_state(input[i], &in_single, &in_double);
-		if (!in_single && !in_double && is_tilde_expansion_point(input, i))
+		if (should_expand_tilde(input, i, in_single, in_double)
+			&& expand_tilde(input, i, shell, &skip))
 		{
-			j = copy_home(result, j, home);
-			i++;
+			j = copy_home(result, j, shell->home);
+			i += skip;
 		}
 		else
-		{
-			result[j] = input[i];
-			j++;
-			i++;
-		}
+			result[j++] = input[i++];
 	}
 	result[j] = '\0';
 }
 
-char	*expand_tilde_unquoted(char *input)
+char	*expand_tilde_unquoted(char *input, t_shell *shell)
 {
-	char	*home;
 	char	*result;
 
-	home = getenv("HOME");
-	if (!home)
+	if (!shell->home)
 		return (ft_strdup(input));
-	result = malloc(ft_strlen(input) + ft_strlen(home) + 1);
+	result = malloc(ft_strlen(input) + ft_strlen(shell->home) + 1);
 	if (!result)
 		return (NULL);
-	expand_loop(input, result, home);
+	expand_loop(input, result, shell);
 	return (result);
 }
