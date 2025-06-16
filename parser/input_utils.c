@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 12:08:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 10:13:28 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 21:43:11 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,11 @@ static int	process_command_args(int is_echo, int i, t_shell *shell)
 	j = 0;
 	while (shell->input.commands[i][j])
 	{
+		if (is_quoted_redirection(shell->input.commands[i][j]))
+		{
+			j++;
+			continue ;
+		}
 		cleaned = remove_quotes_concat(shell->input.commands[i][j]);
 		if (!cleaned)
 			return (handle_quote_error(shell->input.commands, i, j, 0));

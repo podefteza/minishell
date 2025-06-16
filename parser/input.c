@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 13:55:32 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 09:44:13 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 21:36:40 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,14 @@ void	handle_input(t_shell *shell)
 		return ;
 	if (validate_and_prepare_commands(shell))
 		return ;
+	// print the 2D array !shell->input.commands
+	/*for (int i = 0; shell->input.commands && shell->input.commands[i]; i++)
+	{
+		for (int j = 0; shell->input.commands[i][j]; j++)
+		{
+			printf("Command[%d][%d]: %s\n", i, j, shell->input.commands[i][j]);
+		}
+	}*/
 	execute_final_command(shell);
 	cleanup_all_temp_files(shell);
 	free_input(shell);

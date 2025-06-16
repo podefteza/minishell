@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 02:04:37 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/09 11:55:47 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 21:42:32 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static int	is_valid_heredoc_start(char *pos)
 	while (*pos == ' ' || *pos == '\t')
 		pos++;
 	if (!*pos || (!is_valid_heredoc_delimiter_char(*pos) && *pos != '\''
-			&& *pos != '"'))
+			&& *pos != '"' && *pos != '$'))
 		return (0);
 	return (1);
 }
