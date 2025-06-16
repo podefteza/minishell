@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 17:11:38 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/30 14:30:56 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 08:09:27 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ static void	skip_token_while_valid(t_tokenizer *t)
 				t->in_quotes = FALSE;
 		}
 		t->pos++;
-		if (!t->in_quotes && (isspace(t->input[t->pos]) || ft_strchr("><|",
+		if (!t->in_quotes && (ft_isspace(t->input[t->pos]) || ft_strchr("><|",
 					t->input[t->pos])))
 			break ;
 	}
@@ -101,7 +101,7 @@ char	*get_next_token_tokenizer(t_tokenizer *t)
 {
 	int	start;
 
-	while (isspace(t->input[t->pos]))
+	while (ft_isspace(t->input[t->pos]))
 		t->pos++;
 	if (t->input[t->pos] == '\0')
 	{

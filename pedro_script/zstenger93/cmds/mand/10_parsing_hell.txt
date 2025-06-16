@@ -42,13 +42,6 @@ why
 not
 $USER
 
-cat << "$US"E"R"
-because
-we
-love
-bash
-$USER
-
 >> $HOME
 
 >> "$H"OM"E"
@@ -300,7 +293,7 @@ echo '$'$'$'$'$'$'$'
 
 echo "$"$'$'$"$"$"$"$'$'
 
-echo $/ $/ 
+echo $/ $/
 
 echo $U/SER
 

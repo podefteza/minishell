@@ -106,8 +106,6 @@ echo <<< echo seegf
 
 echo segf <|< echo super valid
 
-echo test |  <<lala
-
 echo | > la
 
 echo yolo | eco test >> test

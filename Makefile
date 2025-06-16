@@ -8,6 +8,7 @@ SRCS = minishell.c \
 		./builtins/cd/builtin_cd.c \
 		./builtins/cd/builtin_cd_utils.c \
 		./builtins/cd/builtin_oldpwd.c \
+		./builtins/echo/builtin_echo_utils.c \
 		./builtins/echo/builtin_echo.c \
 		./builtins/env/builtin_env_utils.c \
 		./builtins/env/builtin_env.c \

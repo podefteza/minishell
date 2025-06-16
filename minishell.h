@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/15 19:02:48 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 08:45:50 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,10 @@ int					builtin_cd(char **args, t_shell *shell);
 // ./builtins/cd/builtin_oldpwd.c
 void				change_to_previous_directory(t_shell *shell);
 // ./builtins/echo/
+// ./builtins/echo/builtin_echo_utils.c
+int					skip_n_flags(char **args, int *newline);
+int					is_redirection_token(char *token);
+int					is_quoted_redirection(char *token);
 // ./builtins/echo/builtin_echo.c
 int					builtin_echo(char **args, t_shell *shell);
 // ./builtins/env/

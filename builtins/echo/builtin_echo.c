@@ -6,46 +6,45 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:59:20 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/09 13:35:47 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 08:45:05 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-static int	skip_n_flags(char **args, int *newline)
+static int	handle_echo_token(char *token)
 {
-	int	i;
-	int	j;
+	int		len;
+	char	*content;
 
-	i = 1;
-	*newline = 1;
-	while (args[i] && args[i][0] == '-' && args[i][1] != '\0')
+	if (!is_quoted(token) && is_redirection_token(token))
+		return (0);
+	if (is_quoted_redirection(token))
 	{
-		j = 1;
-		while (args[i][j] == 'n')
-			j++;
-		if (args[i][j] == '\0')
-			*newline = 0;
-		else
-			break ;
-		i++;
+		len = ft_strlen(token);
+		content = ft_substr(token, 1, len - 2);
+		if (content)
+		{
+			printf("%s", content);
+			free(content);
+		}
 	}
-	return (i);
-}
-
-static int	is_redirection_token(char *token)
-{
-	return ((ft_strncmp(token, "<", 1) == 0 && ft_strlen(token) == 1)
-		|| (ft_strncmp(token, "<<", 2) == 0 && ft_strlen(token) == 2)
-		|| (ft_strncmp(token, ">", 1) == 0 && ft_strlen(token) == 1)
-		|| (ft_strncmp(token, ">>", 2) == 0 && ft_strlen(token) == 2));
+	else
+	{
+		if (printf("%s", token) < 0)
+			return (-1);
+	}
+	return (1);
 }
 
 static void	print_echo_arguments(char **args, int i)
 {
+	int	result;
+
 	while (args[i])
 	{
-		if (!is_quoted(args[i]) && is_redirection_token(args[i]))
+		result = handle_echo_token(args[i]);
+		if (result == 0)
 		{
 			if (args[i + 1])
 				i += 2;
@@ -53,7 +52,7 @@ static void	print_echo_arguments(char **args, int i)
 				i++;
 			continue ;
 		}
-		if (printf("%s", args[i]) < 0)
+		if (result == -1)
 			break ;
 		if (args[i + 1])
 			printf(" ");
