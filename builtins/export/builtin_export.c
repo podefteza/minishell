@@ -6,47 +6,33 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 09:14:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/13 15:06:57 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 16:02:02 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../minishell.h"
 
-static void	handle_export_with_value(char *arg, t_shell *shell, char *copy,
-		char *equal_sign)
+static int	is_append_syntax(const char *arg)
 {
-	char	*key;
-	char	*value;
+	char	*plus;
 
-	*equal_sign = '\0';
-	key = copy;
-	value = equal_sign + 1;
-	if (!is_valid_identifier(key))
-		print_export_error(arg, shell);
-	else
-	{
-		shell->export_list = add_or_update_export_list(shell->export_list, key,
-				value);
-		shell->envp = add_or_update_env(shell, key, value);
-	}
+	plus = ft_strchr(arg, '+');
+	if (plus && plus[1] == '=')
+		return (1);
+	return (0);
 }
 
 static void	handle_export_assignment(char *arg, t_shell *shell)
 {
 	char	*copy;
-	char	*equal_sign;
 
 	copy = ft_strdup(arg);
 	if (!copy)
 		return ;
-	equal_sign = ft_strchr(copy, '=');
-	if (equal_sign)
-		handle_export_with_value(arg, shell, copy, equal_sign);
-	else if (!is_valid_identifier(copy))
-		print_export_error(arg, shell);
+	if (is_append_syntax(arg))
+		handle_append_export(arg, shell, copy);
 	else
-		shell->export_list = add_or_update_export_list(shell->export_list, copy,
-				NULL);
+		handle_simple_export(arg, shell, copy);
 	free(copy);
 }
 

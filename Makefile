@@ -18,6 +18,7 @@ SRCS = minishell.c \
 		./builtins/export/builtin_export.c \
 		./builtins/export/builtin_export_utils.c \
 		./builtins/export/builtin_export_utils2.c \
+		./builtins/export/builtin_export_utils3.c \
 		./builtins/pwd/builtin_pwd.c \
 		./builtins/unset/builtin_unset.c \
 		./builtins/unset/builtin_unset_utils.c \

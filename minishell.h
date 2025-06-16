@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 10:13:04 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 16:01:52 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,9 @@ void				sort_env(char **envp);
 int					find_export_var(char **export_list, const char *key);
 char				**add_or_update_export_list(char **export_list,
 						const char *key, const char *value);
+// ./builtins/export/builtin_export_utils3.c
+void				handle_simple_export(char *arg, t_shell *shell, char *copy);
+void				handle_append_export(char *arg, t_shell *shell, char *copy);
 // ./builtins/export/builtin_export.c
 int					builtin_export(char **args, t_shell *shell);
 // ./builtins/pwd/
@@ -212,6 +215,7 @@ void				check_for_expansion(t_shell *shell);
 // ./expansions/expand_variables.c
 char				*expand_variables(char *input, t_shell *shell);
 // ./expansions/expansions.c
+char				*find_env_value(char *var_name, t_shell *shell);
 char				*expand_dollar_sign(char **input, t_shell *shell);
 
 // ./parser/

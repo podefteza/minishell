@@ -1,13 +1,13 @@
 #!/bin/bash
+#test_file="cmds/mand/0_compare_parsing.txt"
+#test_file="cmds/mand/1_builtins.txt"
+#test_file="cmds/mand/1_pipelines.txt"
+#test_file="cmds/mand/1_redirs.txt"
+test_file="cmds/mand/1_scmds.txt"
 
-#test_file="test_commands_reduced.txt"
-#test_file="test_commands_with_leaks.txt"
-test_file="test_commands.txt"
-#test_file="test_waltergcc.txt"
 
-while IFS= read -r command; do
-    echo "Executing command: $command"
-  	#echo "$command" | valgrind -q --leak-check=full --show-leak-kinds=all --track-origins=yes --suppressions=readline_supression ../minishell
-	echo "$command" | valgrind -q --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes --suppressions=readline_supression ../minishell
-	#echo "$command" | ../minishell
-done < "$test_file"
+# Read non-empty lines and join them with newlines
+commands=$(awk 'NF {printf "%s\\n", $0}' "$test_file")
+
+# Feed all commands to a single minishell instance
+printf "%b" "$commands" | ../minishell

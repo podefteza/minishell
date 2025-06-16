@@ -13,7 +13,7 @@ find "$test_dir" -type f -name "*.txt" | while read -r test_file; do
     echo "==============================================" >> "$cmd_file"
 
     # Filter out empty lines and comments, add 'echo' between commands for separation
-    grep -v -E '^(#|$)' "$test_file" | sed 's/$/\necho "*********************"/' >> "$cmd_file"
+    grep -v -E '^(#|$)' "$test_file" | sed 's/$/\necho "\n"/' >> "$cmd_file"
 
     echo "" >> "$cmd_file"
 done

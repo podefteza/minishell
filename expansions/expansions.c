@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:42:01 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 09:08:24 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 15:49:43 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static char	*wrap_in_quotes(const char *str)
 	return (quoted);
 }
 
-static char	*find_env_value(char *var_name, t_shell *shell)
+char	*find_env_value(char *var_name, t_shell *shell)
 {
 	char	*prefix;
 	char	*value;
