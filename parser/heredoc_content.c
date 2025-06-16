@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 11:10:34 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/13 09:02:57 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 10:07:56 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ char	*collect_heredoc_content(char *delimiter, int expand, t_shell *shell)
 	struct sigaction	old_sa;
 	int					result;
 
+	if (g_signal_status)
+		return (NULL);
 	content = ft_strdup("");
 	if (!content)
 		return (NULL);

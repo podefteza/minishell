@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 12:08:02 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 09:05:55 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/16 10:13:28 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ int	process_initial_input(t_shell *shell)
 		shell->input.trim_spaces = NULL;
 		return (1);
 	}
-	shell->input.processed = expand_tilde_unquoted(shell->input.trim_spaces, shell);
+	shell->input.processed = expand_tilde_unquoted(shell->input.trim_spaces,
+			shell);
 	free(shell->input.trim_spaces);
 	shell->input.trim_spaces = NULL;
 	if (!shell->input.processed)
