@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 14:10:50 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/13 15:41:38 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/17 10:54:19 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	builtin_env(char **args, t_shell *shell)
 	while (shell->envp[i])
 	{
 		equal_sign = ft_strchr(shell->envp[i], '=');
-		if (equal_sign && equal_sign[1] != '\0')
+		if (equal_sign)
 			printf("%s\n", shell->envp[i]);
 		i++;
 	}

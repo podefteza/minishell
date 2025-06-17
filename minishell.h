@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 21:36:12 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/17 13:48:27 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,10 +131,13 @@ void				update_quote_state(char c, int *in_single, int *in_double);
 int					copy_home(char *result, int j, char *home);
 // ./builtins/cd/builtin_cd_utils.c
 char				*expand_tilde_unquoted(char *input, t_shell *shell);
+void				handle_home_directory(t_shell *shell, char *home,
+						char *old_pwd);
 // ./builtins/cd/builtin_cd.c
 int					builtin_cd(char **args, t_shell *shell);
 // ./builtins/cd/builtin_oldpwd.c
-void				change_to_previous_directory(t_shell *shell);
+void				change_to_previous_directory(t_shell *shell,
+						int should_print);
 // ./builtins/echo/
 // ./builtins/echo/builtin_echo_utils.c
 int					skip_n_flags(char **args, int *newline);

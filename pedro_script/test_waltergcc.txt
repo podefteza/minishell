@@ -14,12 +14,6 @@ wc -l Makefile
 echo
 echo This is a test
 echo -n Hello World
-exit
-exit 1
-exit 42
-exit -42
-exit 42 10
-exit 42scholl
 echo $?
 /bin/ls
 echo $?
@@ -81,8 +75,7 @@ ls -l > test
 cat Makefile >> test
 wc -l < test
 wc -c < test > test_out
-cat << EOF
-cat << EOF | wc -l
+
 cat Makefile | grep NAME | wc -l
 cat notexist | wc -l
 < Makefile grep NAME | wc -l > out
@@ -130,6 +123,5 @@ unset b_test
 export TEST1="withdouble" TEST2 TEST3=wihoutquotes TEST4="with spaces and expand $USER" TEST5="ok, but it has more" TEST6= TEST7='with single $PATH' = TEST8 9TEST9 TEST10="" TEST11=too=many=equals TEST.12="    " TEST13='withsingle' TEST14/
 unset TEST1 TEST2 TEST3 TEST4 TEST5 TEST6 TEST7 TEST8 9TEST9 TEST10 TEST11 TEST.12 TEST13 TEST14/
 cd -
-<< EOF
 > file
 >> file

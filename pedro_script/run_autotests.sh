@@ -1,13 +1,19 @@
 #!/bin/bash
-#test_file="cmds/mand/0_compare_parsing.txt"
-#test_file="cmds/mand/1_builtins.txt"
-#test_file="cmds/mand/1_pipelines.txt"
-#test_file="cmds/mand/1_redirs.txt"
-test_file="cmds/mand/1_scmds.txt"
 
+# Collect all .txt files into one command stream
+command_stream=$(find cmds/ -type f -name '*.txt' -exec cat {} +)
 
-# Read non-empty lines and join them with newlines
-commands=$(awk 'NF {printf "%s\\n", $0}' "$test_file")
+# Optional: save combined input to a temp file if you want to review
+# echo "$command_stream" > all_commands.txt
 
-# Feed all commands to a single minishell instance
-printf "%b" "$commands" | ../minishell
+# Run once under valgrind
+echo "$command_stream" | valgrind -q \
+    --leak-check=full \
+    --show-leak-kinds=all \
+    --track-origins=yes \
+    --track-fds=yes \
+    --suppressions=readline_supression \
+    ../minishell
+
+# no valgrind
+# echo "$command_stream" | ../minishell

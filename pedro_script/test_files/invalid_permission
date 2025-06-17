@@ -1,11 +1,10 @@
-0
-bash.txt
 cmds
-ms.txt
+la
 readline_supression
 run_autotests.sh
 run_autotests_bash.sh
 run_waltergcc_tests.sh
+test
 test_commands.txt
 test_files
 test_waltergcc.txt

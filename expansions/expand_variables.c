@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:51:22 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 21:34:19 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/17 13:43:15 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,32 @@ static void	append_var_value(char **ptr, char *var_value)
 	}
 }
 
+static void	expand_handle_dollar(char **input, char **ptr, t_shell *shell)
+{
+	char	*var_value;
+
+	if (*(*input + 1) == '\0' || ft_strchr(" \t\n\"\'", *(*input + 1)))
+		*(*ptr)++ = *(*input)++;
+	else if (*(*input + 1) == '\"')
+	{
+		(*input)++;
+		*(*ptr)++ = *(*input)++;
+		while (**input && **input != '\"')
+			*(*ptr)++ = *(*input)++;
+		if (**input == '\"')
+			*(*ptr)++ = *(*input)++;
+	}
+	else
+	{
+		var_value = expand_dollar_sign(input, shell);
+		append_var_value(ptr, var_value);
+	}
+}
+
 static void	expand_process_input(char **input, char **ptr, t_shell *shell,
 		int *in_single_quote)
 {
-	char	*var_value;
-	int		in_double_quote;
-	char	next_char;
+	int	in_double_quote;
 
 	in_double_quote = 0;
 	while (**input)
@@ -41,13 +61,7 @@ static void	expand_process_input(char **input, char **ptr, t_shell *shell,
 		if (**input == '\'' || **input == '\"')
 			expand_handle_quotes(input, ptr, in_single_quote, &in_double_quote);
 		else if (**input == '$' && !(*in_single_quote))
-		{
-			next_char = 0;
-			var_value = expand_dollar_sign(input, shell);
-			append_var_value(ptr, var_value);
-			if (next_char && !(ft_isalnum(next_char) || next_char == '_'))
-				*(*ptr)++ = next_char;
-		}
+			expand_handle_dollar(input, ptr, shell);
 		else
 			*(*ptr)++ = *(*input)++;
 	}

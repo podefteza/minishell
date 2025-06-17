@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 15:35:55 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/13 15:34:41 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/17 13:47:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ static char	*get_oldpwd_value(char **envp)
 	return (NULL);
 }
 
-static void	handle_cd_to_oldpwd(t_shell *shell, char *oldpwd, char *old_pwd)
+static void	handle_cd_to_oldpwd(t_shell *shell, char *oldpwd, char *old_pwd,
+	int should_print)
 {
 	char	new_pwd[PATH_MAX];
 
@@ -40,7 +41,8 @@ static void	handle_cd_to_oldpwd(t_shell *shell, char *oldpwd, char *old_pwd)
 			shell->envp = add_or_update_env(shell, "PWD", new_pwd);
 			shell->export_list = add_or_update_export_list(shell->export_list,
 					"PWD", new_pwd);
-			ft_putendl_fd(new_pwd, STDOUT_FILENO);
+			if (should_print)
+				ft_putendl_fd(new_pwd, STDOUT_FILENO);
 		}
 		shell->exit_status = 0;
 	}
@@ -54,7 +56,7 @@ static void	handle_cd_to_oldpwd(t_shell *shell, char *oldpwd, char *old_pwd)
 	}
 }
 
-void	change_to_previous_directory(t_shell *shell)
+void	change_to_previous_directory(t_shell *shell, int should_print)
 {
 	char	*oldpwd;
 	char	old_pwd[PATH_MAX];
@@ -68,5 +70,5 @@ void	change_to_previous_directory(t_shell *shell)
 	}
 	if (!getcwd(old_pwd, sizeof(old_pwd)))
 		ft_strlcpy(old_pwd, "", sizeof(old_pwd));
-	handle_cd_to_oldpwd(shell, oldpwd, old_pwd);
+	handle_cd_to_oldpwd(shell, oldpwd, old_pwd, should_print);
 }

@@ -334,3 +334,6 @@ remove supp file
 	- to run valgrind with the suppressed errors related to readline library:
 		valgrind --suppressions=readline.supp -s --leak-check=full --show-leak-kinds=all ./minishell
 
+
+
+❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌

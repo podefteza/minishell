@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 08:42:56 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 08:45:18 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/17 13:43:47 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ int	is_quoted_redirection(char *token)
 	len = ft_strlen(token);
 	if (len < 3)
 		return (0);
-	if (token[0] == '"' && token[len - 1] == '"')
+	if ((token[0] == '"' && token[len - 1] == '"')
+		|| (token[0] == '\'' && token[len - 1] == '\''))
 	{
 		if (len == 3 && (token[1] == '<' || token[1] == '>' || token[1] == '|'))
 			return (1);

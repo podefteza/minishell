@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/06 15:11:38 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/17 13:47:44 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ static void	exit_and_cleanup(t_shell *shell, int exit_code)
 	free_commands_array(shell->input.commands);
 	free_shell_resources(shell);
 	close_all_fds();
+	cleanup_all_temp_files(shell);
 	exit(exit_code);
 }
 

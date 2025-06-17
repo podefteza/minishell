@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 16:18:48 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 09:23:33 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/17 13:46:23 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,4 +70,28 @@ char	*expand_tilde_unquoted(char *input, t_shell *shell)
 		return (NULL);
 	expand_loop(input, result, shell);
 	return (result);
+}
+
+void	handle_home_directory(t_shell *shell, char *home, char *old_pwd)
+{
+	char	new_pwd[PATH_MAX];
+
+	if (chdir(home) == 0)
+	{
+		if (getcwd(new_pwd, sizeof(new_pwd)))
+		{
+			shell->envp = add_or_update_env(shell, "OLDPWD", old_pwd);
+			shell->export_list = add_or_update_export_list(shell->export_list,
+					"OLDPWD", old_pwd);
+			shell->envp = add_or_update_env(shell, "PWD", new_pwd);
+			shell->export_list = add_or_update_export_list(shell->export_list,
+					"PWD", new_pwd);
+		}
+		shell->exit_status = 0;
+	}
+	else
+	{
+		shell->exit_status = 1;
+		perror("minishell: cd");
+	}
 }

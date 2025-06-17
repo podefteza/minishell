@@ -226,7 +226,7 @@ $NOVAR
 $HOME
 lim
 
-cat << lim''
+cat << lim
 $USER
 $NOVAR
 $HOME

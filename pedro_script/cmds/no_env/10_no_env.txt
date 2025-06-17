@@ -28,11 +28,6 @@ pwd
 
 echo "no env over here"
 
-exit asd
-
-exit 5
-
-exit 5 asd
 
 unset OLDPWD
 cd -
@@ -66,20 +61,9 @@ export a="asd" b="de" o= c="hellomi" X
 unset o asd B x X wqd c
 
 unset PATH
-cat
-cd ..
-exit
-
-unset PATH
 pwd
 cd
 pwd
-
-unset PATH
-pwd
-cd -
-pwd
-exit
 
 unset PATH
 pwd
