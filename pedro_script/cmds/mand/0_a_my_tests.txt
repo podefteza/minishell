@@ -1,0 +1,11 @@
+echo $USER '$USER' "$USER" $ola
+echo $USER '$USER' "$USER" $ola"
+
+echo asdas "$asdasd" ""
+echo asdas "$asdasd" '
+
+echo $DISPLAY
+echo $DISPLAY ""
+echo $DISPLAY ''
+echo $DISPLAY '
+echo $DISPLAY "
