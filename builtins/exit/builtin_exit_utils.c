@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 10:54:06 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/05/28 14:13:20 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:07:00 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int	validate_and_get_exit_code(char *exit_code_str, int i, t_shell *shell)
 	{
 		if (!ft_isdigit(exit_code_str[i]))
 		{
+			ft_putstr_fd("exit\n", 1);
 			ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 			free(exit_code_str);
 			free(shell->input.expanded);
@@ -111,6 +112,7 @@ int	handle_exit_in_second_arg(char **args, t_shell *shell)
 
 	if (!is_str_digit(args[1]) || is_overflow(args[1]))
 	{
+		ft_putstr_fd("exit\n", 1);
 		ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 		free(shell->input.expanded);
 		free_array(shell->input.args);

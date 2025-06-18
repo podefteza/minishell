@@ -337,3 +337,11 @@ remove supp file
 
 
 ❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌
+
+
+check if anything breaks if using values higher that MAX_VALUE
+use tester on minishell_that_crashes
+
+
+
+use address sasnitizer at compilation.

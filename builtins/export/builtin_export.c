@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 09:14:15 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/16 16:02:02 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:45:29 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ static void	display_export_entry(char *entry)
 	char	*equal_sign;
 	char	*display_entry;
 
+	if ((ft_strncmp(entry, "_=", 2) == 0) || (ft_strncmp(entry, "_", 2) == 0))
+		return ;
 	equal_sign = ft_strchr(entry, '=');
 	if (equal_sign)
 	{

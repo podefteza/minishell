@@ -22,6 +22,7 @@ SRCS = minishell.c \
 		./builtins/pwd/builtin_pwd.c \
 		./builtins/unset/builtin_unset.c \
 		./builtins/unset/builtin_unset_utils.c \
+		./execution/child_process_utils.c \
 		./execution/child_process.c \
 		./execution/command_execution.c \
 		./execution/command_handler.c \

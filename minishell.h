@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:12:57 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/17 13:48:27 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/18 11:42:59 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,6 +186,8 @@ void				builtin_setup(t_builtin *builtins);
 int					execute_builtins(t_shell *shell, char **cmd);
 
 // ./execution/
+// ./execution/child_process_utils.c
+void				exit_if_invalid_command(char **args, t_shell *shell);
 // ./execution/child_process.c
 void				execute_child(t_shell *shell, char **args, int prev,
 						int pipe_fd[2]);

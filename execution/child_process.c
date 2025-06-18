@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 12:02:59 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/17 13:41:32 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/18 11:43:36 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ void	execute_child(t_shell *shell, char **args, int prev, int pipe_fd[2])
 		cleanup_all_temp_files(shell);
 		exit(1);
 	}
+	exit_if_invalid_command(args, shell);
 	if (is_builtin(args[0], shell))
 	{
 		execute_builtins(shell, args);

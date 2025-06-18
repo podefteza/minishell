@@ -6,7 +6,7 @@
 /*   By: carlos-j <carlos-j@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/19 12:57:11 by carlos-j          #+#    #+#             */
-/*   Updated: 2025/06/17 13:47:44 by carlos-j         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:33:37 by carlos-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,8 @@ int	builtin_exit(char **args, t_shell *shell)
 			return (1);
 		}
 	}
+	if (shell->exit_status == 130)
+		exit_and_cleanup(shell, 130);
 	exit_and_cleanup(shell, exit_code);
 	return (0);
 }
